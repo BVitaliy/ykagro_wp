@@ -1,0 +1,125 @@
+{
+  "key": "group_product_fields",
+  "title": "Продукт",
+  "fields": [
+    {
+      "key": "field_84648e432c50c8d3",
+      "label": "Галерея",
+      "name": "gallery",
+      "type": "gallery",
+      "instructions": "Фото товару для слайдера. Розмір 828×655 px. Перше фото — головне.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "insert": "append",
+      "mime_types": "jpg,jpeg,png,webp",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_827b2cdca4a8382a",
+      "label": "Короткий опис",
+      "name": "short_text",
+      "type": "textarea",
+      "instructions": "Абзац під назвою товару.",
+      "rows": 4,
+      "new_lines": "",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_172c23aa9c804207",
+      "label": "Переваги (чеклист)",
+      "name": "features",
+      "type": "repeater",
+      "instructions": "Короткі пункти під описом, напр. «Лабораторний контроль кожної партії».",
+      "layout": "table",
+      "button_label": "Додати пункт",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_1f70d88f1891184d",
+          "label": "Текст",
+          "name": "text",
+          "type": "text",
+          "wrapper": { "width": "100" }
+        }
+      ]
+    },
+    {
+      "key": "field_64878c3f312b36a1",
+      "label": "Кнопка",
+      "name": "cta",
+      "type": "group",
+      "layout": "table",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_81afecb5805b275e",
+          "label": "Напис",
+          "name": "label",
+          "type": "text",
+          "default_value": "Замовити",
+          "wrapper": { "width": "50" }
+        },
+        {
+          "key": "field_426105b17a02a66c",
+          "label": "Дія",
+          "name": "action",
+          "type": "select",
+          "choices": {
+            "modal": "Відкрити форму у модальному вікні",
+            "link": "Перейти за посиланням"
+          },
+          "default_value": "modal",
+          "return_format": "value",
+          "ui": 1,
+          "wrapper": { "width": "25" }
+        },
+        {
+          "key": "field_66d237203b9bf9ce",
+          "label": "Посилання",
+          "name": "link",
+          "type": "link",
+          "return_format": "array",
+          "conditional_logic": [
+            [
+              {
+                "field": "field_426105b17a02a66c",
+                "operator": "==",
+                "value": "link"
+              }
+            ]
+          ],
+          "wrapper": { "width": "25" }
+        }
+      ]
+    },
+    {
+      "key": "field_04dff669854bcf08",
+      "label": "Характеристики",
+      "name": "specs",
+      "type": "wysiwyg",
+      "instructions": "Розгорнутий опис і таблиця характеристик. Виводиться колонкою 1080 px по центру.",
+      "toolbar": "full",
+      "media_upload": 0,
+      "delay": 1,
+      "wrapper": { "width": "100" }
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "post_type",
+        "operator": "==",
+        "value": "product"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Поля сторінки товару.",
+  "show_in_rest": 0
+}

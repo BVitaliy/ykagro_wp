@@ -1,0 +1,266 @@
+@use "../mixins" as *;
+
+// ── Production steps — fullpage slider (Figma 931:6192) ─────────────
+// Edge inset and corner radius match .page-hero, so the panels read as the
+// same full-bleed card language as the page's own hero.
+.production-steps {
+  --steps-pad: #{rem(20)};
+  --steps-radius: #{rem(24)};
+
+  position: relative;
+  // Taller than the viewport so the sticky stage stays glued to the top over a
+  // range of scroll rather than a single position — that range is the window in
+  // which JS can take the wheel, and a violent flick can jump ~270px between
+  // scroll samples. Nothing moves on screen inside the range (the stage is
+  // pinned and fills the viewport), so the extra height costs nothing visually:
+  // app-production.js parks the scroll at either end of it on engage/release.
+  height: calc(var(--app-vh, 100dvh) * 1.4);
+
+  &__viewport {
+    position: sticky;
+    top: 0;
+    // --app-vh is synced in app-global.js and ignores mobile browser-chrome
+    // micro-shifts, so the pinned stage doesn't resize mid-scroll on phones
+    height: var(--app-vh, 100dvh);
+    padding: var(--steps-pad);
+  }
+
+  // Clipping lives here, not on the padded viewport: `overflow` clips at the
+  // padding edge, so the neighbouring panels would otherwise show through the
+  // inset band.
+  &__stage {
+    height: 100%;
+    border-radius: var(--steps-radius);
+    overflow: hidden;
+  }
+
+  // While the slider owns the gesture the browser must not scroll the page
+  // underneath it — Lenis is prevented here, so nothing else is stopping it.
+  &.is-locked &__stage {
+    touch-action: none;
+  }
+
+  // Swiper owns the track on desktop (see app-production.js); the panels are
+  // its slides, so no local layout is needed beyond the height.
+  &__track {
+    height: 100%;
+  }
+
+  &__panel {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  // Taller than the panel so Swiper parallax has room to drift the photo.
+  &__banner.banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14%;
+    height: 128%;
+    border-radius: 0;
+    will-change: transform;
+
+    > picture,
+    > video,
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // ── Floating white card (Figma 899:5972) ──────────────────────────
+  // Outer: placement + shadow. The shadow has to live here because clip-path
+  // on the inner element would cut a box-shadow away; drop-shadow on the parent
+  // follows the clipped silhouette instead.
+  &__card {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    width: rem(724);
+    max-width: calc(100% - #{rem(120)});
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 #{rem(24)} #{rem(60)} rgba(0, 0, 0, 0.14));
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.7s ease;
+  }
+
+  // Incoming / active — settle in from below with a soft rise.
+  &__panel.swiper-slide-active &__card {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+    transition-delay: 0.22s;
+  }
+
+  // Leaving upward (previous) — drift up & fade.
+  &__panel.swiper-slide-prev &__card {
+    opacity: 0;
+    transform: translateY(calc(-50% - #{rem(48)})) scale(0.97);
+    transition-duration: 0.45s;
+    transition-delay: 0s;
+  }
+
+  // Waiting below (next) — sit slightly down, ready to rise in.
+  &__panel.swiper-slide-next &__card,
+  &__panel:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next) &__card {
+    opacity: 0;
+    transform: translateY(calc(-50% + #{rem(52)})) scale(0.96);
+    transition-duration: 0.35s;
+    transition-delay: 0s;
+  }
+
+  // Inner: the slanted-left-edge mask + the card surface itself
+  &__card-inner {
+    display: flex;
+    flex-direction: column;
+    gap: rem(100);
+    padding: rem(60);
+    background: var(--clr-white);
+    -webkit-clip-path: url(#production-card-clip);
+    clip-path: url(#production-card-clip);
+  }
+
+  // Figma insets: 40 on the right-hand cards, 60 on the left-hand ones
+  &__panel--right &__card {
+    right: rem(40);
+  }
+
+  &__panel--left &__card {
+    left: rem(60);
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: rem(24);
+  }
+
+  &__card-title {
+    margin: 0;
+    color: var(--clr-black);
+    font-weight: 600;
+    font-size: clamp(#{rem(24)}, 1.77vw, #{rem(34)});
+    line-height: 1.1;
+  }
+
+  // Figma paints this badge's label dark green, not the shared .tag black
+  &__card-num {
+    flex-shrink: 0;
+    color: #214314;
+    white-space: nowrap;
+  }
+
+  // In Figma the icon is absolutely placed and overhangs the text block, so it
+  // does NOT drive the card height — the card is 332 tall, the icon 185.
+  &__card-body {
+    position: relative;
+    min-height: rem(75);
+    padding-right: rem(225);
+  }
+
+  &__card-text {
+    max-width: rem(321);
+    margin: 0;
+    color: var(--clr-muted);
+    font-size: clamp(#{rem(16)}, 0.94vw, #{rem(18)});
+    line-height: 1.4;
+  }
+
+  &__card-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(185);
+    height: rem(185);
+    transform: translateY(-50%);
+
+    img {
+      display: block;
+      width: calc(100% * var(--step-icon-scale, 1));
+      height: calc(100% * var(--step-icon-scale, 1));
+      object-fit: contain;
+    }
+  }
+
+  // ── Small screens: same pinned slider, just a tighter card ────────
+  @include maxMedia(lg) {
+    --steps-pad: #{rem(10)};
+
+    // card sits over the bottom of the photo instead of beside it
+    &__card {
+      right: rem(16);
+      bottom: rem(106);
+      left: rem(16);
+      top: auto;
+      width: auto;
+      max-width: none;
+      transform: none;
+      filter: drop-shadow(0 #{rem(12)} #{rem(32)} rgba(0, 0, 0, 0.16));
+    }
+
+    &__panel.swiper-slide-active &__card {
+      transform: none;
+    }
+
+    &__panel.swiper-slide-prev &__card {
+      transform: translateY(#{rem(-28)});
+    }
+
+    &__panel.swiper-slide-next &__card,
+    &__panel:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next) &__card {
+      transform: translateY(#{rem(32)});
+    }
+
+    &__panel--right &__card,
+    &__panel--left &__card {
+      right: rem(16);
+      left: rem(16);
+    }
+
+    &__card-inner {
+      gap: rem(28);
+      padding: rem(24);
+      -webkit-clip-path: url(#production-card-clip-mob);
+      clip-path: url(#production-card-clip-mob);
+    }
+
+    &__card-body {
+      min-height: 0;
+      padding-right: rem(108);
+    }
+
+    &__card-icon {
+      width: rem(88);
+      height: rem(88);
+    }
+  }
+
+  @include maxMedia(md) {
+    &__card-inner {
+      gap: rem(20);
+      padding: rem(20);
+    }
+
+    &__card-head {
+      gap: rem(12);
+    }
+
+    &__card-body {
+      padding-right: rem(84);
+    }
+
+    &__card-icon {
+      width: rem(68);
+      height: rem(68);
+    }
+  }
+}

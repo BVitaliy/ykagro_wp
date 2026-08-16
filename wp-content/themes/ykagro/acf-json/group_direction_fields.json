@@ -1,0 +1,173 @@
+{
+  "key": "group_direction_fields",
+  "title": "Напрям діяльності",
+  "fields": [
+    {
+      "key": "field_a8a7fc1618a6a542",
+      "label": "Картка у списку",
+      "name": "card_tab",
+      "type": "tab",
+      "placement": "top",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_8196110cf10b2e2a",
+      "label": "Іконка",
+      "name": "icon",
+      "type": "select",
+      "instructions": "Лінійна іконка в куті картки.",
+      "choices": {
+        "direction-broiler": "Птиця (бройлер)",
+        "direction-recipe": "Рецептура",
+        "direction-quality": "Якість",
+        "direction-logistics": "Логістика",
+        "direction-equipment": "Обладнання",
+        "direction-gmo": "Контроль ГМО"
+      },
+      "return_format": "value",
+      "ui": 1,
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_e9c8004b9da4a88f",
+      "label": "Опис для картки",
+      "name": "card_text",
+      "type": "textarea",
+      "instructions": "Короткий текст у картці на сторінці «Напрями діяльності» та на головній.",
+      "rows": 3,
+      "new_lines": "",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_d43e126f2872d3a4",
+      "label": "Сторінка напряму",
+      "name": "detail_tab",
+      "type": "tab",
+      "placement": "top",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_c6264eff3ce7bf2d",
+      "label": "Банер",
+      "name": "banner",
+      "type": "image",
+      "instructions": "Широкий банер угорі сторінки. Розмір 2880×1000 px.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "mime_types": "jpg,jpeg,png,webp",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_53b40fb942054bb8",
+      "label": "Банер — мобільний",
+      "name": "banner_mob",
+      "type": "image",
+      "instructions": "Вертикальний кроп для мобільних. Розмір 750×800 px. Порожнє — використається основний банер.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "mime_types": "jpg,jpeg,png,webp",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_aad4c3fe606dad76",
+      "label": "Секції",
+      "name": "sections",
+      "type": "repeater",
+      "instructions": "Блоки «текст + фото» на сторінці напряму. Сторона чергується вручну.",
+      "layout": "block",
+      "button_label": "Додати секцію",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_0670bc57567b8d3f",
+          "label": "Фото зліва чи справа",
+          "name": "side",
+          "type": "select",
+          "choices": {
+            "right": "Фото справа",
+            "left": "Фото зліва"
+          },
+          "default_value": "right",
+          "return_format": "value",
+          "ui": 1,
+          "wrapper": { "width": "25" }
+        },
+        {
+          "key": "field_36a73f9cfc848609",
+          "label": "Мітка",
+          "name": "tag",
+          "type": "text",
+          "instructions": "Маленький підпис над заголовком.",
+          "wrapper": { "width": "35" }
+        },
+        {
+          "key": "field_db22697a1fd879e1",
+          "label": "Заголовок",
+          "name": "title",
+          "type": "textarea",
+          "instructions": "Переноси рядків зберігаються.",
+          "rows": 2,
+          "wrapper": { "width": "40" }
+        },
+        {
+          "key": "field_7a5467894bf78661",
+          "label": "Текст",
+          "name": "text",
+          "type": "wysiwyg",
+          "toolbar": "basic",
+          "media_upload": 0,
+          "delay": 1,
+          "wrapper": { "width": "60" }
+        },
+        {
+          "key": "field_acc686ced87e4d31",
+          "label": "Фото",
+          "name": "image",
+          "type": "image",
+          "instructions": "Розмір 1000×700 px.",
+          "return_format": "array",
+          "preview_size": "medium",
+          "mime_types": "jpg,jpeg,png,webp",
+          "wrapper": { "width": "40" }
+        },
+        {
+          "key": "field_e04d784b930cbe80",
+          "label": "Пункти списку",
+          "name": "items",
+          "type": "repeater",
+          "instructions": "Опційний перелік під текстом.",
+          "layout": "table",
+          "button_label": "Додати пункт",
+          "wrapper": { "width": "100" },
+          "sub_fields": [
+            {
+              "key": "field_fdfd92e9bc6edddd",
+              "label": "Текст",
+              "name": "text",
+              "type": "text",
+              "wrapper": { "width": "100" }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "post_type",
+        "operator": "==",
+        "value": "direction"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Поля напряму діяльності: картка у списку + сторінка деталки.",
+  "show_in_rest": 0
+}

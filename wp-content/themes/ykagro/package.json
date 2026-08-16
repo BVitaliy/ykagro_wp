@@ -1,0 +1,38 @@
+{
+  "name": "ykagro-theme",
+  "version": "1.0.0",
+  "description": "YKagro WordPress theme — asset pipeline (SCSS, images, vendor JS).",
+  "main": "gulpfile.js",
+  "type": "module",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "dev": "gulp",
+    "styles": "gulp styles",
+    "img": "gulp img",
+    "vendors": "gulp updateJS && gulp updateCSS"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.3",
+    "del": "^7.1.0",
+    "dotenv": "^16.4.5",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^9.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-imagemin": "^9.1.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-notify": "^4.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-sass": "^5.1.0",
+    "gulp-webp": "^5.0.0",
+    "sass": "^1.81.0"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "inputmask": "^5.0.9",
+    "intl-tel-input": "^29.1.0",
+    "jquery": "^3.7.1",
+    "lenis": "^1.1.14",
+    "split-type": "^0.3.4",
+    "swiper": "^11.1.15"
+  }
+}

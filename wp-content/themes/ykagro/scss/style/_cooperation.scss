@@ -1,0 +1,144 @@
+@use "../mixins" as *;
+
+// ── Cooperation page (Figma 784:7150) ───────────────────────────────
+
+// Hero title panel with a CTA button under the title (Figma 784:7447)
+.page-hero__title-panel--cta {
+  text-align: center;
+}
+.page-hero__cta {
+  margin-top: rem(24);
+}
+
+// Comfort cards — Figma 833:6206 (uses .container-full — 20px side padding)
+.comfort-cards {
+  // clip the mobile slider bleed (below 992)
+  @include maxMedia(lg) {
+    overflow: hidden;
+  }
+
+  &__title {
+    margin-bottom: var(--sp-md);
+    text-align: center;
+  }
+
+  // Grid on desktop; Swiper slider below 992 (bleeds past the container padding)
+  &__slider {
+    width: 100%;
+
+    @include maxMedia(lg) {
+      @include slider-bleed;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: rem(48);
+
+    @include maxMedia(lg) {
+      display: flex;
+      gap: 0;
+    }
+  }
+
+  &__pagination.swiper-pagination {
+    display: none;
+
+    @include maxMedia(lg) {
+      @include slider-dots;
+    }
+  }
+}
+
+.comfort-card {
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
+  padding: rem(24);
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  color: inherit;
+
+  &__media {
+    display: block;
+    aspect-ratio: 547 / 459;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s;
+    }
+  }
+
+  // Figma H6 24/1.4 SemiBold · #2d2e30
+  &__title {
+    display: block;
+    color: var(--clr-black);
+    transition: color var(--transition-1);
+  }
+
+  // Figma Text 18/1.4 Regular — colour via .clr-muted utility on the element
+  &__text {
+    display: block;
+  }
+
+  @include hover {
+    &--link:hover &__media img {
+      transform: scale(1.05);
+    }
+
+    &--link:hover &__title {
+      color: var(--clr-orange);
+    }
+  }
+}
+
+// Gallery heading is wider here than on the homepage (Figma 784:7577 = 1142px)
+.cooperation-page .home-gallery__title {
+  max-width: rem(1142);
+}
+
+// ── Cooperation form — cream card, slanted-cut top, white inputs (Figma 833:6752)
+.coop-form {
+  &__card {
+    max-width: rem(928);
+    margin-inline: auto;
+    padding: rem(120) rem(60) rem(60);
+    background: var(--bg-1);
+    // slanted-top cut mask on every screen (shallower cut on tall mobile card)
+    -webkit-clip-path: url(#coop-form-clip);
+    clip-path: url(#coop-form-clip);
+    .form-block__submit{
+      margin-top: rem(28);
+    }
+
+    @include maxMedia(md) {
+      padding: rem(56) rem(20) rem(32);
+      -webkit-clip-path: url(#coop-form-clip-mob);
+      clip-path: url(#coop-form-clip-mob);
+    }
+  }
+
+  &__title {
+    margin-bottom: rem(40);
+    text-align: center;
+
+    @include maxMedia(md) {
+      margin-bottom: rem(28);
+    }
+  }
+
+  // form fills the card; inputs are white on the cream card (Figma)
+  .form-block {
+    max-width: none;
+  }
+  .form-block__input {
+    background: var(--clr-white);
+  }
+}

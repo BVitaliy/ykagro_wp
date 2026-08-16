@@ -1,0 +1,550 @@
+@use "../mixins" as *;
+
+// ── Modal system (Figma 685:1338 / 747:4583) ────────────────────────
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  // Exactly the currently visible area: inset:0 alone would size the wrapper to
+  // the layout viewport, which on iOS stays at its "browser UI hidden" height —
+  // the panel would then centre below the optical centre while the bar is up.
+  height: 100%;
+  height: 100dvh;
+  padding: rem(20) var(--gutter);
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 0.5s;
+  // Overflow is owned by the wrapper, not by .modal__body: a panel taller than
+  // the viewport scrolls as one piece instead of growing an inner scroll area
+  // inside the text column.
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  // …and that scroll stays invisible — a bar running down the scrim next to the
+  // page's own bar reads as a second scrollbar.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.is-open {
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  // Scrim (Figma 685:1963): flat 40% black over the whole viewport + a
+  // progressive backdrop blur — the page stays sharp at the top and reaches
+  // ~20px of blur at the bottom. The dim itself is NOT graduated: black is
+  // uniform, only the blur ramps.
+  // The scrim does NOT fade in with `opacity`: an element with opacity < 1 is a
+  // backdrop root, so while it animated, the blur layer's backdrop was only the
+  // scrim itself — the blur stayed invisible and then popped in the moment the
+  // transition landed on 1. Animate what is actually drawn instead: the black
+  // fades via background-color, the blur ramps from 0 to 20px, both over 0.5s.
+  &__overlay {
+    position: fixed;
+    top: -1px;
+    left: -1px;
+    // Never shorter than the screen while the mobile browser bars slide in and
+    // out: lvh is the "all bars hidden" height, so the scrim simply extends
+    // behind them instead of leaving a strip at the bottom mid-animation.
+    width: calc(100% + #{rem(2)});
+    height: calc(100% + #{rem(2)});
+    height: calc(100lvh + #{rem(2)});
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.5s ease;
+    cursor: pointer;
+
+    // The blur layer is masked instead of the whole scrim: alpha 0 over the top
+    // half leaves the backdrop untouched there, alpha 1 at the bottom shows it
+    // fully blurred. It sits above the parent's black, so the dim stays even.
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      //mask-image: linear-gradient(0deg, #000 0%, #000 32%, rgba(0, 0, 0, 0.55) 46%, transparent 58%);
+      //-webkit-mask-image: linear-gradient(0deg, #000 0%, #000 32%, rgba(0, 0, 0, 0.55) 46%, transparent 58%);
+      transition: backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
+      pointer-events: none;
+      mask-image: linear-gradient(0deg, #000 40%, transparent);
+      -webkit-mask-image: linear-gradient(0deg, #000 40%, transparent);      
+    }
+  }
+  &.is-open &__overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  &.is-open &__overlay::after {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  &__panel {
+    position: relative;
+    display: none;
+    width: min(100%, #{rem(729)});
+    // auto margins centre the panel while there is room and collapse to 0 once
+    // it is taller than the wrapper, so the top never gets cut off the way
+    // align-items: center would clip it.
+    margin: auto;
+    background: transparent;
+    border-radius: rem(24);
+    box-shadow: none;
+    filter: none;
+    overflow: hidden;
+    clip-path: url(#modal-panel-clip);
+    -webkit-clip-path: url(#modal-panel-clip);
+    opacity: 0;
+    transform: translateY(#{rem(24)}) scale(0.98);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: var(--clr-white);
+      border-radius: rem(24);
+      box-shadow: none;
+      filter: none;
+    }
+
+    &.is-active {
+      display: block;
+    }
+
+    &--form {
+      width: min(100%, #{rem(729)});
+    }
+
+    &--detail {
+      width: min(100%, #{rem(729)});
+    }
+  }
+  &.is-open &__panel.is-active {
+    opacity: 1;
+    transform: none;
+  }
+
+  &__backing {
+    display: none;
+  }
+
+  &__close {
+    position: absolute;
+    top: rem(17);
+    right: rem(14);
+    padding: rem(19);
+    z-index: 2;
+    display: inline-flex;
+    width: rem(60);
+    height: rem(60);
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-black);
+    transition: opacity var(--transition-1);
+
+    svg { width: 100%; height: 100%; }
+
+    @include hover {
+      &:hover { opacity: 0.55; }
+    }
+  }
+
+  &__body {
+    position: relative;
+    z-index: 1;
+    padding: rem(105) rem(60) rem(60);
+
+    &--center {
+      text-align: center;
+    }
+  }
+
+  &__title {
+    margin: 0 0 rem(40);
+    color: #1d1d1d;
+    font-size: clamp(#{rem(30)}, 3.9vw, #{rem(40)});
+    line-height: 1.1;
+  }
+
+  &__text {
+    max-width: rem(501);
+    margin: 0 auto rem(40);
+    color: var(--clr-muted);
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(222);
+    height: rem(222);
+    margin-bottom: rem(40);
+    color: var(--clr-black);
+
+    svg { width: 100%; height: 100%; }
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 609 / 336;
+    margin: 0 auto rem(40);
+    overflow: hidden;
+    border-radius: rem(14);
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__cta {
+    margin-top: 0;
+  }
+
+  &__panel--form &__body {
+    padding: rem(105) rem(60) rem(40);
+  }
+
+  &__panel--form &__title {
+    max-width: rem(609);
+    margin-inline: auto;
+    margin-bottom: rem(40);
+  }
+
+ 
+
+  &__panel--detail &__title {
+    max-width: rem(555);
+    margin-inline: auto;
+  }
+
+ 
+
+  &__panel--detail &__text {
+    max-width: rem(561);
+  }
+
+  &__panel--thanks {
+    width: min(100%, #{rem(729)});
+  }
+
+ 
+  &__panel--thanks &__icon {
+    width: rem(222);
+    height: rem(222);
+    margin-bottom: rem(40);
+  }
+
+  &__panel--thanks &__title {
+    max-width: rem(609);
+    margin-inline: auto;
+    margin-bottom: rem(40);
+  }
+
+  &__panel--thanks &__text {
+    max-width: rem(411);
+    margin-bottom: 0;
+  }
+
+  &__panel--team {
+    width: min(calc(100vw - var(--gutter) * 2), #{rem(1375)});
+
+    &::before {
+      background: var(--bg-1);
+    }
+  }
+
+  &__panel--team &__close {
+    top: rem(50);
+    right: rem(40); 
+  }
+
+  &__team {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(#{rem(360)}, min(50%, #{rem(633)})) minmax(0, 1fr);
+    align-items: start;
+    gap: rem(40);
+    padding: rem(120) rem(60) rem(70);
+  }
+
+  &__team-photo {
+    display: block;
+    align-self: start;
+    width: 100%;
+    max-width: rem(633);
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    aspect-ratio: 633 / 635;
+    background: #f1e5d8;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 28%;
+    }
+  }
+
+  &__team-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: rem(40);
+    min-width: 0;
+    min-height: min(#{rem(635)}, 50vw); 
+  }
+
+  &__team-content {
+    display: flex;
+    flex-direction: column;
+    gap: rem(40);
+  }
+
+  &__team-head {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__team-name,
+  &__team-role,
+  &__team-text p {
+    margin: 0;
+  }
+
+  &__team-name {
+    color: #1d1d1d;
+  }
+
+  &__team-role {
+    max-width: rem(411);
+    color: var(--clr-black);
+  }
+
+  &__team-text {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+    max-width: rem(560);
+  }
+
+  &__team-socials {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+  }
+
+  &__team-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(56);
+    height: rem(56);
+    border-radius: var(--radius-sm);
+    background: var(--clr-white);
+    color: var(--clr-orange);
+    transition: background var(--transition-1), color var(--transition-1);
+
+    svg {
+      display: block;
+      width: rem(30);
+      height: rem(30);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-orange);
+        color: var(--clr-white);
+      }
+    }
+  }
+
+  @include maxMedia(lg) {
+    &__panel--team {
+      width: min(calc(100vw - var(--gutter) * 2), #{rem(760)});
+    }
+
+    &__team {
+      grid-template-columns: 1fr;
+      gap: rem(32);
+      padding: rem(76) rem(32) rem(36);
+    }
+
+    &__team-photo {
+      max-width: rem(420);
+    }
+
+    &__team-body {
+      min-height: 0;
+      padding-right: 0;
+    }
+  }
+
+  @include maxMedia(md) {
+    padding-inline: rem(12);
+
+    &__panel {
+      border-radius: rem(20);
+      box-shadow: none;
+      filter: none;
+      clip-path: url(#modal-panel-mobile-clip);
+      -webkit-clip-path: url(#modal-panel-mobile-clip);
+    }
+
+    &__panel::before {
+      border-radius: rem(20);
+      box-shadow: none;
+      filter: none;
+    }
+
+    &__body,
+    &__panel--form &__body,
+    &__panel--detail &__body,
+    &__panel--thanks &__body {
+      padding: rem(72) rem(18) rem(30);
+    }
+
+    &__close {
+      top: rem(24);
+      right: rem(20);
+       padding: rem(14);
+      top: rem(14);
+      right: rem(8);
+      width: rem(48);
+      height: rem(48);        
+    }
+
+    &__panel--team &__close {
+      top: rem(14);
+      right: rem(8);
+      width: rem(48);
+      height: rem(48); 
+    }
+
+    &__team {
+      gap: rem(24);
+      padding: rem(68) rem(20) rem(28);
+    }
+
+    &__team-photo {
+      max-width: none;
+      border-radius: var(--radius-sm);
+      aspect-ratio: 335 / 320;
+    }
+
+    &__team-content {
+      gap: rem(28);
+    }
+
+    &__team-head {
+      gap: rem(12);
+    }
+
+    &__team-name {
+      font-size: rem(30);
+    }
+
+    &__team-social {
+      width: rem(48);
+      height: rem(48);
+
+      svg {
+        width: rem(26);
+        height: rem(26);
+      }
+    }
+
+    &__icon {
+      width: rem(150);
+      height: rem(120);
+      margin-bottom: rem(20);
+    }
+
+    &__image {
+      margin-bottom: rem(28);
+      border-radius: rem(12);
+    }
+  }
+}
+
+// ── Scroll lock (same approach as Ajour: overflow:clip + padding comp) ──
+//
+// Desktop (classic scrollbar): `overflow: clip` on html+body drops the bar, so
+// the viewport goes full width and every fixed inset:0 overlay covers edge to
+// edge — no undimmed lane on the right. The width gained by dropping the bar is
+// handed back as `padding-right` on body and on the fixed full-width elements
+// (set in JS from the measured bar width), so the page and the centred panel do
+// NOT shift. Scrolling itself is blocked by Lenis.stop + wheel/touch/key guards.
+//
+// Touch (no classic bar): pin body with `.is-modal-scroll-pin` + html clip, so
+// iOS/Android cannot rubber-band the page under the modal.
+html.is-modal-open {
+  overflow: clip;
+  overscroll-behavior: none;
+}
+
+html.is-modal-open body {
+  overflow: clip;
+}
+
+html.is-modal-open--pin {
+  overflow: clip;
+}
+
+html.is-modal-open--pin body {
+  overflow: hidden;
+}
+
+body.is-modal-open.is-modal-scroll-pin {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+// lightGallery uses the same lock approach as modals, but with separate state
+// classes so opening a gallery does not depend on the modal wrapper.
+html.is-lg-open {
+  overflow: clip;
+  overscroll-behavior: none;
+}
+
+html.is-lg-open body {
+  overflow: clip;
+}
+
+html.is-lg-open.lg-overlay-open,
+html.is-lg-open body.lg-overlay-open {
+  overflow: clip;
+}
+
+html.is-lg-open--pin {
+  overflow: clip;
+}
+
+html.is-lg-open--pin body {
+  overflow: hidden;
+}
+
+body.is-lg-open.is-lg-scroll-pin {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}

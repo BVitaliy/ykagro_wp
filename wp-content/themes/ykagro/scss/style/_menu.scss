@@ -1,0 +1,406 @@
+@use "../mixins" as *;
+
+// ── Floating menu / nav (Figma 684:685) ─────────────────────────────
+// Two separate dark pills at bottom-center (square search + menu). The menu
+// pill expands upward into a dark panel with a search field + nav links that
+// stagger in. Dark surface (#2d2e30) with backdrop blur.
+.menu {
+  --menu-bg: #2d2e30;
+  --menu-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --menu-ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  position: fixed;
+  left: 50%;
+  bottom: rem(24);
+  z-index: 120;
+  transform: translateX(-50%);
+  pointer-events: none;
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.32s ease, visibility 0s linear 0.32s;
+  }
+
+  &.is-open &__overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  &.is-closing &__overlay {
+    opacity: 0;
+    visibility: visible;
+    pointer-events: none;
+  }
+
+  &__dock {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: rem(213);
+    isolation: isolate;
+    pointer-events: auto;
+    transition: width 0.56s var(--menu-ease);
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+      height: rem(64);
+      border-radius: rem(8);
+      background: var(--menu-bg);
+      box-shadow: 0 rem(18) rem(60) rgba(0, 0, 0, 0.16);
+      transform-origin: 50% 100%;
+      will-change: height, border-radius;
+      transition:
+        height 0.62s var(--menu-ease),
+        border-radius 0.62s var(--menu-ease),
+        box-shadow 0.36s ease,
+        background 0.35s ease,
+        transform 0.35s var(--menu-ease);
+    }
+  }
+
+  @include hover {
+    &:not(.is-open):not(.is-closing) &__dock:hover::before {
+      background: var(--clr-orange);
+      box-shadow: 0 rem(22) rem(72) rgba(235, 110, 1, 0.28);
+    }
+
+    &:not(.is-open):not(.is-closing) &__dock:hover &__pill .icon,
+    &:not(.is-open):not(.is-closing) &__dock:hover &__label {
+      color: var(--clr-black);
+    }
+  }
+
+  &.is-open &__dock {
+    width: rem(480);
+    max-width: calc(100vw - #{rem(24)});
+
+    &::before {
+      height: 100%;
+      border-radius: rem(8);
+      box-shadow: 0 rem(24) rem(90) rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  &.is-closing &__dock {
+    width: rem(213);
+    transition: width 0.24s var(--menu-ease-in) 0.06s;
+  }
+
+  &.is-closing &__dock::before {
+    transition:
+      height 0.3s var(--menu-ease-in),
+      border-radius 0.3s var(--menu-ease-in),
+      box-shadow 0.2s ease;
+  }
+
+  // ── Expanding panel ───────────────────────────────────────────────
+  &__panel {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 100%;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(#{rem(8)});
+    transform-origin: 50% 100%;
+    will-change: grid-template-rows, opacity, transform;
+    transition:
+      grid-template-rows 0.58s var(--menu-ease),
+      opacity 0.16s ease,
+      transform 0.58s var(--menu-ease);
+  }
+
+  &.is-open &__panel {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.is-closing &__panel {
+    transition:
+      grid-template-rows 0.28s var(--menu-ease-in),
+      opacity 0.14s ease,
+      transform 0.28s var(--menu-ease-in);
+  }
+
+  // Bottom-anchored while the panel expands: the row it uncovers first is the
+  // one nearest the bar, which is also the one the stagger reveals first, so
+  // the list fills upward with the panel instead of the first items fading in
+  // behind a clipped edge.
+  &__panel-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    min-height: 0;
+
+    > * {
+      flex-shrink: 0;
+    }
+  }
+
+  // ── Search field inside panel ─────────────────────────────────────
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: rem(20);
+    height: rem(42);
+    margin: rem(24) rem(24) rem(40);
+    padding: rem(10) rem(24);
+    border-radius: rem(24);
+    background: #232426;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(#{rem(16)});
+    transform-origin: 50% 100%;
+    transition: opacity 0.3s ease, transform 0.42s var(--menu-ease);
+  }
+
+  // The reveal runs bottom-up, and the field sits above every link — so it
+  // comes in last, one step after the topmost one (--menu-n set in app-menu.js).
+  &.is-ready &__search {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay: calc(var(--menu-n, 1) * 0.05s);
+  }
+
+  &.is-closing &__search {
+    transition-duration: 0.14s, 0.2s;
+    transition-delay: 0s;
+  }
+
+  &__search-icon {
+    width: rem(16);
+    height: rem(16);
+    color: var(--clr-white);
+    flex-shrink: 0;
+  }
+
+  &__search-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: none;
+    color: var(--clr-white);
+    font-size: rem(16);
+    font-weight: 400;
+    line-height: 1.4;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  // ── Nav links (staggered reveal) ──────────────────────────────────
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(20);
+    padding: 0 rem(24) rem(20);
+  }
+
+  &__link {
+    --menu-i: 0;
+    --menu-n: 1;
+
+    position: relative;
+    display: inline-flex;
+    color: var(--clr-white);
+    font-weight: 600;
+    font-size: rem(12);
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(#{rem(26)}) scale(0.96);
+    transform-origin: 50% 100%;
+    transition:
+      color var(--transition-1),
+      opacity 0.32s ease,
+      transform 0.46s var(--menu-ease);
+
+    &.is-active {
+      color: var(--clr-orange);
+    }
+
+    @include hover {
+      &:hover {
+        color: var(--clr-orange);
+      }
+    }
+  }
+
+  // The items reveal together with the panel (is-ready lands on the next frame,
+  // see app-menu.js) — the panel's overflow clips them meanwhile — and they run
+  // BOTTOM-UP: the link closest to the bar comes first, the list fills upward.
+  // --menu-i / --menu-n set in app-menu.js from the actual link count; the step
+  // is deliberately unhurried (keep it in sync with STEP_MS there).
+  &.is-ready &__link {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay:
+      0s,
+      calc((var(--menu-n) - 1 - var(--menu-i)) * 0.05s),
+      calc((var(--menu-n) - 1 - var(--menu-i)) * 0.05s);
+  }
+
+  // Closing mirrors it: the list empties from the top down, and much faster —
+  // the panel collapses in 0.28s, so the items must be gone by then.
+  &.is-closing &__link {
+    transition-duration: var(--transition-1), 0.14s, 0.2s;
+    transition-delay:
+      0s,
+      calc(var(--menu-i) * 0.012s),
+      calc(var(--menu-i) * 0.012s);
+  }
+
+  // ── Control bar: two pills ────────────────────────────────────────
+  &__bar {
+    display: flex;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    transition:
+      padding 0.52s var(--menu-ease),
+      transform 0.52s var(--menu-ease);
+  }
+
+  &.is-open &__bar {
+    padding: 0 rem(24) rem(24);
+  }
+
+  &.is-closing &__bar {
+    transition:
+      padding 0.26s var(--menu-ease-in),
+      transform 0.26s var(--menu-ease-in);
+  }
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    height: rem(64);
+    background: transparent;
+    border-radius: rem(8);
+    transition:
+      opacity 0.3s ease,
+      transform 0.42s var(--menu-ease),
+      border-radius 0.42s var(--menu-ease);
+
+    .icon {
+      color: var(--clr-orange);
+      transition: color var(--transition-1);
+    }
+
+    &--search {
+      justify-content: center;
+      width: rem(64);
+      flex-shrink: 0;
+
+      .icon {
+        width: rem(22);
+        height: rem(22);
+      }
+    }
+
+    &--main {
+      flex: 1;
+      gap: rem(20);
+      padding: 0 rem(24);
+    }
+  }
+
+  &.is-open &__pill {
+    border-radius: 0;
+  }
+
+  // hide the separate search pill while the panel (with its own search) is open
+  &.is-open &__pill--search {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+  }
+
+  &__toggle-icon {
+    position: relative;
+    display: inline-flex;
+    width: rem(22);
+    height: rem(22);
+
+    .icon {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transition:
+        color var(--transition-1),
+        opacity 0.28s ease,
+        transform 0.42s var(--menu-ease);
+    }
+  }
+
+  &__icon-close {
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+
+  &.is-open &__icon-open {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.7);
+  }
+  &.is-open &__icon-close {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+
+  &__label {
+    margin-left: auto;
+    color: var(--clr-white);
+    font-weight: 600;
+    font-size: rem(16);
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    transform: translateY(#{rem(1)});
+    transition: color var(--transition-1);
+  }
+
+  @include maxMedia(md) {
+    left: var(--gutter);
+    right: var(--gutter);
+    transform: none;
+
+    &__dock {
+      width: 100%;
+    }
+
+    &.is-open &__dock {
+      width: 100%;
+    }
+
+    &.is-closing &__dock {
+      width: 100%;
+    }
+  }
+}

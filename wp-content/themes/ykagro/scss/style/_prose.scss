@@ -1,0 +1,226 @@
+@use "../mixins" as *;
+
+// ── Prose — classless editor content (light mode) ────────────────────
+// Shared by .doc-page__content (policy-style pages) and .article-content
+// (blog articles). Content comes straight from a WYSIWYG editor, so every
+// rule here targets bare tags via :where() — never add classes to the
+// content itself. Mirrors the dark .footer__seo pattern, light palette.
+// Usage: @use "../prose" as *; then .my-content { @include prose; }
+@mixin prose {
+  color: var(--clr-black);
+  font-size: rem(18);
+  line-height: 1.4;
+
+  // base rhythm (heading→text, text→text) — a new heading gets extra room
+  // to read as the start of the next section (mirrors the Figma sections)
+  > * + * {
+    margin-top: rem(20);
+  }
+
+  > * + h2,
+  > * + h3 {
+    margin-top: rem(56);
+  }
+
+  :where(p) {
+    margin: 0;
+  }
+
+  :where(h2, h3, h4) {
+    margin: 0;
+    color: var(--clr-black);
+    font-size: rem(34);
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  :where(h4) {
+    font-size: rem(24);
+  }
+
+  :where(a) {
+    color: var(--clr-orange);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    transition: opacity var(--transition-1);
+
+    @include hover {
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  :where(strong, b) {
+    color: var(--clr-black);
+    font-weight: 500;
+  }
+
+  :where(ul, ol) {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  :where(li) {
+    position: relative;
+    padding-left: rem(28);
+  }
+
+  :where(ul li)::before {
+    content: "";
+    position: absolute;
+    left: rem(4);
+    top: 0.62em;
+    width: rem(7);
+    height: rem(7);
+    border-radius: 50%;
+    background: var(--clr-orange);
+  }
+
+  :where(ol) {
+    counter-reset: prose-list;
+  }
+
+  :where(ol li) {
+    counter-increment: prose-list;
+
+    &::before {
+      content: counter(prose-list) ".";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--clr-orange);
+      font-weight: 600;
+    }
+  }
+
+  :where(figure) {
+    margin: 0;
+  }
+
+  :where(figure img),
+  > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+
+  :where(blockquote) {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: rem(28);
+    margin: 0;
+    padding: rem(40);
+    border-radius: var(--radius-md);
+    background: var(--bg-1);
+    color: var(--clr-black);
+    font-size: rem(20);
+    font-weight: 500;
+    line-height: 1.5;
+
+    &::before {
+      content: "";
+      flex: 0 0 rem(64);
+      width: rem(64);
+      height: rem(64);
+      background: url("../img/icons/quote-mark.svg") center / contain no-repeat;
+    }
+
+    :where(p) {
+      margin: 0;
+    }
+  }
+
+  :where(table) {
+    width: 100%;
+    border: 1px solid var(--clr-line);
+    border-collapse: collapse;
+    color: var(--clr-black);
+  }
+
+  :where(th, td) {
+    padding: rem(16);
+    border-bottom: 1px solid var(--clr-line);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  :where(th) {
+    background: var(--bg-1);
+    font-size: rem(16);
+    font-weight: 600;
+  }
+
+  :where(td) {
+    font-size: rem(16);
+  }
+
+  @include maxMedia(md) {
+    font-size: rem(16);
+
+    > * + * {
+      margin-top: rem(16);
+    }
+
+    > * + h2,
+    > * + h3 {
+      margin-top: rem(36);
+    }
+
+    :where(h2, h3, h4) {
+      font-size: rem(24);
+    }
+    :where(h4) {
+      font-size: rem(20);
+    }
+
+    :where(blockquote) {
+      flex-direction: column;
+      gap: rem(16);
+      padding: rem(24);
+      font-size: rem(17);
+
+      &::before {
+        flex-basis: rem(44);
+        width: rem(44);
+        height: rem(44);
+      }
+    }
+  }
+
+  @include maxMedia(sm) {
+    :where(table) {
+      display: block;
+    }
+
+    :where(thead) {
+      display: none;
+    }
+
+    :where(tbody, tr, td) {
+      display: block;
+      width: auto;
+    }
+
+    :where(tr) {
+      padding-block: rem(10);
+      border-bottom: 1px solid var(--clr-line);
+    }
+
+    :where(td) {
+      padding: rem(4) 0;
+      border-bottom: 0;
+
+      &:first-child {
+        color: var(--clr-black);
+        font-weight: 600;
+      }
+    }
+  }
+}

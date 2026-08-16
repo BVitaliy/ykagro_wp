@@ -1,0 +1,206 @@
+@use "../../mixins" as *;
+
+// ── Home news block (Figma 406:917 / 406:922) ───────────────────────
+// Text + angled-cut photo; image on the right (default) or left (modifier).
+// Body markup is classless — everything is styled from .news-block__body.
+.news-block {
+  display: grid;
+  grid-template-columns: minmax(0, 811fr) minmax(0, 849fr);
+  align-items: center;
+  gap: rem(100);
+
+  @include maxMedia(lg) {
+    grid-template-columns: 1fr;
+    gap: rem(32);
+  }
+
+  @include maxMedia(md) {
+    gap: rem(24);
+  }
+
+  // ── Text column (classless children) ─────────────────────────────
+  &__body {
+    max-width: rem(811);
+    padding-left: rem(171);
+
+    @include maxMedia(xxl) {
+      padding-left: rem(40);
+    }
+    @include maxMedia(lg) {
+      padding-left: 0;
+      order: 2;
+    }
+
+    // Figma H4 40/1.1 Bold
+    h3 {
+      margin-bottom: rem(40);
+      color: var(--clr-black);
+      font-weight: 700;
+      font-size: clamp(#{rem(28)}, 2.08vw, #{rem(40)});
+      line-height: 1.1;
+
+      @include maxMedia(md) {
+        margin-bottom: rem(24);
+      }
+    }
+
+    // Figma Text 18/1.4 Regular · rgba(0,0,0,0.6)
+    p {
+      margin-bottom: rem(20); // gap between consecutive paragraphs
+      color: var(--clr-muted);
+      font-size: clamp(#{rem(16)}, 0.94vw, #{rem(18)});
+      line-height: 1.4;
+    }
+
+    // single/last paragraph before the check-list gets the full gap (home block)
+    p:last-of-type {
+      margin-bottom: rem(60);
+
+      @include maxMedia(md) {
+        margin-bottom: rem(24);
+      }
+    }
+
+    // trailing paragraph with no list after it (multi-paragraph news blocks,
+    // e.g. responsibility page) — no dangling gap. Later + equal specificity
+    // than :last-of-type, so it wins for the final paragraph.
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: rem(24);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      @include maxMedia(lg) {
+        gap: rem(16);
+      }      
+    }
+
+    // Figma list: Medium 18/1.4, check via ::before (editor-safe, no inline SVG)
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: rem(16);
+      color: var(--clr-black);
+      font-weight: 500;
+      font-size: rem(18);
+      line-height: 1.4;
+      
+      @include maxMedia(lg) {
+        font-size: rem(16);
+      }
+
+      &::before {
+        content: "";
+        flex-shrink: 0;
+        width: rem(20);
+        height: rem(20);
+        margin-top: rem(2);
+        background-color: var(--clr-orange);
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M8.42095 19.5H8.41209C8.35496 19.4988 8.29865 19.4861 8.24655 19.4625C8.19445 19.4389 8.14764 19.4049 8.10893 19.3627L0.111941 10.6235C0.0454334 10.5508 0.0060964 10.4572 0.00065196 10.3586C-0.00479248 10.26 0.0239935 10.1626 0.0820911 10.083C0.140208 10.0034 0.223997 9.94655 0.319171 9.9221C0.414344 9.89765 0.515008 9.90714 0.603999 9.94895L7.9233 13.3933C7.98487 13.4223 8.05762 13.4083 8.10473 13.359L19.2695 1.63162C19.4207 1.47272 19.6679 1.45537 19.8395 1.59225C20.0111 1.72912 20.0508 1.97474 19.9309 2.15895L8.82486 19.2577C8.809 19.2825 8.79035 19.305 8.76983 19.3261L8.72085 19.3753C8.64115 19.455 8.53337 19.4998 8.42095 19.5Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M8.42095 19.5H8.41209C8.35496 19.4988 8.29865 19.4861 8.24655 19.4625C8.19445 19.4389 8.14764 19.4049 8.10893 19.3627L0.111941 10.6235C0.0454334 10.5508 0.0060964 10.4572 0.00065196 10.3586C-0.00479248 10.26 0.0239935 10.1626 0.0820911 10.083C0.140208 10.0034 0.223997 9.94655 0.319171 9.9221C0.414344 9.89765 0.515008 9.90714 0.603999 9.94895L7.9233 13.3933C7.98487 13.4223 8.05762 13.4083 8.10473 13.359L19.2695 1.63162C19.4207 1.47272 19.6679 1.45537 19.8395 1.59225C20.0111 1.72912 20.0508 1.97474 19.9309 2.15895L8.82486 19.2577C8.809 19.2825 8.79035 19.305 8.76983 19.3261L8.72085 19.3753C8.64115 19.455 8.53337 19.4998 8.42095 19.5Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+      }
+    }
+  }
+
+  // Optional pill above the title (About page, Figma 1035:7349)
+  &__tag {
+    margin-bottom: rem(24);
+  }
+
+  // Optional button under the list (same block); 60 to the list per design
+  &__cta {
+    margin-top: rem(60);
+
+    @include maxMedia(lg) {
+      margin-top: rem(40);
+    }
+  }
+
+  // ── Photo ─────────────────────────────────────────────────────────
+  &__media {
+    --news-media-parallax-room: #{rem(120)};
+
+    position: relative;
+    aspect-ratio: 849 / 682;
+    overflow: hidden;
+
+    @include maxMedia(lg) {
+      --news-media-parallax-room: #{rem(120)};
+
+      order: 1;
+      height: auto;
+      aspect-ratio: 16 / 11;
+    }
+
+    @include maxMedia(md) {
+      --news-media-parallax-room: #{rem(72)};
+    }
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+    }
+
+    picture {
+      position: absolute;
+      inset: calc(var(--news-media-parallax-room) * -0.5) 0;
+    }
+
+    img {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  // @include hover {
+  //   &:hover &__media picture {
+  //     transform: scale(1.035);
+  //   }
+  // }
+
+  // image on the right → cut on top
+  &--img-right &__media {
+    clip-path: url(#news-top-clip);
+  }
+
+  // image on the left → cut on bottom, text on the right
+  &--img-left {
+    grid-template-columns: minmax(0, 849fr) minmax(0, 811fr);
+
+    @include maxMedia(lg) {
+      grid-template-columns: 1fr;
+      gap: rem(32);
+    }
+
+    @include maxMedia(md) {
+      gap: rem(24);
+    }
+
+    .news-block__body {
+      order: 2;
+      padding-left: 0;
+      padding-right: rem(171);
+      max-width: rem(811);
+
+      @include maxMedia(xxl) {
+        padding-right: rem(40);
+      }
+      @include maxMedia(lg) {
+        padding-right: 0;
+      }
+    }
+    .news-block__media {
+      order: 1;
+      clip-path: url(#news-bottom-clip);
+    }
+  }
+}

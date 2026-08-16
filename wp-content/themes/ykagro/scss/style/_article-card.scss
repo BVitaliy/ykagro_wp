@@ -1,0 +1,128 @@
+@use "../mixins" as *;
+
+// Reusable article/blog card (Figma 440:779)
+.article-card {
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: rem(24);
+
+  @include maxMedia(md) {
+    width: calc(100vw - var(--gutter) * 2);
+    max-width: 100%;
+  }
+
+  &__media {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 594 / 422;
+    overflow: hidden;
+    border-radius: rem(24);
+    background: var(--bg-1);
+
+    picture {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.15s  ;
+    }
+  }
+
+  &__title {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding-inline: rem(24);
+    color: var(--clr-black);
+    font-size: rem(20);
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    transition: color var(--transition-1);
+
+    @include maxMedia(md) {
+      width: rem(280);
+      max-width: calc(100vw - #{rem(64)});
+      padding-inline: rem(16);
+      font-size: rem(18);
+    }
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(16);
+    margin-top: auto;
+    padding: 0 rem(24) rem(32);
+
+    @include maxMedia(md) {
+      padding: 0 rem(16) rem(16);
+    }
+  }
+
+  &__date {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(12);
+    min-width: 0;
+    color: var(--clr-muted);
+  }
+
+  &__cal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 rem(18);
+    width: rem(18);
+    height: rem(18);
+    // optical nudge: the calendar's feet make it sit visually high next to the
+    // digits, so drop it ~1px to center it against the text's cap height.
+    transform: translateY(calc(rem(1) * -1));
+    color: var(--clr-black);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__icon {
+    flex: 0 0 rem(18);
+    width: rem(18);
+    height: rem(18);
+    color: var(--clr-orange);
+    transform-origin: center;
+    transition: transform var(--transition-1);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  @include hover {
+    &:hover .article-card__media img {
+      transform: scale(1.03);
+    }
+
+    &:hover .article-card__title {
+      color: var(--clr-orange);
+    }
+
+    &:hover .article-card__icon {
+      transform: rotate(45deg);
+    }
+  }
+}

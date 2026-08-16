@@ -1,0 +1,159 @@
+@use "../mixins" as *;
+
+// ── Typography utilities (Figma text styles) ────────────────────────
+// Single family: Montserrat. Each class = weight + size + line-height (fluid
+// clamp). Color is set separately via .clr-* utilities or the parent block.
+// Desktop reference: 1920px mockup.
+//
+// Figma scale:
+//   H1 Bold 80/1.1 · H2 Bold 64/1.1 · H3 Bold 52/1.1 · H4 Bold 40/1.1
+//   H5 SemiBold 34/1.1 · H6 SemiBold 24/1.4 · text big Medium 24/1.4
+//   Text Regular 18/1.4 · button SemiBold 12/1.2
+
+%display {
+  font-family: var(--font-main);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+h1,
+.h1 {
+  @extend %display;
+  font-size: clamp(#{rem(40)}, 4.17vw, #{rem(80)});
+}
+
+h2,
+.h2 {
+  @extend %display;
+  font-size: clamp(#{rem(32)}, 3.33vw, #{rem(64)});
+}
+
+h3,
+.h3 {
+  @extend %display;
+  font-size: clamp(#{rem(28)}, 2.71vw, #{rem(52)});
+}
+
+h4,
+.h4 {
+  @extend %display;
+  font-size: clamp(#{rem(24)}, 2.08vw, #{rem(40)});
+}
+
+h5,
+.h5 {
+  font-family: var(--font-main);
+  font-weight: 600;
+  line-height: 1.1;
+  font-size: clamp(#{rem(22)}, 1.77vw, #{rem(34)});
+}
+
+h6,
+.h6 {
+  font-family: var(--font-main);
+  font-weight: 600;
+  line-height: 1.4;
+  font-size: clamp(#{rem(18)}, 1.25vw, #{rem(24)});
+}
+
+.text-big {
+  font-family: var(--font-main);
+  font-weight: 500;
+  line-height: 1.4;
+  font-size: clamp(#{rem(18)}, 1.25vw, #{rem(24)});
+}
+
+.text-lg {
+  font-family: var(--font-main);
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: clamp(#{rem(16)}, 0.94vw, #{rem(18)});
+}
+
+.text-md {
+  font-family: var(--font-main);
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: rem(16);
+}
+
+.text-sm {
+  font-family: var(--font-main);
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: rem(14);
+}
+
+.text-xs {
+  font-family: var(--font-main);
+  font-weight: 400;
+  line-height: 1.3;
+  font-size: rem(12);
+}
+
+// ── Weight utilities ────────────────────────────────────────────────
+.fw-400 {
+  font-weight: 400;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.fw-600 {
+  font-weight: 600;
+}
+.fw-700 {
+  font-weight: 700;
+}
+
+// ── Color utilities ─────────────────────────────────────────────────
+.clr-black {
+  color: var(--clr-black);
+}
+.clr-text {
+  color: var(--clr-text);
+}
+.clr-orange {
+  color: var(--clr-orange);
+}
+.clr-white {
+  color: var(--clr-white);
+}
+.clr-gray {
+  color: var(--clr-gray);
+}
+.clr-muted {
+  color: var(--clr-muted);
+}
+
+// ── Title reveal (app-titles.js + SplitType) ────────────────────────
+// Les Grandes Serres style: each line is an overflow mask; chars rise
+// with a skewY release and a tight per-letter stagger.
+.ta-line {
+  display: block;
+  overflow: hidden;
+}
+
+.ta-char {
+  display: inline-block;
+  // Avoid extra gaps between glyphs while split (inline-block + kerning)
+  letter-spacing: 0;
+  vertical-align: top;
+}
+
+// Pre-hide: inline script in _top.php sets .ta-js before first paint;
+// app-titles.js adds .ta-ready after placing chars in their start position.
+// If JS is off, .ta-js never appears and titles stay visible.
+// h3 is excluded from the title reveal, so it must not be pre-hidden either.
+html.ta-js main :is(h1, h2):not(.ta-ready):not([data-title-anim="off"]) {
+  opacity: 0;
+}
+
+// Opt-outs and WYSIWYG body headings stay visible from first paint.
+html.ta-js main :is(h1, h2)[data-title-anim="off"],
+html.ta-js main .doc-page__content :is(h1, h2) {
+  opacity: 1;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}

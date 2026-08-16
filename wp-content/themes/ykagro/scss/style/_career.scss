@@ -1,0 +1,344 @@
+@use "../mixins" as *;
+
+// ── Career page (Figma 784:8547) ────────────────────────────────────
+
+// Vacancies — Figma 833:6068
+.vacancies {
+  &__inner {
+    max-width: rem(1604); // 1564 content + 2×20 padding
+    margin-inline: auto;
+    padding-inline: rem(20);
+
+    @include maxMedia(md) {
+      padding-inline: 1rem;
+    }
+  }
+
+  &__title {
+    margin-bottom: var(--sp-md);
+    text-align: center;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(48);
+
+    @include maxMedia(lg) {
+      gap: rem(24);
+    }
+    @include maxMedia(md) {
+      grid-template-columns: 1fr;
+      gap: rem(16);
+    }
+  }
+}
+
+.vacancy-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: rem(40);
+  min-height: rem(268);
+  padding: rem(40);
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+
+  @include maxMedia(md) {
+    min-height: 0;
+    gap: rem(24);
+    padding: rem(24);
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+    @include maxMedia(md) {
+      gap: rem(24);
+    }
+  }
+
+  &__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: rem(20);
+  }
+
+  &__title {
+    color: var(--clr-black);
+
+    a {
+      color: inherit;
+      transition: color var(--transition-1);
+
+      @include hover {
+        &:hover {
+          color: var(--clr-orange);
+        }
+      }
+    }
+  }
+
+  // orange circular link with a diagonal arrow (arrow-diagonal = currentColor).
+  // Hover matches .btn: black fill + arrow rotates ↗ → →
+  &__link {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(54);
+    height: rem(54);
+    border-radius: 50%;
+    background: var(--clr-orange);
+    color: var(--clr-white);
+    transition: background var(--transition-1), color var(--transition-1);
+
+    .icon {
+      display: inline-flex;
+      transform-origin: center;
+      transition: transform var(--transition-1);
+    }
+
+    .icon svg {
+      display: block;
+      width: rem(18);
+      height: rem(18);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-black);
+        color: var(--clr-white);
+      }
+
+      &:hover .icon {
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  // meta pills: pin icon + label (all use the same orange pin, per Figma).
+  // Type comes from .text-sm .fw-500 on the <li> in the markup.
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(12) rem(24);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: rem(12);
+      color: var(--clr-black);
+    }
+  }
+
+  &__meta-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: rem(24);
+    height: rem(24);
+    color: var(--clr-orange);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // description clamped to 2 lines (colour via .clr-muted utility)
+  &__text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// ── Vacancy detail (Figma 833:6255) — 2 cols, sticky right form ──────
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 806fr) minmax(0, 731fr);
+  // Figma 833:6255 — 806 / 225 / 731 across the 1760px content row; the gap is
+  // a % of that row so the three parts keep their proportion as it scales.
+  gap: 12.78%;
+  align-items: start;
+  // Crumbs → title is exactly the 60px .page-head padding-bottom, so the grid
+  // must not add another gap on top of it.
+
+  // Below the 1920 mockup the design gap would starve the form column
+  @include maxMedia(xl) {
+    gap: rem(60);
+  }
+
+  @include maxMedia(lg) {
+    // minmax(0, …) — the plain `1fr` floor is min-content, and the nowrap
+    // upload label inside the form pushed the whole column past the viewport.
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-lg);
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: rem(60);
+
+    @include maxMedia(md) {
+      gap: rem(40);
+    }
+  }
+
+  // title + meta block
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: rem(40);
+  }
+
+  &__title {
+    color: var(--clr-black);
+  }
+
+  // same meta row as the card — type via .text-sm .fw-500 in the markup
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(12) rem(24);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: rem(12);
+      color: var(--clr-black);
+    }
+  }
+
+  &__meta-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: rem(24);
+    height: rem(24);
+    color: var(--clr-orange);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // lead paragraphs — size/leading from .text-lg on the wrapper
+  &__body {
+    p {
+      margin: 0;
+    }
+    p + p {
+      margin-top: rem(20);
+    }
+  }
+
+  // "У ваші обов'язки" / "Ми пропонуємо" blocks
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+  }
+
+  &__block-title {
+    color: var(--clr-black);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    // .text-lg sits on the <ul>; the bullet offset is in em so it follows it
+    li {
+      position: relative;
+      padding-left: rem(19);
+      color: var(--clr-black);
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.62em;
+        width: rem(7);
+        height: rem(7);
+        border-radius: 50%;
+        background: var(--clr-orange);
+      }
+    }
+  }
+
+  // right column — sticky application form.
+  // Figma 833:6255 — the card's top-right tip sits 60px above the h1, level
+  // with the breadcrumbs; the slanted cut eats that space back on the left.
+  &__aside {
+    position: sticky;
+    top: rem(40);
+    margin-top: rem(-60);
+
+    @include maxMedia(lg) {
+      position: static;
+      max-width: rem(729);
+      margin-top: 0;
+      margin-inline: auto;
+      width: 100%;
+    }
+  }
+}
+
+// Same cream card as the cooperation form (Figma 833:6598 / Rectangle 56):
+// slanted top cut, so padding-top carries the 60px slope + 60px real padding.
+.detail-form {
+  padding: rem(120) rem(60) rem(60);
+  background: var(--bg-1);
+  -webkit-clip-path: url(#coop-form-clip);
+  clip-path: url(#coop-form-clip);
+
+  // Narrow 2-col range: the card is ~420px, so trim the padding and stack the
+  // name/phone row instead of squeezing two inputs into it.
+  @include maxMedia(xl) {
+    padding: rem(100) rem(40) rem(40);
+
+    .form-block__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @include maxMedia(md) {
+    padding: rem(56) rem(20) rem(32);
+    -webkit-clip-path: url(#coop-form-clip-mob);
+    clip-path: url(#coop-form-clip-mob);
+  }
+
+  &__title {
+    margin-bottom: rem(40);
+    text-align: center;
+
+    @include maxMedia(md) {
+      margin-bottom: rem(28);
+    }
+  }
+
+  // form fills the card; inputs are white on the cream card (Figma)
+  .form-block {
+    max-width: none;
+  }
+  .form-block__input {
+    background: var(--clr-white);
+  }
+}

@@ -1,0 +1,232 @@
+@use "../mixins" as *;
+
+// ── Custom select (Figma 784:11620) ─────────────────────────────────
+// Closed state is the design's cream pill (54 / radius 22 / 24 inline).
+// The open panel is not in the mockup — it is built from the same tokens:
+// white sheet, 22 radius, cream hover, orange for the current value.
+//
+// Until app-select.js adds .select--ready the native <select> is what shows,
+// so the field still works with JS disabled or still loading.
+.select {
+  position: relative;
+  width: 100%;
+
+  &__native {
+    width: 100%;
+    height: rem(54);
+    padding-inline: rem(24) rem(56);
+    border: 0;
+    border-radius: rem(22);
+    background: var(--bg-1);
+    color: var(--clr-muted);
+    font-family: var(--font-main);
+    font-size: rem(16);
+    line-height: 1.4;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+  }
+
+  &__toggle {
+    display: none;
+  }
+
+  // JS is up: swap the native field out for the styled proxy.
+  &--ready &__native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  &--ready &__toggle {
+    display: flex;
+  }
+
+  // ── Closed pill ───────────────────────────────────────────────────
+  &__toggle {
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(16);
+    width: 100%;
+    height: rem(54);
+    padding: rem(16) rem(24);
+    border: 0;
+    border-radius: rem(22);
+    background: var(--bg-1);
+    color: var(--clr-muted);
+    font-family: var(--font-main);
+    font-size: rem(16);
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--transition-1), color var(--transition-1);
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 rem(3) rgba(235, 110, 1, 0.32);
+    }
+    @include maxMedia(md) {
+      height: rem(48);
+      padding: rem(12) rem(18);
+      border-radius: rem(18); 
+    }      
+
+    @include hover {
+      &:hover {
+        color: var(--clr-text);
+      }
+    }
+  }
+
+  &__value {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  // 16px viewBox scaled so the chevron itself lands on the design's 12.7 × 6.4
+  &__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: rem(22);
+    height: rem(22);
+    margin-right: rem(-3);
+    color: var(--clr-orange);
+    transition: transform var(--transition-1);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &.is-open &__icon {
+    transform: rotate(180deg);
+  }
+
+  &.is-open &__toggle {
+    color: var(--clr-text);
+  }
+
+  // ── Dropdown panel ────────────────────────────────────────────────
+  &__dropdown {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + #{rem(8)});
+    right: 0;
+    left: 0;
+    min-width: 100%;
+    padding: rem(8);
+    border-radius: rem(22);
+    background: var(--clr-white);
+    box-shadow: 0 rem(16) rem(48) rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(#{rem(-8)});
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    pointer-events: none;
+  }
+
+  &--up &__dropdown {
+    top: auto;
+    bottom: calc(100% + #{rem(8)});
+    transform: translateY(#{rem(8)});
+  }
+
+  &:not(.select--ready) &__dropdown {
+    display: none;
+  }
+
+  &.is-open &__dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  &__list {
+    max-height: rem(288);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+    outline: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+    &::-webkit-scrollbar {
+      width: rem(4);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: rem(4);
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(12);
+    min-height: rem(46);
+    padding: rem(12) rem(16);
+    border-radius: rem(16);
+    color: var(--clr-text);
+    font-size: rem(16);
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background var(--transition-1), color var(--transition-1);
+
+    // keyboard cursor and hover share one highlight
+    &.is-active {
+      background: var(--bg-1);
+    }
+
+    &.is-selected {
+      color: var(--clr-orange);
+      font-weight: 600;
+    }
+
+    &.is-selected.is-active {
+      background: rgba(235, 110, 1, 0.16);
+    }
+  }
+
+  &__option-mark {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: rem(18);
+    height: rem(18);
+    color: currentColor;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity var(--transition-1), transform var(--transition-1);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__option.is-selected &__option-mark {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__dropdown,
+    &__icon,
+    &__option-mark {
+      transition-duration: 0.01ms;
+    }
+  }
+}

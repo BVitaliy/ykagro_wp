@@ -1,0 +1,99 @@
+@use "../../mixins" as *;
+
+// ── Home articles (Figma 440:809) ───────────────────────────────────
+.home-articles {
+  @include maxMedia(lg) {
+    overflow: hidden;
+  }
+
+  > .container {
+    display: flex;
+    flex-direction: column;
+    gap: rem(60);
+    padding-inline: rem(20);
+    @include maxMedia(md) { 
+      gap: var(--sp-sm-2); 
+      padding-inline: var(--gutter);
+    }    
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(40);
+    padding-inline: rem(60);
+
+    @include maxMedia(md) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--sp-sm-2);
+      padding-inline: 0;
+    }
+  }
+
+  // Mobile slider bleeds to the viewport edge so the gutter never clips
+  // slides (same recipe as .home-products__slider)
+  &__slider {
+    @include maxMedia(lg) {
+      overflow: visible;
+      width: calc(100vw - var(--gutter));
+      margin-left: calc(var(--gutter) * -1);
+      padding-left: var(--gutter);
+    }
+  }
+
+  // Grid on desktop; Swiper flex track on mobile (spaceBetween does the gaps)
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: rem(48);
+
+    @include maxMedia(xl) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: rem(32);
+    }
+    @include maxMedia(lg) {
+      display: flex;
+      gap: 0;
+    }
+  }
+
+  &__slide {
+    min-width: 0;
+    height: auto;
+    display: flex;
+
+    .article-card {
+      width: 100%;
+    }
+  }
+
+  // Pagination — mobile only (same bullets as home-products)
+  &__pagination.swiper-pagination {
+    display: none;
+
+    @include maxMedia(lg) {
+      position: static;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: rem(12);
+      margin-top: rem(35);
+
+      .swiper-pagination-bullet {
+        width: rem(20);
+        height: rem(6);
+        margin: 0;
+        border-radius: rem(72);
+        background: rgba(235, 110, 1, 0.2);
+        opacity: 1;
+        transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background 0.45s ease;
+      }
+      .swiper-pagination-bullet-active {
+        width: rem(60);
+        background: var(--clr-orange);
+      }
+    }
+  }
+}

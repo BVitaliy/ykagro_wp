@@ -1,0 +1,96 @@
+@use "../mixins" as *;
+
+// ── Responsibility page (Figma 784:6110) ────────────────────────────
+
+// "Глобальні виклики" is WYSIWYG editor content — it reuses the .article-content
+// class (identical prose treatment to the article body, no style duplication).
+// This wrapper only centers it on the article content width.
+.responsibility-challenges {
+  &__content {
+    max-width: rem(1080);
+    margin-inline: auto;
+
+    h2{
+      font-size: clamp(2rem, 3.33vw, 4rem);
+    }    
+    h3{
+      font-size: clamp(1.75rem, 2.71vw, 3.25rem);
+    }
+    h4{
+      font-size: clamp(1.5rem, 2.08vw, 2.5rem);
+    }
+    & > h2:not(:first-child),
+    & > h3:not(:first-child),
+    & > h4:not(:first-child),
+    & > h5:not(:first-child){
+      margin-top: rem(40);
+    }
+  }
+ 
+}
+
+// ── CTA — cream panel + hand-drawn hen (Figma 784:6205) ─────────────
+.resp-cta {
+  &__panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(40);
+    max-width: rem(1246);
+    margin-inline: auto;
+    padding: rem(124) rem(100) rem(92);
+    border-radius: var(--radius-lg);
+    background: var(--bg-1);
+
+    // Slanted top edge (Figma 784:6206) — same masked-cut language as the
+    // page-hero title panel / news media. Mobile keeps the plain rounded box
+    // (the slant reads awkwardly on a tall stacked panel).
+    @include minMedia(md) {
+      border-radius: 0;
+      -webkit-clip-path: url(#resp-cta-clip);
+      clip-path: url(#resp-cta-clip);
+    }
+
+    @include maxMedia(lg) {
+      padding: rem(56) rem(56);
+    }
+    @include maxMedia(md) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: rem(32);
+      padding: rem(32) rem(24);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: rem(40);
+    max-width: rem(700);
+
+    @include maxMedia(md) {
+      gap: rem(28);
+    }
+  }
+
+  // hand-drawn hen illustration (inline SVG, Figma 784:6210)
+  // Fluid width so it scales with the viewport on every screen.
+  &__art {
+    flex-shrink: 0;
+    width: clamp(#{rem(220)}, 22vw, #{rem(340)});
+    max-width: 40%;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @include maxMedia(md) {
+      width: clamp(#{rem(150)}, 46vw, #{rem(240)});
+      max-width: 100%;
+      align-self: center;
+    }
+  }
+}

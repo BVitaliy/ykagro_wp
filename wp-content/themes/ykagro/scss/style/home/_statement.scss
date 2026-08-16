@@ -1,0 +1,42 @@
+@use "../../mixins" as *;
+
+// ── Home statement (Figma 403:890) ──────────────────────────────────
+.home-statement {
+  &__text {
+    max-width: rem(1040);
+    margin: 0 auto;
+    text-align: left;
+    color: var(--clr-black);
+    line-height: 1.1;
+
+    &.is-fill-ready {
+      color: rgba(45, 46, 48, 0.18);
+    }
+
+    @include maxMedia(xxl) {
+      max-width: rem(940);
+    }
+    @include maxMedia(xl) {
+      max-width: rem(800);
+    }
+    @include maxMedia(lg) {
+      max-width: rem(700);
+    }
+  }
+
+  &__line {
+    .is-fill-ready & {
+      --line-fill: 0%;
+      display: block;
+      color: transparent;
+      background:
+        linear-gradient(
+          90deg,
+          var(--clr-black) 0 var(--line-fill),
+          rgba(45, 46, 48, 0.18) var(--line-fill) 100%
+        );
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+  }
+}

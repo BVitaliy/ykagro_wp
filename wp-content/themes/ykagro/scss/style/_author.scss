@@ -1,0 +1,145 @@
+@use "../mixins" as *;
+
+// ── Author page hero (Figma 784:8498) ───────────────────────────────
+// 648×650 photo + 703-wide text column, 100px gap, both vertically centred
+// inside the shared 1564 container (same as .blog-list__inner).
+.author-hero {
+  &__inner {
+    width: 100%;
+    max-width: calc(#{rem(1564)} + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    display: grid;
+    grid-template-columns: minmax(0, #{rem(648)}) minmax(0, 1fr);
+    gap: rem(100);
+    align-items: center;
+
+    // Below the 1920 mockup the 648px photo would squeeze the text column —
+    // switch it to a proportional track.
+    @include maxMedia(xxl) {
+      grid-template-columns: minmax(0, 45%) minmax(0, 1fr);
+      gap: rem(60);
+    }
+
+    @include maxMedia(xl) {
+      gap: rem(40);
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: 1fr;
+      gap: rem(32);
+    }
+  }
+
+  &__photo {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      // Figma 648×650
+      aspect-ratio: 648 / 650;
+      object-fit: cover;
+    }
+
+    @include maxMedia(lg) {
+      max-width: rem(520);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    // Figma — 514px text block centred in the 650px photo, socials 60px
+    // below the bio
+    gap: var(--sp-md);
+    min-width: 0;
+    // Figma text column is 703px wide, the container leaves the rest empty
+    max-width: rem(703);
+
+    @include maxMedia(lg) {
+      max-width: none;
+      gap: rem(32);
+    }
+  }
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-sm-2);
+
+    @include maxMedia(md) {
+      gap: rem(24);
+    }
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: rem(16);
+  }
+
+  &__name {
+    margin: 0;
+    // Figma text style "чорний"
+    color: #1d1d1d;
+  }
+
+  &__role {
+    margin: 0;
+  }
+
+  &__bio {
+    color: var(--clr-muted);
+
+    p + p {
+      margin-top: rem(20);
+    }
+  }
+
+  &__socials {
+    display: flex;
+    gap: rem(12);
+  }
+
+  &__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(56);
+    height: rem(56);
+    border-radius: var(--radius-sm);
+    background: var(--bg-1);
+    color: var(--clr-orange);
+    transition: background var(--transition-1), color var(--transition-1);
+
+    svg {
+      width: rem(30);
+      height: rem(30);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-orange);
+        color: var(--clr-white);
+      }
+    }
+  }
+}
+
+// ── "Статті автора" heading (Figma 784:8496) — H2, centred ──────────
+.author-articles {
+  &__title {
+    max-width: calc(#{rem(1564)} + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    text-align: center;
+    color: var(--clr-text);
+  }
+}

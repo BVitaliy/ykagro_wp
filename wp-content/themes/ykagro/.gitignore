@@ -1,0 +1,9 @@
+node_modules/
+vendor/
+.env
+
+# Джерела зображень для `gulp img`. Оптимізований результат у img/ — він трекається.
+images/
+
+*.css.map
+.DS_Store

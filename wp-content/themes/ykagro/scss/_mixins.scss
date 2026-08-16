@@ -1,0 +1,74 @@
+@use "sass:math";
+@use "sass:map";
+
+// px → rem helper (root baseline = 16px via --root-scale)
+@function rem($px) {
+  @return math.div($px, 16) * 1rem;
+}
+
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1441px,
+  xxxl: 1681px,
+);
+
+// min-width (mobile-first)
+@mixin minMedia($bp) {
+  @media (min-width: map.get($breakpoints, $bp)) {
+    @content;
+  }
+}
+
+// max-width (desktop-first)
+@mixin maxMedia($bp) {
+  @media (max-width: (map.get($breakpoints, $bp) - 1px)) {
+    @content;
+  }
+}
+
+// Hover effects only on wide screens (≥1200px). Keeps the original selector
+// intact (write `&:hover` inside), just gates it — so touch/narrow layouts
+// never get sticky-hover states.
+@mixin hover {
+  @media (min-width: map.get($breakpoints, xl)) {
+    @content;
+  }
+}
+
+// Swiper pagination — pill dots with an orange active bullet (mobile sliders).
+@mixin slider-dots {
+  position: static;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: rem(12);
+  margin-top: rem(35);
+
+  .swiper-pagination-bullet {
+    width: rem(20);
+    height: rem(6);
+    margin: 0;
+    border-radius: rem(72);
+    background: rgba(235, 110, 1, 0.2);
+    opacity: 1;
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background 0.45s ease;
+  }
+  .swiper-pagination-bullet-active {
+    width: rem(60);
+    background: var(--clr-orange);
+  }
+}
+
+// Mobile grid → Swiper slider: section clips the bleed, the slider extends past
+// the container gutter so slides are never cut at the edges (used with .container
+// / .container-full). Apply @include slider-bleed inside the slider's maxMedia(lg).
+@mixin slider-bleed($pad: var(--container-pad, #{rem(20)})) {
+  align-self: flex-start;
+  overflow: visible;
+  width: calc(100vw - #{$pad});
+  margin-left: calc(#{$pad} * -1);
+  padding-left: $pad;
+}

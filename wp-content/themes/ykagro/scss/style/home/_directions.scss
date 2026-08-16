@@ -1,0 +1,443 @@
+@use "../../mixins" as *;
+
+// ── Home directions (Figma 385:428) ─────────────────────────────────
+// Desktop: pinned section — field background + left heading, right column of
+// cards that scroll through a fixed window (GSAP pin in app-home.js).
+// Mobile (<lg): PEK services pattern — bg pinned to viewport, content in flow.
+.home-directions {
+  // Pinned block insets --pin-gap from top AND bottom of the viewport (≥lg).
+  // This var is the ONLY place to tune the gap: JS reads it for the pin start
+  // offset and the height calc uses it too, so both gaps always stay equal.
+  // NEVER add margins to __pin — margins on a ScrollTrigger-pinned element
+  // jump when the pin engages (classic pin-spacer gotcha).
+  --pin-gap: #{rem(16)};
+
+  padding-inline: rem(20);
+
+  @include maxMedia(lg) {
+    --pin-gap: 0rem;
+
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 0;
+  }
+
+  @include maxMedia(md) {
+    padding-inline: 0;
+  }
+
+  &__pin {
+    position: relative;
+    overflow: hidden;
+    min-height: rem(720);
+    // angled top edge + rounded corners (SVG clip in the markup)
+    -webkit-clip-path: url(#directions-clip);
+    clip-path: url(#directions-clip);
+
+ 
+    @include maxMedia(lg) {
+      min-height: 0;
+      clip-path: none;
+    }
+  }
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+
+    @include minMedia(lg) {
+      -webkit-clip-path: url(#directions-clip);
+      clip-path: url(#directions-clip);      
+    }
+    @include maxMedia(lg) {
+      inset: -1px 0;
+    }
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      object-fit: cover;
+      will-change: transform;
+    }
+  }
+
+  &__bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(40, 45, 20, 0.65) 20%, rgba(90, 75, 20, 0.28) 70%);
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    // title column is slightly wider than the cards column
+    grid-template-columns: 1fr 0.85fr;
+    column-gap: clamp(#{rem(48)}, 8vw, #{rem(160)});
+    align-items: center;
+    padding: rem(80) rem(60);
+ 
+
+    @include maxMedia(xl) {
+      padding: rem(60) rem(40);
+    }
+    @include maxMedia(lg) {
+      grid-template-columns: 1fr;
+      gap: rem(32);
+      width: 100%;
+      max-width: none;
+      padding: rem(84) var(--gutter) rem(40);
+      display: flex;
+    } 
+    
+  }
+
+  &__head {
+    align-self: center;
+    padding-left: rem(60);
+
+    @include maxMedia(xl) {
+            padding-left: 0;      
+      padding-top: 0;
+    }    
+    @include maxMedia(lg) {
+      padding-left: 0;      
+      padding-top: 0;
+      text-align: center;
+    }
+  }
+
+  &__title {
+    margin-bottom: var(--sp-sm-2);
+    max-width: rem(720);
+
+    @include maxMedia(lg) {
+      margin-inline: auto;
+    }
+  }
+
+  &__lead {
+    max-width: rem(560);
+    opacity: 0.9;
+
+    @include maxMedia(lg) {
+      margin-inline: auto;
+    }
+
+    @include maxMedia(md) {
+      font-size: rem(18);
+    }
+  }
+
+  // ── Cards window + track ──────────────────────────────────────────
+  // Cards are clipped by the parent block mask (__pin), not by any padding.
+  &__window {
+    position: relative;
+    overflow: visible;
+  }
+
+  // Pinned state (GSAP): the block insets 20px from the viewport on every side
+  // (vertical = horizontal). Cards scroll through and are clipped by the block
+  // mask; the first card is fully visible at the bottom, the rest rise (JS).
+  &.is-pinned &__pin {
+    height: calc(var(--app-vh, 100dvh) - (var(--pin-gap) * 2));
+    min-height: rem(600);
+
+    @supports (height: 100lvh) {
+      height: calc(max(var(--app-vh, 100vh), 100lvh) - (var(--pin-gap) * 2));
+    }
+
+    @include maxMedia(lg) {
+      height: var(--app-vh, 100dvh);
+      min-height: var(--app-vh, 100dvh);
+
+      @supports (height: 100lvh) {
+        height: max(var(--app-vh, 100vh), 100lvh);
+        min-height: max(var(--app-vh, 100vh), 100lvh);
+      }
+    }
+  }
+
+  &.is-pinned &__inner {
+    position: relative;
+    height: 100%;
+    padding-block: 0;
+    align-items: stretch;
+
+    @include maxMedia(lg) {
+   
+      padding-inline: var(--gutter);
+    }
+  }
+
+  &.is-pinned &__head {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+
+    @include maxMedia(lg) {
+      text-align: center;
+    }
+  }
+
+  &.is-pinned &__window {
+    height: 100%;
+    overflow: visible;
+
+    @include maxMedia(lg) {
+      position: absolute;
+      inset: 0 var(--gutter);
+      z-index: 2;
+      pointer-events: none;
+    }
+  }
+
+  &.is-pinned &__track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+
+    @include maxMedia(lg) {
+      pointer-events: auto;
+    }
+  }
+
+  &__track {
+    display: flex;
+    flex-direction: column;
+    gap: rem(48);
+    will-change: transform;
+
+    @include maxMedia(lg) {
+      gap: rem(24);
+    }
+  }
+
+  // ── Mobile stack (PEK services logic) ─────────────────────────────
+  // Bg is pinned to the viewport (JS); title + cards scroll in normal flow.
+  // 100lvh keeps the photo tall enough when the browser chrome hides.
+  &.is-mobile-stack {
+    @include maxMedia(lg) {
+      position: relative;
+      z-index: 0;
+      overflow: hidden;
+
+      .home-directions__pin {
+        height: auto;
+        min-height: 0;
+        overflow: hidden;
+        clip-path: none;
+        // Warm fill so pin/exit never flashes page white through the photo
+        background-color: #5c5328;
+      }
+
+      .home-directions__bg {
+        position: absolute;
+        inset: auto;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100vh;
+        min-height: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        background-color: #5c5328;
+
+        @supports (height: 100lvh) {
+          height: 100lvh;
+        }
+
+        // PEK-style: visual starts above the clip so exit y-parallax never
+        // opens a white gap at the top of the pinned frame.
+        picture {
+          position: absolute;
+          left: 0;
+          top: -64vh;
+          width: 100%;
+          height: calc(100% + 64vh);
+          max-height: none;
+        }
+
+        img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center top;
+        }
+      }
+
+      .home-directions__inner {
+        display: flex;
+        flex-direction: column;
+        gap: rem(28);
+        height: auto;
+        min-height: 100vh;
+        padding: rem(100) var(--gutter) rem(72);
+        align-items: stretch;
+
+        @supports (min-height: 100svh) {
+          min-height: 100svh;
+        }
+      }
+
+      .home-directions__head {
+        position: static;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .home-directions__window {
+        position: static;
+        inset: auto;
+        height: auto;
+        pointer-events: auto;
+      }
+
+      .home-directions__track {
+        position: static;
+        left: auto;
+        right: auto;
+        top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: rem(20);
+        will-change: auto;
+        transform: none !important;
+      }
+
+      // Opaque cover so the lagging pinned bg doesn't show under products
+      & + .spacer-xl {
+        position: relative;
+        z-index: 2;
+        background: var(--clr-white);
+      }
+    }
+  }
+}
+
+// ── Direction card (Figma 73:2920) ──────────────────────────────────
+.direction-card {
+  position: relative;
+  padding: rem(56);
+  background: var(--clr-white);
+  overflow: hidden;
+  // rounded card with a bottom-left inset (Figma 726x513)
+  clip-path: url(#direction-card-clip);
+
+  @include maxMedia(xl) {
+    padding: rem(36);
+  }
+  @include maxMedia(md) {
+    min-height: rem(340);
+    padding: rem(25) 28px;
+    border-radius: var(--radius-lg);
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: rem(20);
+    margin-bottom: rem(100);
+
+    @include maxMedia(xxxl) {
+      margin-bottom: rem(80);
+    }
+    @include maxMedia(xl) {
+      margin-bottom: rem(40);
+    }    
+    @include maxMedia(md) { 
+      gap: rem(14);
+    }
+  }
+
+  &__title {
+    color: var(--clr-black);
+    max-width: rem(320);
+
+    @include maxMedia(md) {
+      max-width: rem(210);
+    }
+  }
+
+  &__count {
+    flex-shrink: 0;
+    padding: rem(10) rem(20);
+    border-radius: rem(100);
+    background: #c8d4c4;
+    color: #214314;
+    font-weight: 500;
+    font-size: rem(14);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: rem(40);
+    align-items: flex-start;
+
+    @include maxMedia(md) {
+      gap: rem(28);
+      padding-bottom: rem(86);
+    }
+  }
+
+  &__text {
+    max-width: rem(340);
+    color: var(--clr-muted);
+  }
+
+  &__more {
+    max-width: rem(220);
+
+    @include maxMedia(md) {
+      position: absolute;
+      left: rem(28); 
+      bottom: rem(28);
+      width: auto;
+      max-width: none;
+      padding-inline: rem(28);
+    }
+  }
+
+  // line icon — orange outline, right side
+  &__icon {
+    position: absolute;
+    right: rem(56);
+    bottom: rem(48);
+    width: rem(150);
+    height: rem(150);
+    color: var(--clr-orange);
+    pointer-events: none;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+    @include maxMedia(xxxl) {
+      width: rem(100);
+      height: rem(100);
+      right: rem(24);
+      bottom: rem(38);
+    }
+
+    @include maxMedia(md) {
+      width: rem(78);
+      height: rem(78);
+      right: rem(24);
+      bottom: rem(18);
+    }
+  }
+}

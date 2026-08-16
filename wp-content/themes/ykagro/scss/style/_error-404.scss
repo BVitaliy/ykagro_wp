@@ -1,0 +1,321 @@
+@use "../mixins" as *;
+
+// ── 404 page (Figma 694:2116) ────────────────────────────────────────
+
+body:has(.error-404-shell) {
+  position: relative;
+}
+
+// ── Lines — full document, natural path scale (like scroll-line) ─────
+.error-404__lines {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.error-404__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  path {
+    // Match light-page scroll-line + Figma vector (50 @ ~0.06)
+    stroke: #eb6e01;
+    stroke-opacity: 0.08;
+    stroke-width: 50;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  // Figma 706:2301
+  &--left {
+    left: 0;
+    width: 65%;
+    @include maxMedia(sm) {
+      width: 140%;
+      bottom: auto;
+      min-height: 100%;
+    }    
+  }
+
+  // Figma 694:2120 — further right
+  &--right {
+    left: 25%;
+    width: 80%;
+    @include maxMedia(sm) {
+      display: none;
+    }
+  }
+}
+
+// main.error-404-shell — content parent + clip box for sack bleed under footer
+.error-404-shell {
+  // Room for sack that dips under the footer; negative margin keeps layout tight
+  --error-404-bleed: clamp(#{rem(80)}, 12svh, #{rem(160)});
+
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh + var(--error-404-bleed));
+  height: 100svh;
+  // Extend clip box below the viewport so sack under footer stays visible
+  // (footer paints on top via z-index; rounded corners reveal the bleed)
+  padding-bottom: var(--error-404-bleed);
+  margin-bottom: calc(var(--error-404-bleed) * -1);
+  // Clip horizontal overflow from sack breath — without clipping the bottom bleed
+  overflow-x: clip;
+  overflow-y: visible;
+
+  .page-head {
+    z-index: 3;
+    padding-bottom: 0;
+
+    @include minMedia(lg) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+    }
+  }
+
+  // Beat scroll-line’s `main > *:not(.scroll-line) { position: relative }`
+  // which collapsed this overlay to height 0 and hid rooster/sack.
+  > .error-404__media {
+    position: absolute;
+    z-index: 0;
+  }
+
+  > .error-404 {
+    z-index: 2;
+  }
+}
+
+.error-404 {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  &__inner {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    min-height: 100%;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    // Figma 706:2327 @ y=296 (frame 1920)
+    padding-top: clamp(#{rem(200)}, 15.4vw, #{rem(296)});
+    max-width: rem(563);
+
+    @include maxMedia(lg) {
+      padding-top: var(--sp-sm);
+      max-width: rem(520);
+      margin-inline: auto;
+      text-align: center;
+    }
+  }
+
+  // Figma 706:2327 — gap 24 between tag and title group
+  &__tag {
+    margin-bottom: rem(24);
+  }
+
+  // Figma 706:2304 — gap 40 between title / text / button
+  &__title {
+    margin-bottom: rem(40);
+    color: var(--clr-black);
+  }
+
+  &__text {
+    max-width: rem(563);
+    margin-bottom: rem(40);
+    color: var(--clr-gray);
+
+    @include maxMedia(lg) {
+      max-width: none;
+      margin-inline: auto;
+    }
+  }
+}
+
+// ── Full-bleed media (fills the shell + bleed under footer) ──────────
+.error-404__media {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  // Reach into the main padding / under-footer zone
+  bottom: calc(var(--error-404-bleed, 0px) * -1);
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+  // Lift rooster + sack by the under-footer bleed amount
+  transform: translateY(calc(var(--error-404-bleed, 0px) * -2));
+}
+
+.error-404__sack {
+  position: absolute;
+  right: 0%;
+  // Sit low but keep the pile in the viewport; slight bleed under footer
+  bottom: clamp(#{rem(-120)}, -10svh, #{rem(-130)});
+  // Wide like the design — height follows aspect so the mound fills the lower third
+  width: min(100%, #{rem(1800)}, calc(75svh * 1789 / 501));
+  max-width: 100%;
+  z-index: 1;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1789 / 901;
+    overflow: visible;
+  }
+}
+
+.error-404__rooster {
+  position: absolute;
+  right: 25%;
+  bottom: clamp(#{rem(24)}, 8svh, 15%);
+  // Aspect 763/850 — cap width so rendered height ≈ ≤ 72svh
+  width: min(38%, #{rem(760)}, calc(82svh * 763 / 850));
+  z-index: 2;
+  overflow: visible;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 763 / 850;
+    overflow: visible;
+  }
+}
+
+// Hide resting pose until GSAP parks him off-screen left (avoids flash-then-run)
+@media (prefers-reduced-motion: no-preference) {
+  html.ta-js .error-404__rooster:not(.is-run-ready) {
+    visibility: hidden;
+  }
+
+  // Same idea for the stroke-draw lines: stay invisible until app-404.js has
+  // configured the dash offset (hidden), so nothing shows before the draw.
+  // JS reveals each path via gsap.set opacity:1. Reduce-motion keeps them shown.
+  html.ta-js .error-404__line path {
+    opacity: 0;
+  }
+}
+
+@include maxMedia(lg) {
+  .error-404-shell {
+    height: auto;
+    min-height: 100svh;
+    // Less under-footer bleed on stacked mobile layout
+    --error-404-bleed: clamp(#{rem(40)}, 8svh, #{rem(80)});
+  }
+
+  .error-404-shell > .error-404__media {
+    position: relative;
+    inset: auto;
+    bottom: auto;
+    order: 3;
+    width: 100%;
+    // height: min(#{rem(400)}, 42svh);
+    height: auto;
+    margin: var(--sp-md) auto 0;
+    transform: none;
+  }
+
+  .error-404-shell > .error-404 {
+    order: 2;
+  }
+
+  .error-404-shell > .page-head {
+    order: 1;
+  }
+
+  .error-404__sack {
+    right: 0; 
+    bottom: clamp(#{rem(-50)}, -10svh, #{rem(-60)});
+    width: min(130%, #{rem(1800)}, calc(75svh * 1789 / 501));
+    max-width: 130%;
+    margin-left: -30%;
+    position: relative;
+  }
+
+  .error-404__rooster {
+    left: 20%;
+    right: auto;
+    top: auto;
+    bottom: 8%;
+    width: min(43%, #{rem(760)}, calc(82svh * 763 / 850));
+    // width: min(70%, calc(36svh * 763 / 850));
+  }
+}
+
+@include maxMedia(md) {
+  .error-404__media {
+    width: min(100%, #{rem(380)});
+    height: min(#{rem(300)}, 36svh);
+  }
+}
+@include maxMedia(sm) {
+  .error-404-shell{
+    min-height: auto;
+  }
+  .error-404__sack { 
+    width: min(160%, #{rem(1800)}, calc(75svh * 1789 / 501));
+    max-width: 160%;
+    margin-left: -60%; 
+  }
+
+  .error-404__rooster { 
+    left: 12%; 
+    bottom: 5%;    
+    width: min(54%, #{rem(760)}, calc(82svh * 763 / 850)); 
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-404__rooster #error-404-illu__rooster,
+  .error-404__rooster #error-404-illu__bag,
+  .error-404__rooster #error-404-illu__shadow,
+  .error-404__rooster #error-404-illu__wing,
+  .error-404__rooster #error-404-illu__head,
+  .error-404__rooster #error-404-illu__tail,
+  .error-404__rooster #error-404-illu__eye-r,
+  .error-404__rooster #error-404-illu__eye-l,
+  .error-404__rooster #error-404-illu__leg-r,
+  .error-404__rooster #error-404-illu__leg-l,
+  .error-404__rooster,
+  .error-404__sack {
+    transform: none !important;
+  }
+
+  .error-404__line path {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}

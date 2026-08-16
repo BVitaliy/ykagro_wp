@@ -1,0 +1,317 @@
+@use "../mixins" as *;
+
+// ── Contacts page (Figma 706:4891) ──────────────────────────────────
+// Hero: intro column (title + socials + address cards) beside the map frame.
+// Below: cream angled panel with the photo collage around the form card.
+
+// ── Hero ────────────────────────────────────────────────────────────
+.contacts-hero {
+  padding-left: var(--gutter);
+  // the map frame sits 20px off the viewport edge (Figma 715:5238)
+  padding-right: rem(20);
+
+  @include maxMedia(xl) {
+    padding-right: var(--gutter);
+  }
+
+  &__inner {
+    display: grid;
+    grid-template-columns: #{rem(669)} 1fr;
+    gap: rem(103);
+    align-items: start;
+
+    // < 1200 — stack: intro, then full-width map
+    @include maxMedia(xl) {
+      grid-template-columns: 1fr;
+      gap: var(--sp-md);
+    }
+  }
+
+  &__intro {
+    // Figma 742:2252 — column gap 40 between title / socials / cards
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-sm-2);
+    // title baseline sits ~21px below the map top edge
+    padding-top: rem(21);
+
+    @include maxMedia(xl) {
+      padding-top: 0;
+    }
+  }
+
+  &__title {
+    // Figma 706:4989 — H3 Bold 52/1.1, #000
+    color: var(--clr-text);
+    max-width: rem(669);
+  }
+
+  &__socials {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+  }
+
+  &__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(56);
+    height: rem(56);
+    border-radius: var(--radius-sm);
+    background: var(--bg-1);
+    color: var(--clr-orange);
+    transition: background var(--transition-1), color var(--transition-1);
+
+    .icon {
+      width: rem(30);
+      height: rem(30);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-orange);
+        color: var(--clr-white);
+      }
+    }
+
+    @include maxMedia(md) {
+      width: rem(48);
+      height: rem(48);
+
+      .icon {
+        width: rem(24);
+        height: rem(24);
+      }
+    }
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: rem(24);
+    width: 100%;
+
+    @include maxMedia(sm) {
+      grid-template-columns: 1fr;
+      gap: rem(16);
+    }
+  }
+}
+
+// ── Address card (Figma 745:2384) — left-edge bend like .direction-card
+// List / row / icon classes are also reused inside the map popup (no clip).
+.contacts-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
+  padding: rem(24) rem(32);
+  background: var(--bg-1);
+  // Fallback when clip-path is unsupported
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  -webkit-clip-path: url("#contacts-card-clip");
+  clip-path: url("#contacts-card-clip");
+
+  &__title {
+    // Figma 744:2352 — SemiBold 20/1.4 (between h6 24 and text-md 16)
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: rem(20);
+    line-height: 1.4;
+    color: var(--clr-black);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: rem(12);
+    // Figma body: Medium 16 / rgba(0,0,0,0.6)
+    color: var(--clr-muted);
+    font-weight: 500;
+
+    a {
+      color: inherit;
+      transition: color var(--transition-1);
+
+      @include hover {
+        &:hover {
+          color: var(--clr-orange);
+        }
+      }
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: rem(20);
+    height: rem(20);
+    margin-top: rem(1);
+    color: var(--clr-orange);
+  }
+
+  @include maxMedia(md) {
+    padding: rem(20) rem(24);
+    gap: rem(16);
+  }
+}
+
+// ── Map ─────────────────────────────────────────────────────────────
+.contacts-map {
+  &__frame {
+    position: relative;
+    aspect-ratio: 1048 / 631;
+    border-radius: var(--radius-md);
+    background: var(--bg-1);
+    -webkit-clip-path: url("#contacts-map-clip");
+    clip-path: url("#contacts-map-clip");
+
+    @include maxMedia(lg) {
+      aspect-ratio: 4 / 3;
+      -webkit-clip-path: url("#contacts-map-clip-mob");
+      clip-path: url("#contacts-map-clip-mob");
+    }
+
+    @include maxMedia(sm) {
+      aspect-ratio: 3 / 3.5;
+    }
+  }
+
+  &__canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  // Fallback copy when the Maps API cannot start
+  &__fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: rem(24);
+    text-align: center;
+    color: var(--clr-gray);
+  }
+
+  &__pin {
+    position: absolute;
+    z-index: 2;
+    width: rem(47);
+    height: rem(61);
+    // the tip of the pin marks the coordinate
+    transform: translate(-50%, -100%);
+    transition: filter var(--transition-1);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @include hover {
+      &:hover {
+        filter: drop-shadow(0 rem(6) rem(12) rgba(0, 0, 0, 0.25));
+      }
+    }
+
+    @include maxMedia(md) {
+      width: rem(36);
+      height: rem(47);
+    }
+  }
+
+  // The live map moves this element itself (Google OverlayView); in static
+  // mode it is anchored above its pin — 12px gap (Figma 747:2496).
+  &__popup {
+    position: absolute;
+    z-index: 3;
+    width: rem(266);
+    max-width: calc(100% - #{rem(40)});
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    padding: rem(24);
+    border-radius: var(--radius-md);
+    background: var(--bg-1);
+    box-shadow: 0 rem(10) rem(30) rgba(0, 0, 0, 0.08);
+
+    &.is-hidden {
+      display: none;
+    }
+
+    .contacts-card__row {
+      color: var(--clr-muted);
+    }
+  }
+
+  &--static &__popup {
+    transform: translate(-50%, calc(-100% - #{rem(73)}));
+  }
+
+  // Live mode places the pins from lat/lng — keep them out of the top-left
+  // corner until the overlay has drawn them (and for good if the map fails).
+  &--live &__pin {
+    visibility: hidden;
+  }
+
+  &--failed &__pin {
+    display: none;
+  }
+
+  &__popup-title {
+    padding-right: rem(24);
+    color: var(--clr-black);
+  }
+
+  &__close {
+    position: absolute;
+    top: rem(16);
+    right: rem(16);
+    width: rem(16);
+    height: rem(16);
+    color: var(--clr-black);
+    transition: color var(--transition-1);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @include hover {
+      &:hover {
+        color: var(--clr-orange);
+      }
+    }
+  }
+
+  &__route {
+    align-self: flex-start;
+  }
+}
+
+// ── Form section (Figma 706:5142) ───────────────────────────────────
+// Uses the shared home-contact component in its form variant
+// (see scss/style/home/_contact.scss → .home-contact--form).

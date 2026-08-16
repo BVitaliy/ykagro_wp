@@ -1,0 +1,200 @@
+@use "../mixins" as *;
+
+// ── Form block (Figma 685:1338) — cream-filled inputs ───────────────
+.form-block {
+  display: flex;
+  flex-direction: column;
+  gap: rem(12);
+  max-width: rem(609);
+  margin-inline: auto;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: rem(12);
+
+    @include maxMedia(sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: rem(6);
+    min-width: 0;
+  }
+
+  &__input {
+    width: 100%;
+    height: rem(54);
+    padding: 0 rem(24);
+    border: 1px solid transparent;
+    border-radius: rem(22);
+    background: var(--bg-1);
+    color: var(--clr-black);
+    font-size: rem(16);
+    transition: border-color var(--transition-1);
+
+    &::placeholder {
+      color: var(--clr-muted);
+    }
+    &:focus {
+      outline: none;
+      border-color: var(--clr-orange);
+    }
+    // filled → orange border (Figma 747:3427)
+    &.is-filled {
+      border-color: var(--clr-orange);
+    }
+    // error → red border + message
+    &.is-error {
+      border-color: #e70000;
+      color: #e70000;
+    }
+
+    &--area {
+      height: auto;
+      min-height: rem(100);
+      padding: rem(16) rem(24);
+      resize: none;
+    }
+  }
+
+  &__error {
+    display: none;
+    font-size: rem(13);
+    color: #e70000;
+    text-align: left;
+  }
+  &__input.is-error ~ &__error {
+    display: block;
+  }
+
+  // ── CV file upload (Figma 826:5633) — dashed orange field ──────────
+  &__file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+    height: rem(54);
+    padding: 0 rem(24);
+    border: 1px dashed var(--clr-orange);
+    border-radius: rem(22);
+    background: var(--bg-1);
+    color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    transition: color var(--transition-1);
+
+    @include hover {
+      &:hover {
+        color: var(--clr-black);
+      }
+    }
+  }
+
+  &__file-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: rem(20);
+    height: rem(20);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__file-text {
+    min-width: 0;
+    font-size: rem(16);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  // chosen-file chip (Figma 833:6738): file icon + name + remove ✕
+  &__file-list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+
+    // [hidden] must win over display:flex until a file is chosen
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__chip {
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+  }
+
+  &__chip-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: rem(20);
+    height: rem(20);
+    color: var(--clr-black);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__chip-name {
+    min-width: 0;
+    color: var(--clr-black);
+    font-size: rem(14);
+    font-weight: 500;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__chip-remove {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(16);
+    height: rem(16);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--clr-black);
+    cursor: pointer;
+    transition: color var(--transition-1);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    @include hover {
+      &:hover {
+        color: var(--clr-orange);
+      }
+    }
+  }
+
+  &__submit {
+    align-self: center;
+    margin-top: rem(28);
+  }
+}

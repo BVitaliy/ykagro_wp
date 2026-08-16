@@ -1,0 +1,130 @@
+@use "../mixins" as *;
+
+// ── Decorative scroll-drawn line (Figma Vector) ─────────────────────
+// Spans the full main content behind the sections; the bright stroke draws
+// itself as you scroll (app-scroll-line.js). Sections sit above it (z-index 1)
+// so it shows through the gaps and transparent areas.
+main {
+  position: relative;
+  // Scroll line controls:
+  // --scroll-line-max-width: Figma SVG width (1838px = 114.875rem)
+  // --scroll-line-start: set this per page on <main> when a page needs another start point
+  // --scroll-line-bottom: negative = extend a bit into/under the footer
+  --scroll-line-max-width: #{rem(1838)};
+  --scroll-line-min-render-width: #{rem(900)};
+  --scroll-line-width: min(var(--scroll-line-max-width), max(100vw, var(--scroll-line-min-render-width)));
+  --scroll-line-start: calc(min(#{rem(950)}, 100svh) - #{rem(350)});
+  --scroll-line-bottom: #{rem(-200)};
+
+  @include maxMedia(md) {
+    --scroll-line-start: #{rem(308)};
+    --scroll-line-bottom: #{rem(-140)};
+  }
+
+  // Light inner pages — line from the very top (article / privacy), same as Figma.
+  // Must override the mobile default start too.
+  &.is-article,
+  &.is-doc {
+    --scroll-line-start: #{rem(-40)};
+    // Soft orange wash on light pages (Figma decorative vector)
+    --scroll-line-draw-stroke: #eb6e01;
+    --scroll-line-draw-opacity: 0.06;
+
+    @include maxMedia(md) {
+      --scroll-line-start: #{rem(-40)};
+    }
+  }
+
+  // Author page (Figma 784:8234) — start under the hero block.
+  // JS measures [data-scroll-line-after] + this offset (negative = higher).
+  // Use px here so the value is obvious when tweaking.
+  &.is-author {
+    --scroll-line-after-offset: -180px;
+    --scroll-line-start: #{rem(600)};
+
+    @include maxMedia(lg) {
+      --scroll-line-after-offset: -80px;
+      --scroll-line-start: #{rem(920)};
+    }
+
+    @include maxMedia(md) {
+      --scroll-line-after-offset: -60px;
+      --scroll-line-start: #{rem(680)};
+    }
+  }
+}
+
+main > *:not(.scroll-line) {
+  position: relative;
+  z-index: 1;
+}
+
+.scroll-line {
+  position: absolute;
+  top: var(--scroll-line-start);
+  // right: 0;
+  bottom: var(--scroll-line-bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  width: 100%;
+  max-width: var(--scroll-line-max-width);
+  pointer-events: none;
+  // Isolate the huge SVG from the rest of the page paint tree.
+  contain: layout paint style;
+  // Clip only to this box (which already bleeds into the footer via
+  // --scroll-line-bottom). Keeps short-page SVGs from spilling further.
+  overflow: hidden;
+
+  &__svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: var(--scroll-line-width);
+    height: 100%;
+    margin-right: 0;
+    // Height / viewBox crop for short pages is set in app-scroll-line.js
+    // (natural scale, clipped near footer — no giant min-height layer).
+  }
+
+  &__base {
+    stroke: var(--scroll-line-base-stroke, #EB6E01);
+    stroke-opacity: var(--scroll-line-base-opacity, 0);
+  }
+
+  // Static watermark variant ($scroll_line_static) — the same vector used as
+  // decor inside an overlay that is not inside <main>, so none of the
+  // --scroll-line-* page vars apply. The consumer sizes/places it with the
+  // --decor-line-* vars (see .catalog-filter__decor).
+  &--static {
+    top: var(--decor-line-top, 0);
+    bottom: auto;
+    left: var(--decor-line-left, 50%);
+    width: var(--decor-line-width, #{rem(518)});
+    height: var(--decor-line-height, #{rem(3435)});
+    max-width: none;
+    transform: translate(-50%, -50%) rotate(180deg);
+  }
+
+  &--static &__svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__draw {
+    stroke: var(--scroll-line-draw-stroke, rgba(235, 110, 1, 0.031));
+    stroke-opacity: var(--scroll-line-draw-opacity, 1);
+    // Fully undrawn until app-scroll-line.js measures the real path length
+    // (must be > getTotalLength; dasharray:1 would show a dotted full path).
+    stroke-dasharray: 99999;
+    stroke-dashoffset: 99999;
+  }
+
+  // &--blog {
+  //   --scroll-line-base-stroke: #EB6E01;
+  //   --scroll-line-base-opacity: 0;
+  //   --scroll-line-draw-stroke: #EB6E01;
+  //   --scroll-line-draw-opacity: 0.1;
+  // }
+}

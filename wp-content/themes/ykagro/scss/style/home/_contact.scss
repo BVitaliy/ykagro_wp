@@ -1,0 +1,193 @@
+@use "../../mixins" as *;
+
+// ── Home contact (Figma 422:522) ────────────────────────────────────
+// Cream rounded panel, central white card + a photo collage around it.
+.home-contact {
+  padding-inline: rem(20);
+
+  @include maxMedia(md) {
+    padding-inline: rem(0);
+  }
+
+  &__panel {
+    position: relative;
+    width: 100%;
+    max-width: rem(1880);
+    margin-inline: auto;
+    padding: rem(195) 0 rem(135);
+    display: flex;
+    justify-content: center;
+    background: var(--bg-1);
+    border-radius: var(--radius-lg);
+    -webkit-clip-path: url("#directions-clip");
+    clip-path: url("#directions-clip");
+
+    @include maxMedia(lg) {
+      padding: rem(40) rem(20);
+      min-height: 0;
+      -webkit-clip-path: none;
+      clip-path: none;
+    }
+
+    @include maxMedia(md) {
+       border-radius: 0;
+    }    
+  }
+
+  // ── Central card ──────────────────────────────────────────────────
+  &__card {
+    position: relative;
+    z-index: 4;
+    width: min(calc(100% - #{rem(40)}), #{rem(849)});
+    min-height: rem(616);
+    padding: clamp(#{rem(70)}, 7.98vw, #{rem(150)}) clamp(#{rem(28)}, 3.3vw, #{rem(62)}) rem(60);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    -webkit-clip-path: url("#contact-card-clip");
+    clip-path: url("#contact-card-clip");
+
+    @include maxMedia(lg) {
+      width: min(100%, rem(720));
+      min-height: rem(520);
+      padding: rem(76) rem(32) rem(48);
+      -webkit-clip-path: url("#contact-card-clip");
+      clip-path: url("#contact-card-clip");
+    }
+
+    @include maxMedia(md) {
+      min-height: 0;
+      padding: rem(52) rem(24) rem(32);
+      border-radius: var(--radius-md);
+      // -webkit-clip-path: none;
+      // clip-path: none;
+    }
+  }
+
+  &__tag {
+    margin-bottom: rem(24);
+  }
+
+  &__title {
+    width: rem(573);
+    max-width: 100%;
+    margin-bottom: clamp(#{rem(40)}, 6.2vw, #{rem(116)});
+       
+  }
+
+  &__text {
+    width: rem(637);
+    max-width: 100%;
+    margin-bottom: rem(40);
+    color: var(--clr-black);
+    font-weight: 500;
+    font-size: clamp(#{rem(16)}, 1.25vw, #{rem(24)});
+    line-height: 1.4;
+  }
+
+  &__cta {
+    min-width: rem(194);
+  }
+
+  // ── Form variant — contacts page (Figma 706:5142) ─────────────────
+  // Same clipped panel + collage; the card holds the shared form instead
+  // of the CTA and sits lower to balance the taller card.
+  &--form {
+    .form-block{
+      max-width: 100%;
+      width: 100%;
+    }
+
+    &__panel {
+      padding: rem(250) 0 rem(187);
+
+      @include maxMedia(lg) {
+        padding: rem(40) rem(20);
+      }
+    }    
+  }
+
+  
+
+  &--form &__card {
+    width: min(calc(100% - #{rem(40)}), #{rem(729)});
+    min-height: 0;
+    // Extra top padding compensates for the steeper L→R top cut (Figma 706:5115)
+    padding: rem(127) rem(60) rem(125);
+    background: #fffefc;
+    -webkit-clip-path: url("#contact-form-card-clip");
+    clip-path: url("#contact-form-card-clip");
+
+    @include maxMedia(md) {
+      padding: rem(86) rem(24) rem(40);
+       width:100%;
+    }
+  }
+
+  &--form &__title {
+    // Figma 706:5117 — H4 Bold 40/1.1, #1d1d1d
+    width: rem(515);
+    margin-bottom: var(--sp-sm-2);
+    color: #1d1d1d;
+  }
+
+  // Figma 706:5118 — 28px from the last field to the submit
+  &--form .form-block__submit {
+    margin-top: rem(28);
+  }
+
+  // ── Collage photos ────────────────────────────────────────────────
+  &__photo {
+    position: absolute;
+    z-index: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    will-change: transform;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &--tl {
+      top: rem(80);
+      left: 4.04%;
+      width: 15.74%;
+      aspect-ratio: 296 / 357;
+    }
+    &--tc {
+      top: rem(80);
+      left: 35.72%;
+      width: 18.14%;
+      aspect-ratio: 341 / 237;
+    }
+    &--r {
+      top: rem(186);
+      right: 10.12%;
+      width: 15.74%;
+      aspect-ratio: 296 / 416;
+    }
+    &--bl {
+      z-index: 3;
+      top: rem(694);
+      left: 9.47%;
+      width: 20.64%;
+      aspect-ratio: 388 / 398;
+    }
+    &--br {
+      top: rem(741);
+      right: 2.5%;
+      width: 20.85%;
+      aspect-ratio: 392 / 286;
+    }
+
+    // collage is decorative — hide on narrow screens
+    @include maxMedia(lg) {
+      display: none;
+    }
+  }
+}

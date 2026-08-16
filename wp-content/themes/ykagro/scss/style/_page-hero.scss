@@ -1,0 +1,197 @@
+@use "../mixins" as *;
+
+.page-hero {
+  --page-hero-pad: #{rem(20)};
+  --page-hero-radius: #{rem(24)};
+  --page-hero-logo-notch-r: #{rem(28)};
+  --page-hero-banner-h: calc(100dvh - var(--page-hero-pad) * 2);
+  // Scroll parallax room for the banner media (app-hero-parallax.js).
+  // Percentages resolve against the banner height, so the media is
+  // (100% + 2 × room) tall and centred — JS then drifts it down by exactly one
+  // room over the hero's scroll range.
+  --hero-parallax-room: 20%;
+
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  padding: var(--page-hero-pad);
+  overflow: hidden;
+
+  &--has-title-panel {
+    --page-hero-banner-h: calc((100dvh - var(--page-hero-pad) * 2) * 0.9);
+  }
+
+  > .banner {
+    height: var(--page-hero-banner-h);
+    min-height: rem(620);
+    border-radius: var(--page-hero-radius);
+  }
+
+  // Applied unconditionally (never toggled by JS) so the crop is final at first
+  // paint — switching it on after load resized the media and the banner
+  // visibly jumped. Without JS / with reduced motion it just stays centred.
+  // The about hero is out: its banner is scrubbed by the about-scene instead.
+  &:not(.about-scene__hero) > .banner {
+    > picture,
+    > video {
+      position: absolute;
+      left: 0;
+      top: calc(var(--hero-parallax-room) * -1);
+      width: 100%;
+      height: calc(100% + var(--hero-parallax-room) * 2);
+      will-change: transform;
+    }
+  }
+
+  &__logo {
+    position: absolute;
+    left: var(--page-hero-pad);
+    top: var(--page-hero-pad);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    padding: rem(35) var(--gutter-sm);
+    border-bottom-right-radius: var(--page-hero-logo-notch-r);
+    background: var(--clr-white);
+
+    svg {
+      display: block;
+      width: rem(214);
+      height: auto;
+    }
+
+    &::after,
+    &::before {
+      content: "";
+      position: absolute;
+      width: var(--page-hero-logo-notch-r);
+      height: var(--page-hero-logo-notch-r);
+      background: var(--clr-white);
+      -webkit-mask: radial-gradient(circle at bottom right, transparent var(--page-hero-logo-notch-r), #000 calc(var(--page-hero-logo-notch-r) + 0.5px));
+      mask: radial-gradient(circle at bottom right, transparent var(--page-hero-logo-notch-r), #000 calc(var(--page-hero-logo-notch-r) + 0.5px));
+    }
+
+    &::after {
+      top: 0;
+      left: 100%;
+    }
+
+    &::before {
+      top: 100%;
+      left: 0;
+    }
+  }
+
+  &__breadcrumbs {
+    position: absolute;
+    left: calc(var(--gutter-sm) + var(--page-hero-pad));
+    top: rem(190);
+    z-index: 3;
+
+    .breadcrumbs,
+    .breadcrumbs__home,
+    .breadcrumbs__link,
+    .breadcrumbs__current {
+      color: var(--clr-white);
+    }
+  }
+
+  &__title-panel {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 4;
+    width: min(#{rem(1246)}, calc(100% - var(--gutter) * 2));
+    padding: rem(94) rem(88) rem(88);
+    background: var(--bg-1);
+    -webkit-clip-path: url(#page-hero-title-clip);
+    clip-path: url(#page-hero-title-clip);
+    transform: translateX(-50%);
+  }
+
+  &__title {
+    max-width: rem(1032);
+    margin-inline: auto;
+    color: var(--clr-text);
+    text-align: center;
+    overflow-wrap: break-word;
+  }
+
+  @include maxMedia(lg) {
+    > .banner {
+      min-height: rem(560);
+    }
+
+    &__title-panel {
+      width: min(#{rem(920)}, calc(100% - var(--gutter) * 2));
+      padding: rem(76) rem(56) rem(68);
+    }
+  }
+
+  @include maxMedia(md) {
+    --page-hero-pad: #{rem(10)};
+    --page-hero-radius: #{rem(20)};
+    --page-hero-logo-notch-r: #{rem(16)};
+    --hero-parallax-room: 14%;
+    // Banner is 80% of the viewport; the section itself stays full-screen.
+    --page-hero-banner-h: calc(100dvh * 0.83);
+
+    &--has-title-panel {
+      --page-hero-banner-h: calc(100dvh * 0.83);
+    }
+
+    > .banner {
+      height: var(--page-hero-banner-h);
+      min-height: 0;
+    }
+
+    &__logo {
+      padding: rem(16) rem(24);
+
+      svg {
+        width: rem(132);
+      }
+
+      &::after {
+        left: 100%;
+      }
+
+      &::before {
+        top: 100%;
+      }
+    }
+
+    // Full-bleed scroll rail: the trail never wraps and never shrinks, it
+    // scrolls sideways instead. Left/right are 0 so the row is not clipped by
+    // the block padding — the 26px inset lives on .breadcrumbs (--crumbs-pad)
+    // and therefore scrolls with the content.
+    &__breadcrumbs {
+      left: 0;
+      right: 0;
+      top: rem(104);
+      --crumbs-pad: #{rem(26)};
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    &__title-panel {
+      width: calc(100vw - #{rem(32)});
+      max-width: calc(100vw - #{rem(32)});
+      padding: rem(44) rem(24) rem(40);
+      -webkit-clip-path: url(#page-hero-title-mobile-clip);
+      clip-path: url(#page-hero-title-mobile-clip);
+    }
+
+    &__title {
+      max-width: rem(400);
+      font-size: rem(24);
+    }
+  }
+}

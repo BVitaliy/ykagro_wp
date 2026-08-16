@@ -1,0 +1,42 @@
+// YKagro — components & page sections (one partial per component/section)
+@use "./style/menu";
+@use "./style/modals";
+@use "./style/product-card";
+@use "./style/popups";
+@use "./style/form-block";
+@use "./style/scroll-line";
+@use "./style/faq";
+@use "./style/banner";
+@use "./style/page-hero";
+@use "./style/benefits-section";
+@use "./style/page-head";
+@use "./style/breadcrumbs";
+@use "./style/article-card";
+@use "./style/pagination";
+@use "./style/select";
+@use "./style/doc-page";
+@use "./style/error-404";
+@use "./style/blog";
+@use "./style/article";
+@use "./style/author";
+@use "./style/contacts";
+@use "./style/responsibility";
+@use "./style/cooperation";
+@use "./style/career";
+@use "./style/about";
+@use "./style/directions" as directions-page;
+@use "./style/products" as products-page;
+@use "./style/product" as product-page;
+@use "./style/production" as production-page;
+
+// Homepage sections (Figma 384:192) — one file per section
+@use "./style/home/hero";
+@use "./style/home/intro";
+@use "./style/home/directions";
+@use "./style/home/products";
+@use "./style/home/stats";
+@use "./style/home/statement";
+@use "./style/home/gallery";
+@use "./style/home/news";
+@use "./style/home/contact";
+@use "./style/home/articles";

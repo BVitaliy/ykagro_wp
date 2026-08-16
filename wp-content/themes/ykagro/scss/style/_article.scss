@@ -1,0 +1,690 @@
+@use "../mixins" as *;
+@use "./prose" as *;
+
+main{
+  &.is-article{
+    .page-head { 
+        padding-bottom: rem(16);
+    }
+  }
+}
+
+// Article detail — Figma 690:3195
+.article-page {
+  --article-content-w: #{rem(1080)};
+  --article-toc-w: #{rem(427)};
+  --article-gap: clamp(#{rem(40)}, 3.2vw, #{rem(60)});
+  --article-wide: #{rem(1564)};
+  padding-top: 0;
+
+  &__crumbs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: rem(60);
+
+    @include maxMedia(md) {
+      justify-content: flex-start;
+      margin-bottom: rem(28);
+    }
+  }
+
+  &__head {
+    max-width: rem(1032);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: rem(24);
+    margin-bottom: rem(24);
+
+    @include maxMedia(md) {
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: rem(16);
+      margin-bottom: rem(20);
+    }
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: rem(12);
+    min-height: rem(40);
+    padding: rem(10) rem(20);
+    border-radius: rem(100);
+    background: var(--clr-sage);
+    color: #214314;
+    font-size: rem(14);
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background var(--transition-1), color var(--transition-1);
+
+    &:is(a):hover,
+    &:is(a):focus-visible {
+      background: color-mix(in srgb, var(--clr-sage) 85%, #214314);
+    }
+
+    @include maxMedia(md) {
+      gap: rem(8);
+      min-height: rem(34);
+      padding: rem(8) rem(10);
+      font-size: rem(12);
+      white-space: nowrap;
+    }
+  }
+
+  &__chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(24);
+    height: rem(24);
+    flex-shrink: 0;
+    color: #214314;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%; 
+    }
+
+    @include maxMedia(md) {
+      width: rem(16);
+      height: rem(16);
+    }
+  }
+
+  &__chip-text {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    transform: translateY(#{rem(0.5)});
+  }
+
+  &__title {
+    max-width: rem(1032);
+    margin: 0 auto;
+    color: var(--clr-text);
+    font-size: clamp(#{rem(32)}, 3.4vw, #{rem(52)});
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  &__hero {
+    max-width: calc(var(--article-wide) + var(--gutter) * 2);
+    margin-top: rem(60);
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+    }
+
+    @include maxMedia(md) {
+      margin-top: rem(32);
+      padding-inline: var(--gutter);
+    }
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: minmax(0, var(--article-content-w)) var(--article-toc-w);
+    justify-content: center;
+    align-items: start;
+    gap: var(--article-gap);
+    max-width: calc(var(--article-wide) + var(--gutter) * 2);
+    margin-top: rem(100);
+
+    @include maxMedia(xl) {
+      grid-template-columns: minmax(0, 1fr) minmax(#{rem(280)}, #{rem(360)});
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: rem(24);
+      margin-top: rem(56);
+    }
+  }
+
+  &--no-nav &__layout {
+    grid-template-columns: minmax(0, var(--article-content-w));
+  }
+}
+
+.article-content {
+  min-width: 0;
+  @include prose;
+
+  // Figma overrides on shared prose
+  > * + * {
+    margin-top: rem(20);
+  }
+
+  > * + h2,
+  > * + h3 {
+    margin-top: rem(60);
+  }
+
+  > h2 + *,
+  > h3 + * {
+    margin-top: rem(20);
+  }
+
+  > h2 {
+    scroll-margin-top: calc(var(--article-toc-top, 80px) + #{rem(16)});
+    font-size: clamp(#{rem(28)}, 2.4vw, #{rem(40)});
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  > h3 {
+    font-size: rem(24);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  // > h2 + p,
+  // > h2 + p + p {
+  //   color: var(--clr-muted);
+  // }
+
+  :where(ul, ol) {
+    gap: rem(8);
+  }
+
+  :where(blockquote) {
+    gap: rem(32);
+    padding: rem(40);
+    font-size: rem(24);
+    font-weight: 500;
+    line-height: 1.4;
+
+    &::before {
+      flex-basis: rem(100);
+      width: rem(100);
+      height: rem(100);
+      background: url("../img/icons/quote.gif") center / contain no-repeat;
+    }
+  }
+
+  :where(table) {
+    width: 100%;
+    min-width: rem(720);
+    border: 0;
+    border-collapse: collapse;
+    color: var(--clr-black);
+  }
+
+  // Figma table component 690:3097 — 60px rows, 12/16 padding, hairline under
+  // every row, cream header. The outer frame lives on .article-content__table.
+  :where(th, td) {
+    height: rem(60);
+    padding: rem(12) rem(16);
+    border: 0;
+    border-bottom: 1px solid rgba(33, 67, 20, 0.1);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  :where(th) {
+    background: var(--bg-1);
+    font-size: rem(20);
+    font-weight: 600;
+  }
+
+  :where(td) {
+    font-size: rem(18);
+    font-weight: 400;
+  }
+
+  // the wrapper's border already draws the closing line
+  :where(tbody tr:last-child) :where(th, td) {
+    border-bottom: 0;
+  }
+
+  // Images / media: width fluid, height from intrinsic ratio
+  :where(figure img),
+  > img,
+  &__slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+
+  &__slider {
+    overflow: hidden;
+
+    .swiper-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  &__slide {
+    height: auto;
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+    }
+  }
+
+  &__slider-pagination.swiper-pagination {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: rem(12);
+    width: 100%;
+    margin-top: rem(40);
+    line-height: 0;
+
+    @include maxMedia(md) {
+      margin-top: rem(24);
+    }
+  }
+
+  .swiper-pagination-bullet {
+    width: rem(20);
+    height: rem(6);
+    margin: 0 !important;
+    border-radius: rem(72);
+    background: rgba(235, 110, 1, 0.2);
+    opacity: 1;
+    transition: width var(--transition-1), background var(--transition-1);
+  }
+
+  .swiper-pagination-bullet-active {
+    width: rem(60);
+    background: var(--clr-orange);
+  }
+
+  &__video {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    aspect-ratio: 16 / 9;
+    background: #000;
+
+    // YouTube iframe eats wheel/touch when hovered → Lenis jumps. Keep the
+    // iframe inert until the user explicitly clicks to interact.
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    &.is-interactive {
+      iframe {
+        pointer-events: auto;
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  // Keep desktop table layout on mobile — horizontal scroll (Blest pattern)
+  &__table {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    border: 1px solid rgba(33, 67, 20, 0.1);
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+
+    // The frame stays put while the table scrolls under it. No inner wrapper:
+    // the 16px inset comes from the cells, so the cream header row reaches the
+    // frame, and the table's own min-width drives the scroll.
+    table {
+      width: 100%;
+      min-width: rem(720);
+      border: 0;
+    }
+  }
+
+  // Cancel shared prose stacked-table adaptation inside articles
+  @include maxMedia(sm) {
+    :where(table) {
+      display: table;
+    }
+
+    :where(thead) {
+      display: table-header-group;
+    }
+
+    :where(tbody) {
+      display: table-row-group;
+    }
+
+    :where(tr) {
+      display: table-row;
+      padding: 0;
+      border-bottom: 1px solid rgba(33, 67, 20, 0.1);
+    }
+
+    :where(tbody tr:last-child) {
+      border-bottom: 0;
+    }
+
+    :where(td) {
+      display: table-cell;
+      width: auto;
+      padding-block: rem(16);
+      padding-inline: rem(16);
+      border-bottom: 0;
+
+      &:first-child {
+        font-weight: inherit;
+        color: inherit;
+      }
+
+      &:last-child {
+        padding-right: rem(16);
+      }
+    }
+  }
+
+  > :is(blockquote, .article-content__slider, .article-content__video, .article-content__table, figure) {
+    margin-top: rem(60);
+  }
+
+  > h2 + :is(blockquote, .article-content__slider, .article-content__video, .article-content__table, figure) {
+    margin-top: rem(20);
+  }
+
+  @include maxMedia(md) {
+    > * + h2,
+    > * + h3 {
+      margin-top: rem(40);
+    }
+
+    > h3 {
+      font-size: rem(20);
+    }
+
+    :where(blockquote) {
+      gap: rem(20);
+      padding: rem(24);
+      font-size: rem(18);
+
+      &::before {
+        flex-basis: rem(64);
+        width: rem(64);
+        height: rem(64);
+      }
+    }
+
+    :where(th) {
+      font-size: rem(16);
+    }
+
+    :where(td) {
+      font-size: rem(15);
+    }
+  }
+}
+
+.article-toc {
+  position: sticky;
+  top: var(--article-toc-top, calc(var(--header-h, 80px) + #{rem(20)}));
+  z-index: 5;
+  align-self: start;
+  padding: rem(40);
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  transition: top var(--transition-1);
+
+  &__toggle {
+    display: none;
+  }
+
+  &__title {
+    margin: 0 0 rem(20);
+    font-size: rem(24);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--clr-black);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: article-toc;
+  }
+
+  &__list > li {
+    counter-increment: article-toc;
+  }
+
+  &__link {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: rem(12);
+    align-items: start;
+    font-size: rem(18);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--clr-black);
+    transition: color var(--transition-1);
+
+    &::before {
+      content: counter(article-toc) ".";
+      color: var(--clr-orange);
+      font-weight: 400;
+    }
+
+    &.is-active {
+      color: var(--clr-orange);
+    }
+
+    @include hover {
+      &:hover {
+        color: var(--clr-orange);
+      }
+    }
+  }
+
+  @include maxMedia(lg) {
+    order: -1;
+    top: var(--article-toc-top, calc(var(--header-h, 64px) + #{rem(10)}));
+    padding: 0;
+    background: var(--clr-white);
+    border: 1px solid var(--clr-line);
+    border-radius: var(--radius-sm);
+
+    &__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: rem(16);
+      min-height: rem(52);
+      padding: rem(14) rem(16);
+      font-size: rem(14);
+      font-weight: 500;
+      color: var(--clr-black);
+      text-align: left;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    &__toggle-icon {
+      display: inline-flex;
+      width: rem(18);
+      height: rem(18);
+      flex: 0 0 auto;
+      transition: transform var(--transition-1);
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &.is-open &__toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    &__panel {
+      max-height: 0;
+      overflow: hidden;
+      padding-inline: rem(16);
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    &.is-open &__panel {
+      max-height: rem(480);
+      padding-bottom: rem(16);
+    }
+
+    &__title {
+      display: none;
+    }
+
+    &__link {
+      font-size: rem(15);
+    }
+  }
+}
+
+.article-author {
+  max-width: calc(#{rem(1246)} + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+
+  &__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: rem(512) minmax(0, 1fr);
+    gap: rem(40);
+    align-items: stretch;
+    padding:rem(140) rem(60) rem(60);
+    background: var(--bg-1);
+    // Figma 784:8193 — angled top cut + rounded corners
+    -webkit-clip-path: url(#article-author-clip);
+    clip-path: url(#article-author-clip);
+
+    @include maxMedia(lg) {
+      grid-template-columns: 1fr;
+      padding: rem(80) rem(32) rem(40);
+      gap: rem(28);
+      // Flatter ~75° cut + bottom-matching corner radius (tall stacked card)
+      -webkit-clip-path: url(#article-author-clip-mob);
+      clip-path: url(#article-author-clip-mob);
+    }
+
+    @include maxMedia(md) {
+      padding: rem(68) rem(24) rem(32);
+    }
+  }
+
+  &__photo {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    align-self: stretch;
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+    }
+
+    @include maxMedia(lg) {
+      aspect-ratio: 1;
+      max-width: rem(360);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: rem(40);
+    min-width: 0;
+  }
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: rem(40);
+
+    @include maxMedia(md) {
+      gap: rem(24);
+    }
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--clr-black);
+    font-size: clamp(#{rem(28)}, 2.4vw, #{rem(40)});
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  &__text {
+    margin: 0;
+    color: var(--clr-muted);
+  }
+
+  &__socials {
+    display: flex;
+    gap: rem(12);
+  }
+
+  &__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(56);
+    height: rem(56);
+    border-radius: rem(12);
+    background: var(--clr-white);
+    color: var(--clr-orange);
+    transition: background var(--transition-1), color var(--transition-1);
+
+    svg {
+      width: rem(30);
+      height: rem(30);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-orange);
+        color: var(--clr-white);
+      }
+    }
+  }
+}

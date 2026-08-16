@@ -1,0 +1,299 @@
+@use "../mixins" as *;
+
+// ── Design tokens (Figma: YKagro — eWxtOHG9SbDwRrfVJgyJfe) ───────────
+:root {
+  // Fonts
+  --root-scale: 1rem;
+  --font-main: "Montserrat", sans-serif;
+
+  // Colors
+  --clr-black: #2d2e30; // primary dark (headings / dark surfaces)
+  --clr-text: #000000; // body text
+  --clr-orange: #eb6e01; // brand accent (links, badges, buttons)
+  --clr-white: #fff;
+  --clr-gray: #6b6b6b; // secondary text
+  --clr-muted: rgba(0, 0, 0, 0.6); // muted body text (Figma "Text 60%")
+  --clr-line: #e3ddd3; // hairline dividers on light bg
+  --clr-sage: #c9d4be; // soft green tag / badge background
+  --bg-1: #fff7ee; // warm cream page background
+  --bg-dark: #2d2e30; // footer / dark sections / floating menu
+
+  // Global spacing scale — change here, applies site-wide.
+  // Used by the .spacer-* blocks (between sections) and inside components.
+  --sp-xl: clamp(#{rem(100)}, 9.375vw, #{rem(180)}); // between sections (180 @1920)
+  --sp-lg: clamp(#{rem(60)}, 5.2vw, #{rem(100)});
+  --sp-md: clamp(#{rem(40)}, 3.125vw, #{rem(60)}); // block gap inside a section
+  --sp-sm-2: #{rem(40)}; // under titles, between small elements
+  --sp-sm: #{rem(30)}; // under titles, between small elements
+  --sp-xs: #{rem(15)};
+
+  // Layout
+  --container: #{rem(1920)};
+  --gutter-sm: #{rem(60)}; // page side padding 
+  --gutter: #{rem(80)}; // page side padding 
+  --radius-lg: #{rem(40)}; // large panel / hero corner radius
+  --radius-md: #{rem(24)};
+  --radius-sm: #{rem(12)};
+  --header-h: #{rem(120)};
+
+  // Misc
+  --transition-1: 0.3s ease;
+
+  @include maxMedia(xl) {
+    --gutter: #{rem(40)};
+  }
+
+  @include maxMedia(md) {
+    --gutter: #{rem(16)};
+    --radius-lg: #{rem(20)};
+    --radius-md: #{rem(16)};
+    --header-h: #{rem(72)};
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  // NOTE: no `scrollbar-gutter: stable` here. A reserved gutter is a lane the
+  // viewport-wide fixed overlays (modal scrim) can never paint over — it stayed
+  // an undimmed strip down the right edge. The modal lock drops the bar instead
+  // and gives its width back as padding-right, so nothing shifts — see _modals.
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
+:root,
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--clr-black) var(--clr-white);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: var(--clr-white);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--clr-white);
+  border-radius: 999px;
+  background: var(--clr-black);
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-black);
+  background-clip: padding-box;
+}
+
+// In-page anchor targets (#vacancies, #coop-form…): keep breathing room above
+// the section title. app-global.js reads scroll-margin-top for its Lenis offset.
+section[id] {
+  scroll-margin-top: var(--sp-sm);
+}
+
+// Lenis' stock stylesheet puts `overflow: hidden` on .lenis-stopped, which Lenis
+// adds to <html> on stop(). That hides the document scrollbar, the viewport
+// widens by its width and the centred modal jumps sideways. It is not needed for
+// locking: while stopped Lenis already preventDefaults wheel/touch, and
+// app-modals.js blocks the scroll keys and pins the offset (scrollbar drag).
+//
+// .lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  margin: 0;
+  // Always show the page bar so its width is known and stable. On modal open the
+  // lock drops it (overflow: clip) and hands the width back as padding-right, so
+  // the page does not reflow and the scrim covers edge to edge — see _modals.
+  overflow-y: scroll;
+  background: var(--clr-white);
+  color: var(--clr-text);
+  font-family: var(--font-main);
+  font-size: var(--root-scale);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+// Wide container (Bootstrap "container-fluid" style): capped at the site max
+// width but with slim side padding instead of the full gutter. --container-pad
+// is exposed so descendants (e.g. slider-bleed) can match the padding exactly.
+.container-full {
+  --container-pad: #{rem(20)};
+
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+
+  @include maxMedia(md) {
+    --container-pad: 1rem;
+  }
+}
+
+// ── Spacer blocks ───────────────────────────────────────────────────
+// Vertical rhythm lives in the markup: <div class="spacer-xl"></div> between
+// sections, smaller sizes between blocks. All heights come from --sp-* — change
+// once, applies everywhere.
+.spacer-xl {
+  height: var(--sp-xl);
+}
+.spacer-lg {
+  height: var(--sp-lg);
+}
+.spacer-md {
+  height: var(--sp-md);
+}
+.spacer-sm {
+  height: var(--sp-sm);
+}
+.spacer-xs {
+  height: var(--sp-xs);
+}
+
+// ── Element resets ──────────────────────────────────────────────────
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+input,
+textarea,
+button,
+select {
+  font: inherit;
+}
+
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.svg-defs{
+  position: absolute;
+  left: 0px;
+  top: -0px;
+  width: 0;
+  height: 0; 
+}
+
+// ── Root scale (fluid rem base for very large / laptop screens) ─────
+// scale for laptop
+@media (min-width: 1201px) and (max-width: 1480px) {
+  :root {
+    --root-scale: 10px;
+  }
+  html {
+    font-size: .75rem;
+  }  
+}
+@media (min-width: 1481px) and (max-width: 1680px) {
+  :root {
+    --root-scale: 0.9rem;
+  }
+  html {
+    font-size: .85rem;
+  }    
+}
+@media (min-width: 2100px) {
+  html {
+    font-size: 1.375rem;
+  }
+}
+
+@media (min-width: 2600px) {
+  html {
+    font-size: 1.6rem;
+  }
+}
+
+@media (min-width: 3600px) {
+  html {
+    font-size: 1.8rem;
+  }
+}

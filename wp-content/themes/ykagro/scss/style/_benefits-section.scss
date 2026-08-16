@@ -1,0 +1,125 @@
+@use "../mixins" as *;
+
+// Reusable benefits section
+.benefits-section {
+
+  // clip the mobile slider bleed (below 992)
+  @include maxMedia(lg) {
+    overflow: hidden;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__title {
+    max-width: rem(1090);
+    margin-bottom: var(--sp-md);
+    color: var(--clr-black);
+    text-align: center;
+  }
+
+  // Grid on desktop; Swiper slider below 992. On mobile it bleeds past the
+  // container padding so slides are never clipped at the edges when swiping.
+  &__slider {
+    width: 100%;
+
+    @include maxMedia(lg) {
+      @include slider-bleed;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: rem(48);
+    width: 100%;
+
+    @include maxMedia(xl) {
+      gap: rem(28);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    // Swiper flex track — spaceBetween handles the gaps
+    @include maxMedia(lg) {
+      display: flex;
+      gap: 0;
+    }
+  }
+
+  &__pagination.swiper-pagination {
+    display: none;
+
+    @include maxMedia(lg) {
+      @include slider-dots;
+    }
+  }
+
+  &__cta {
+    margin-top: var(--sp-md);
+  }
+}
+
+.benefit-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: rem(24);
+  min-height: rem(435);
+  padding: rem(50);
+  overflow: hidden;
+  background: var(--bg-1);
+  color: var(--clr-black);
+
+  // slanted-cut card shape (same shape as the direction cards, Figma 717:2042)
+  -webkit-clip-path: url(#direction-card-clip);
+  clip-path: url(#direction-card-clip);
+
+  @include maxMedia(xl) {
+    min-height: rem(380);
+    padding: rem(36);
+  }
+
+  @include maxMedia(md) {
+    min-height: rem(300);
+    padding: rem(28);
+  }
+
+  // bottom row: text on the left, icon on the right — they never overlap
+  &__foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: rem(24);
+  }
+
+  &__text {
+    max-width: rem(300);
+    // colour via .clr-muted utility on the element
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: rem(156);
+    height: rem(156);
+    color: var(--clr-orange);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    @include maxMedia(xl) {
+      width: rem(118);
+      height: rem(118);
+    }
+
+    @include maxMedia(md) {
+      width: rem(88);
+      height: rem(88);
+    }
+  }
+}

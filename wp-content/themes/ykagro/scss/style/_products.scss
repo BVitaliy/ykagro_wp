@@ -1,0 +1,552 @@
+@use "../mixins" as *;
+
+// ── Product categories grid (Figma 784:10859) ───────────────────────
+// Three shared .category-card columns inside .container-full (1880 = 3×594 + 2×48).
+.products-categories {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: rem(48);
+
+    @include maxMedia(xl) {
+      gap: rem(32);
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: rem(24);
+    }
+
+    @include maxMedia(md) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: rem(28);
+    }
+  }
+}
+
+// Page title — left aligned on the categories page (Figma 784:10517),
+// centred on a category listing (Figma 784:11609)
+.products-title {
+  max-width: rem(930);
+  margin-bottom: var(--sp-md);
+  color: var(--clr-black);
+
+  &--center {
+    max-width: rem(1200);
+    margin-inline: auto;
+    text-align: center;
+
+    @include maxMedia(md) {
+      text-align: left;
+      margin-inline: 0;
+    }
+  }
+}
+
+// ── Category listing: tabs + search/sort + grid (Figma 784:11606) ───
+.catalog {
+  // Tab rail: the pills never wrap and never shrink — the row scrolls
+  // sideways on narrow screens, bleeding past the container padding.
+  &__tabs-rail {
+    margin-bottom: var(--sp-md);
+
+    // Phones (Figma 1234:6189): the pills move into the filter sheet
+    @include maxMedia(md) {
+      display: none;
+    }
+
+    // Bleeds out of .container on BOTH sides, so the rail is exactly as wide as
+    // the viewport and the last pill scrolls to the screen edge instead of
+    // being clipped short of it. Trailing space comes from .catalog__tabs.
+    @include maxMedia(lg) {
+      margin-inline: calc(var(--gutter) * -1);
+      padding-left: var(--gutter);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: rem(24);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @include maxMedia(lg) {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: max-content;
+      min-width: 100%;
+      gap: rem(12);
+      padding-right: var(--gutter);
+    }
+  }
+
+  // Same pill geometry as .btn (54 / 22 / 12 uppercase), but a filter chip:
+  // muted cream when idle, soft orange when selected.
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: rem(54);
+    padding: rem(16) rem(24);
+    border-radius: rem(22);
+    background: var(--bg-1);
+    color: var(--clr-black);
+    font-weight: 600;
+    font-size: rem(12);
+    line-height: 1.2;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: background var(--transition-1), color var(--transition-1);
+
+  @include maxMedia(md) {
+    min-height: rem(48);
+    padding: rem(12) rem(18);
+    border-radius: rem(18); 
+  }    
+
+    &.is-active {
+      background: rgba(235, 110, 1, 0.16);
+      color: var(--clr-orange);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-black);
+        color: var(--clr-white);
+      }
+    }
+  }
+
+  // ── Search + sort row ─────────────────────────────────────────────
+  &__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(24);
+    margin-bottom: var(--sp-md);
+
+    // Phones: search + filter trigger on one row, sort lives in the sheet
+    @include maxMedia(md) {
+      gap: rem(8);
+    }
+  }
+
+  // Opens the mobile filter sheet — same 48px pill geometry as the search field
+  &__filter-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: rem(48);
+    height: rem(48);
+    padding: 0;
+    border-radius: rem(18);
+    background: var(--bg-1);
+    color: var(--clr-orange);
+    transition: background var(--transition-1), color var(--transition-1);
+
+    @include maxMedia(md) {
+      display: inline-flex;
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-black);
+        color: var(--clr-white);
+      }
+    }
+  }
+
+  &__filter-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(20);
+    height: rem(20);
+
+    svg {
+      width: rem(18);
+      height: auto;
+    }
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: rem(20);
+    flex: 1 1 auto;
+    max-width: rem(1028);
+    min-width: 0;
+    height: rem(54);
+    padding-inline: rem(24);
+    border-radius: rem(22);
+    background: var(--bg-1);
+    @include maxMedia(md) {
+      height: rem(48);
+      padding-inline: rem(18);
+      border-radius: rem(18); 
+    }       
+  }
+
+  &__search-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: rem(16);
+    height: rem(16);
+    color: var(--clr-orange);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: none;
+    color: var(--clr-text);
+    font-family: var(--font-main);
+    font-size: rem(16);
+    line-height: 1.4;
+    outline: none;
+
+    &::placeholder {
+      color: var(--clr-muted);
+    }
+
+    // kill the WebKit search decorations so the field matches the design
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }
+
+  &__sort {
+    display: flex;
+    align-items: center;
+    gap: rem(20);
+    flex-shrink: 0;
+
+    @include maxMedia(md) {
+      display: none;
+    }
+  }
+
+  &__sort-label {
+    color: var(--clr-muted);
+    font-size: rem(16);
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  // Shared .select component (inc/select.php) — only the width is local.
+  &__select {
+    width: rem(298);
+
+    @include maxMedia(md) {
+      width: auto;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  // ── Grid + pagination ─────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: rem(48);
+
+    @include maxMedia(xl) {
+      gap: rem(38);
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+     
+    }
+
+    @include maxMedia(md) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: rem(32);
+    }
+  }
+}
+
+// ── Catalog card (Figma 813:5557) ───────────────────────────────────
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
+
+  &__media {
+    display: block;
+    aspect-ratio: 594 / 391;
+    border-radius: rem(24);
+    overflow: hidden;
+
+    picture {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(16);
+    text-align: center;
+
+    @include maxMedia(md) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  &__title {
+    min-width: 0;
+    color: var(--clr-text);
+    transition: color var(--transition-1);
+  }
+
+  &__more {
+    flex-shrink: 0;
+  }
+
+  @include maxMedia(md) {
+    gap: rem(20);
+  }
+
+  @include hover {
+    &:hover &__media img {
+      transform: scale(1.05);
+    }
+
+    &:hover &__title {
+      color: var(--clr-orange);
+    }
+
+    &:hover &__more .link-more__icon {
+      transform: rotate(45deg);
+    }
+  }
+}
+
+// ── Mobile filter sheet (Figma 1234:6213) ───────────────────────────
+// Full-screen picker that replaces the tab rail + sort dropdown on phones.
+// Lives in template-parts/catalog-list.php but is moved to <body> by
+// app-catalog-filter.js, so it escapes the page stacking context and covers
+// the floating menu (z-index 120) as in the mockup.
+.catalog-filter {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: #fffefc;
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+
+  // Desktop keeps the inline tabs + select, so the sheet never shows there.
+  @include minMedia(md) {
+    display: none;
+  }
+
+  &.is-open {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+
+  // Same decorative vector as the page line, as a static watermark.
+  // z-index: -1 keeps it behind the (unpositioned) content but above the sheet
+  // background — .catalog-filter is the stacking context.
+  &__decor {
+    --decor-line-top: calc(50% + #{rem(176.5)});
+    --decor-line-left: calc(50% - #{rem(78)});
+    z-index: -1;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    // Exactly the visible area while the mobile browser bars slide in/out.
+    height: 100%;
+    height: 100dvh;
+    padding: rem(16) var(--gutter);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  // Absolute (not in the scroll flow): the X stays at 16/16 like the mockup.
+  &__close {
+    position: absolute;
+    top: rem(2);
+    right: rem(2);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(44);
+    height: rem(44);
+    padding: 0;
+    color: var(--clr-black);
+    transition: opacity var(--transition-1);
+
+    svg {
+      width: rem(16);
+      height: rem(16);
+    }
+
+    // opening the sheet moves focus here — no UA ring for that, only for keyboard
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: rem(2) solid var(--clr-orange);
+      outline-offset: rem(-8);
+    }
+
+    @include hover {
+      &:hover {
+        opacity: 0.55;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    // 16 (inner padding) + 79 = 95 down to the first category, per the mockup
+    padding-top: rem(79);
+  }
+
+  &__cats,
+  &__sort {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  &__cats-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(16);
+  }
+
+  &__cat,
+  &__sort-option {
+    position: relative;
+    display: block;
+    cursor: pointer;
+  }
+
+  // Hidden but focusable — the radio stays the source of truth for the choice.
+  &__radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &__cat-text {
+    display: block;
+    color: var(--clr-black);
+    font-weight: 600;
+    font-size: rem(16);
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    transition: color var(--transition-1);
+  }
+
+  &__sort {
+    margin-top: var(--sp-lg);
+  }
+
+  &__sort-label {
+    display: block;
+    margin-bottom: rem(12);
+    padding: 0;
+  }
+
+  &__sort-list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    padding: rem(16) rem(24);
+    border-radius: rem(22);
+    background: var(--bg-1);
+  }
+
+  &__sort-text {
+    display: block;
+    color: var(--clr-muted);
+    transition: color var(--transition-1);
+  }
+
+  &__radio:checked ~ &__cat-text,
+  &__radio:checked ~ &__sort-text {
+    color: var(--clr-orange);
+  }
+
+  &__radio:checked ~ &__sort-text {
+    font-weight: 600;
+  }
+
+  &__radio:focus-visible ~ &__cat-text,
+  &__radio:focus-visible ~ &__sort-text {
+    outline: rem(2) solid var(--clr-orange);
+    outline-offset: rem(4);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: rem(16);
+    padding-top: var(--sp-md);
+  }
+
+  // Cancel sits centred in the space left of the button (mockup)
+  .js-catalog-filter-cancel {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  &__apply {
+    flex: 0 0 auto;
+    min-width: rem(186);
+  }
+}

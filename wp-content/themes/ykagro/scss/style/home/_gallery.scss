@@ -1,0 +1,133 @@
+@use "../../mixins" as *;
+
+// ── Home gallery (Figma 403:852) ────────────────────────────────────
+// Centered heading + horizontal slider; images clip-path-reveal on enter.
+.home-gallery {
+  overflow: hidden;
+
+  &__title {
+    max-width: rem(980);
+    margin: 0 auto clamp(#{rem(32)}, 4vw, #{rem(48)});
+    color: var(--clr-black); 
+    line-height: 1.1;
+
+    @include maxMedia(md) {
+      margin-bottom: rem(40);
+    }
+  }
+
+  &__slider {
+    --gallery-card-w: clamp(#{rem(286)}, 28.28vw, #{rem(543)});
+    --gallery-card-gap: clamp(#{rem(16)}, 2.5vw, #{rem(48)});
+    --gallery-stage-h: calc(var(--gallery-card-w) * 614 / 660 * 1.08);
+    width: 100%;
+    height: var(--gallery-stage-h);
+    overflow: visible;
+    perspective: rem(1200);
+
+    .swiper-wrapper {
+      align-items: center;
+      transform-style: preserve-3d;
+    }
+
+    @include maxMedia(lg) {
+      --gallery-card-w: clamp(#{rem(248)}, 33vw, #{rem(320)});
+      --gallery-card-gap: #{rem(24)};
+      padding-inline: var(--gutter);
+    }
+
+    @include maxMedia(md) {
+      --gallery-card-w: min(#{rem(300)}, 78vw);
+      --gallery-card-gap: #{rem(16)};
+      padding-inline: 0;
+    }
+  }
+
+  &__slide {
+    width: var(--gallery-card-w);
+    height: calc(var(--gallery-card-w) * 482 / 543);
+    display: flex;
+    align-items: center;
+    overflow: visible;
+    perspective: rem(1200);
+    transform-style: preserve-3d;
+
+    @include maxMedia(md) {
+      width: var(--gallery-card-w);
+      // height: calc(var(--gallery-card-w) * 482 / 563);
+        -webkit-clip-path: path("M 0 12.85 C 0 5.57 6.05 0 13.33 0 L 278.6 18.81 C 285.53 19.04 291 24.72 291 31.63 L 291 225.93 C 291 232.84 285.53 238.52 278.6 238.78 L 13.33 257.56 C 6.05 257.82 0 252.01 0 244.71 L 0 12.85 Z");
+        clip-path: path("M 0 12.85 C 0 5.57 6.05 0 13.33 0 L 278.6 18.81 C 285.53 19.04 291 24.72 291 31.63 L 291 225.93 C 291 232.84 285.53 238.52 278.6 238.78 L 13.33 257.56 C 6.05 257.82 0 252.01 0 244.71 L 0 12.85 Z");      
+    }
+  }
+
+  &__media {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: rem(12);
+    overflow: hidden;
+    background-color: rgba(45, 46, 48, 0.08);
+    color: inherit;
+    cursor: zoom-in;
+    transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+    transition: opacity 0.45s ease;
+
+    &:focus-visible {
+      outline: rem(2) solid var(--clr-orange);
+      outline-offset: rem(4);
+    }
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 0.8s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+
+  &__slide.is-in &__media img {
+    opacity: 1;
+    transform: none;
+  }
+
+  &__foot {
+    display: flex;
+    justify-content: center;
+    gap: rem(12);
+    margin-top: rem(28);
+
+    @include maxMedia(md) {
+      margin-top: rem(32);
+    }
+  }
+}
+
+// lightGallery lightbox — the gap under the media equals the height of the
+// .lg-toolbar above it, so the photo sits optically centred between the two.
+//
+// lightGallery writes the media container offsets as INLINE styles
+// (getMediaContainerPosition → top: toolbar height, bottom: captions/thumbs =
+// 0 here), and it rewrites them on every slide change and resize. A plain rule
+// — whatever its specificity — loses to that, hence !important on the bottom
+// only; the top it computes is already the toolbar height we want.
+//
+// The fallback below is the stock toolbar height in px (like the vendor CSS —
+// it must not scale with the root font size); app-home.js overwrites
+// --lg-media-inset with the measured height on open and on resize.
+.home-gallery-lightbox {
+  --lg-media-inset: 47px;
+
+  .lg-content {
+    bottom: var(--lg-media-inset) !important;
+  }
+}

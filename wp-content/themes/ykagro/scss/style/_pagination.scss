@@ -1,0 +1,98 @@
+@use "../mixins" as *;
+
+// Listing footer — "Показати більше" stacked above the pager (Figma 784:11546).
+// Shared by the blog list and the product catalog.
+.pagination-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(24);
+  margin-top: rem(60);
+
+  @include maxMedia(md) {
+    margin-top: rem(44);
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: rem(40);
+
+  @include maxMedia(md) {
+    gap: rem(24);
+  }
+
+  &__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(60);
+    height: rem(60);
+    border-radius: 50%;
+    background: var(--bg-1);
+    color: var(--clr-orange);
+    transition: background var(--transition-1), color var(--transition-1), opacity var(--transition-1);
+
+    .icon {
+      width: rem(18);
+      height: rem(18);
+    }
+
+    &:first-child .icon {
+      transform: rotate(180deg);
+    }
+
+    &.is-disabled {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    @include maxMedia(md) {
+      width: rem(44);
+      height: rem(44);   
+      .icon {
+        width: rem(16);
+        height: rem(16);
+      }     
+    }    
+
+    @include hover {
+      &:hover {
+        background: var(--clr-orange);
+        color: var(--clr-white);
+      }
+    }
+  }
+
+  &__pages {
+    display: flex;
+    align-items: center;
+    gap: rem(24);
+    color: var(--clr-muted);
+    font-size: rem(18);
+    line-height: 1.2;
+
+    @include maxMedia(md) {
+      gap: rem(14);
+      font-size: rem(16);
+    }
+  }
+
+  &__page {
+    color: inherit;
+    transition: color var(--transition-1);
+
+    &.is-active {
+      color: var(--clr-black);
+      font-weight: 500;
+    }
+
+    @include hover {
+      &:hover {
+        color: var(--clr-orange);
+      }
+    }
+  }
+}

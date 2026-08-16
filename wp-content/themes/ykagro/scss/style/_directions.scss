@@ -1,0 +1,239 @@
+@use "../mixins" as *;
+
+// ── Directions page (Figma 653:1351) ────────────────────────────────
+// Hero (shared .page-hero) → two-column grid of photo tiles → FAQ.
+
+// Grid — Figma 773:6068: container 1760, 2 columns. Column gap measured 40 in
+// the mockup (tile = (1760 - 40) / 2 = 860), row gap is the frame's 48.
+.directions-list {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: rem(40);
+    row-gap: rem(48);
+
+    @include maxMedia(lg) {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: rem(24);
+    }
+
+    @include maxMedia(md) {
+      row-gap: rem(20);
+    }
+  }
+}
+
+// ── "Більше напрямів нашої роботи" slider (Figma 773:6195) ──────────
+// Heading left + CTA right (baseline-aligned), then the same tiles as the
+// listing but 2-up in a Swiper with dots (app-swiper.js).
+.directions-slider {
+  overflow: hidden;
+
+  &__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: rem(40);
+    margin-bottom: var(--sp-md);
+
+    @include maxMedia(md) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: rem(24);
+    }
+  }
+
+  &__title {
+    max-width: rem(792); // Figma 773:6198
+  }
+
+  &__cta {
+    flex-shrink: 0;
+  }
+
+  // Desktop shows exactly 2 tiles inside the container (860 + 40 + 860 = 1760),
+  // so the bleed is mobile-only — otherwise the second tile is cut off.
+  &__slider {
+    width: 100%;
+
+    @include maxMedia(lg) {
+      @include slider-bleed(var(--gutter));
+    }
+  }
+
+  // On mobile tiles grow with copy — stretch every slide to the tallest so
+  // the peeking neighbour matches (same recipe as .home-articles__slide).
+  &__slide {
+    @include maxMedia(md) {
+      height: auto;
+      display: flex;
+
+      .direction-tile {
+        width: 100%;
+        justify-content: space-between; // body sits on the bottom when stretched
+      }
+    }
+  }
+
+  &__pagination.swiper-pagination {
+    @include slider-dots;
+  }
+}
+
+// ── Direction tile (Figma 773:6068 — 860×513 card) ──────────────────
+// Photo card: bottom-up scrim, title + counter on top, description and the
+// "Детальніше" button anchored to the bottom edge. Whole tile is the link.
+.direction-tile {
+  --tile-pad: clamp(#{rem(28)}, 3.125vw, #{rem(60)});
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 860 / 513;
+  padding: var(--tile-pad);
+  overflow: hidden;
+  // rounded card whose LEFT edge leans in ~22px top → bottom (Figma)
+  -webkit-clip-path: url(#direction-tile-clip);
+  clip-path: url(#direction-tile-clip);
+
+  // Below xl the two columns get narrow — give the tile more height so the
+  // description and the button keep the Figma breathing room.
+  @include maxMedia(xl) {
+    aspect-ratio: 860 / 640;
+  }
+
+  @include maxMedia(lg) {
+    aspect-ratio: 860 / 513; // single column again — back to the Figma ratio
+  }
+
+  // Height follows content — objectBoundingBox SVG would stretch the corner
+  // radius with every line of text. Fixed rem radius instead (same as
+  // .direction-card on small screens). Lean is dropped here: a polygon clip
+  // would override border-radius and leave sharp corners.
+  @include maxMedia(md) {
+    aspect-ratio: auto;
+    justify-content: flex-start;
+    gap: rem(40); // title → body; stacked cards, no forced min-height
+    border-radius: var(--radius-md); 
+  }
+
+  &__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    display: block;
+    overflow: hidden;
+
+    picture {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.15s;
+    }
+  }
+
+  // Scrim: transparent at the title, ~62% black under the button (Figma render).
+  // No own clip — the tile's clip-path already masks descendants.
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.62) 100%);
+    pointer-events: none;
+    overflow: hidden; 
+    -webkit-clip-path: url(#direction-tile-clip);
+    clip-path: url(#direction-tile-clip);    
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: rem(20);
+
+    @include maxMedia(md) {
+      gap: rem(14);
+    }
+  }
+
+  &__title {
+    max-width: rem(400);
+    transition: color var(--transition-1);
+  }
+
+  // same sage pill as the homepage direction card
+  &__count {
+    flex-shrink: 0;
+    padding: rem(10) rem(20);
+    border-radius: rem(100);
+    background: #c8d4c4;
+    color: #214314;
+    font-weight: 500;
+    font-size: rem(14);
+    line-height: 1.2;
+    white-space: nowrap;
+
+    @include maxMedia(md) {
+      padding: rem(8) rem(14);
+      font-size: rem(12);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-sm-2);
+
+    @include maxMedia(md) {
+      gap: rem(24);
+    }
+  }
+
+  &__text {
+    display: block;
+    max-width: rem(320);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  // ── Hover (same language as .article-card / .category-card) ───────
+  // The button is a <span> inside the link, so its own :hover never fires —
+  // drive every button state from the tile instead.
+  @include hover {
+    &:hover &__media img {
+      transform: scale(1.05);
+    }
+
+    // &:hover &__title {
+    //   color: var(--clr-orange);
+    // }
+
+    &:hover &__more {
+      --btn-fg: var(--clr-white);
+      background: var(--clr-orange);
+    }
+
+    &:hover &__more .btn__icon {
+      transform: rotate(45deg);
+    }
+
+    &:hover &__more .btn__char::before {
+      transform: translateX(0);
+      transition-delay: calc(0.1s + 0.02s * var(--char-index, 0));
+    }
+
+    &:hover &__more .btn__char::after {
+      transform: translateX(-110%);
+      transition-delay: calc(0.02s * var(--char-index, 0));
+    }
+  }
+}

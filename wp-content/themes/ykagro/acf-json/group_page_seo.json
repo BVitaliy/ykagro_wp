@@ -1,0 +1,64 @@
+{
+  "key": "group_page_seo",
+  "title": "SEO-блок над футером",
+  "fields": [
+    {
+      "key": "field_ce9151f6014d0580",
+      "label": "SEO-блок",
+      "name": "seo_block",
+      "type": "group",
+      "instructions": "Текстовий блок над футером. Залиште обидва поля порожніми, щоб не виводити блок на цій сторінці.",
+      "layout": "block",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_37ceb018528eeb64",
+          "label": "Видимий текст",
+          "name": "text",
+          "type": "wysiwyg",
+          "instructions": "Показується одразу. Зазвичай заголовок H2 та один абзац.",
+          "toolbar": "full",
+          "media_upload": 0,
+          "delay": 1,
+          "wrapper": { "width": "100" }
+        },
+        {
+          "key": "field_c14e9992bd0ee87d",
+          "label": "Прихований текст («читати більше»)",
+          "name": "more",
+          "type": "wysiwyg",
+          "instructions": "Розкривається кнопкою. Порожнє поле — кнопка не виводиться.",
+          "toolbar": "full",
+          "media_upload": 0,
+          "delay": 1,
+          "wrapper": { "width": "100" }
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "post_type",
+        "operator": "==",
+        "value": "page"
+      }
+    ],
+    [
+      {
+        "param": "taxonomy",
+        "operator": "==",
+        "value": "product_cat"
+      }
+    ]
+  ],
+  "menu_order": 20,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Опційний SEO-текст, який footer.php виводить над підвалом.",
+  "show_in_rest": 0
+}

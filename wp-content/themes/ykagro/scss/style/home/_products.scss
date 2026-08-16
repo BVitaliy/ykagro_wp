@@ -1,0 +1,165 @@
+@use "../../mixins" as *;
+
+// ── Home products slider (Figma 434:627) ────────────────────────────
+.home-products {
+  // equal vertical gaps: under the title and between slider ↔ pagination
+  --products-gap: var(--sp-md);
+  overflow: hidden;
+  // Sit above the directions mobile pinned bg while it lags on exit
+  position: relative;
+  z-index: 2;
+  background: var(--clr-white);
+
+  @include maxMedia(md) {
+    overflow: hidden;
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: rem(40);
+    margin-bottom: var(--products-gap);
+
+    @include maxMedia(md) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--sp-sm-2);
+    }
+  }
+
+  &__title { 
+    max-width: rem(940);
+  }
+
+  &__cta {
+    flex-shrink: 0;
+  }
+
+  &__slider {
+    width: calc(100vw - #{rem(42)});
+    margin-left: 50%;
+    transform: translateX(-50%);
+    overflow: visible;
+
+    @include maxMedia(lg) {
+      width: 100%;
+      margin-left: 0;
+      transform: none;
+      overflow: visible;
+    }
+
+    @include maxMedia(md) {
+      width: calc(100vw - var(--gutter));
+      margin-left: calc(var(--gutter) * -1);
+      padding-left: var(--gutter);
+    }
+  }
+
+  // ── Pagination (Figma 466:801): active 60px, inactive 20px @20% ────
+  &__pagination.swiper-pagination {
+    position: static;
+    margin-top: var(--products-gap);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: rem(12);
+
+    @include maxMedia(md) {
+      margin-top: rem(35);
+    }    
+
+    .swiper-pagination-bullet {
+      width: rem(20);
+      height: rem(6);
+      margin: 0;
+      border-radius: rem(72);
+      background: rgba(235, 110, 1, 0.2);
+      opacity: 1;
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background 0.45s ease;
+    }
+    .swiper-pagination-bullet-active {
+      width: rem(60);
+      background: var(--clr-orange);
+    }
+  }
+}
+
+// ── Category card (Figma 434:632) ───────────────────────────────────
+.category-card {
+  --media-crop-bottom: #{rem(30)};
+
+  display: block;
+
+  &__media {
+    display: block;
+    aspect-ratio: 594 / 470;
+    border-radius: rem(24);
+    overflow: hidden;
+    position: relative;
+
+    picture {
+      display: block;
+      position: absolute;
+      inset: 0 0 calc(var(--media-crop-bottom) * -1);
+      width: 100%;
+      height: auto;
+      line-height: 0;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.6s;
+    }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(16);
+    margin-top: rem(24);
+    padding-inline: rem(40);
+
+    @include maxMedia(md) {
+      padding-inline: rem(20);
+    }
+  }
+
+  &__title {
+    color: var(--clr-black);
+    font-weight: 600;
+    transition: color var(--transition-1);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: rem(18);
+    height: rem(18);
+    color: var(--clr-orange);
+    transform-origin: center;
+    transition: transform var(--transition-1);
+    svg{
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  @include hover {
+    &:hover .category-card__media img {
+      transform: scale(1.03);
+    }
+    &:hover .category-card__title {
+      color: var(--clr-orange);
+    }
+    &:hover .category-card__icon {
+      transform: rotate(45deg);
+    }
+  }
+}

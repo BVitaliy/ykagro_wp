@@ -1,0 +1,127 @@
+@use "../mixins" as *;
+
+// ── Standalone popups (no overlay). Shown/hidden with .is-open ───────
+.popup {
+  position: fixed;
+  z-index: 110;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(#{rem(24)});
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.5s;
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  &__close {
+    position: absolute;
+    top: rem(13);
+    right: rem(13);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(26);
+    height: rem(26);
+    border-radius: 0;
+    background: transparent;
+    color: var(--clr-black);
+    transition: background var(--transition-1);
+
+    svg {
+      width: rem(22);
+      height: rem(22);
+    }
+
+    @include hover {
+      &:hover {
+        opacity: 0.55;
+      }
+    }
+  }
+
+  // Promo — bottom-right product card
+  &--promo {
+    right: rem(30);
+    bottom: rem(30);
+    width: min(calc(100% - #{rem(40)}), #{rem(380)});
+
+    @include maxMedia(md) {
+      right: rem(12);
+      left: rem(12);
+      bottom: rem(96); // clear of the floating menu
+      width: auto;
+    }
+  }
+
+  // Cookie — bottom-left
+  &--cookie {
+    left:  rem(10);
+    bottom: rem(10);
+    display: flex;
+    align-items: flex-start;
+    gap: rem(24);
+    width: min(calc(100% - #{rem(24)}), #{rem(628)});
+    min-height: rem(160);
+    padding: rem(24) rem(54) rem(24) rem(24);
+    background: rgba(255, 247, 238, 0.92);
+    border-radius: rem(8);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    .popup__cookie-icon {
+      flex: 0 0 rem(106);
+      width: rem(106);
+      height: rem(106);
+      margin-top: rem(1);
+      color: var(--clr-orange);
+    }
+
+    .popup__content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .popup__title {
+      display: none;
+    }
+
+    .popup__text {
+      max-width: rem(432);
+      margin-bottom: rem(16);
+      color: var(--clr-muted);
+
+      a {
+        color: var(--clr-black);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+    }
+
+    @include maxMedia(md) {
+      left: rem(12);
+      right: rem(12);
+      bottom: rem(96);
+      width: auto;
+      min-height: 0;
+      padding: rem(20) rem(46) rem(20) rem(18);
+      gap: rem(16);
+
+      .popup__cookie-icon {
+        flex-basis: rem(64);
+        width: rem(64);
+        height: rem(64);
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: rem(12);
+  }
+}

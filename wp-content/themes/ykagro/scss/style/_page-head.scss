@@ -1,0 +1,35 @@
+@use "../mixins" as *;
+
+// ── Standalone page header (Figma 694:1806 / 694:2116) ──────────────
+// Logo top-left + optional breadcrumbs underneath, for inner pages that
+// don't have the home hero video panel.
+.page-head {
+  display: flex;
+  flex-direction: column;
+  gap: rem(16);
+  padding-top: rem(50);
+  // Figma 694:1806 — ~60px from crumbs to page title
+  padding-bottom: rem(60);
+
+  &__logo {
+    display: inline-flex;
+    align-self: flex-start;
+
+    svg {
+      display: block;
+      width: rem(214);
+      height: auto;
+    }
+
+    @include maxMedia(md) {
+      svg {
+        width: rem(150);
+      }
+    }
+  }
+
+  @include maxMedia(md) {
+    padding-top: rem(24);
+    padding-bottom: rem(40);
+  }
+}

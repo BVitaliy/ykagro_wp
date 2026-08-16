@@ -1,0 +1,106 @@
+{
+  "key": "group_vacancy_fields",
+  "title": "Вакансія",
+  "fields": [
+    {
+      "key": "field_5d36fa312076e3dd",
+      "label": "Умови",
+      "name": "meta",
+      "type": "repeater",
+      "instructions": "Короткі позначки біля заголовка: місто, зайнятість, вилка зарплати. Виводяться і в картці на сторінці «Кар'єра».",
+      "layout": "table",
+      "button_label": "Додати позначку",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_71f2f005621193f0",
+          "label": "Текст",
+          "name": "text",
+          "type": "text",
+          "wrapper": { "width": "100" }
+        }
+      ]
+    },
+    {
+      "key": "field_171fdcf470fbb13d",
+      "label": "Опис вакансії",
+      "name": "lead",
+      "type": "wysiwyg",
+      "instructions": "Вступні абзаци під заголовком. Перший абзац використовується як текст картки у списку вакансій.",
+      "toolbar": "basic",
+      "media_upload": 0,
+      "delay": 1,
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_240f6fea994ccf14",
+      "label": "Заголовок блоку обов'язків",
+      "name": "duties_title",
+      "type": "text",
+      "default_value": "Обов'язки",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_f7c6515ab315c757",
+      "label": "Обов'язки",
+      "name": "duties",
+      "type": "repeater",
+      "layout": "table",
+      "button_label": "Додати пункт",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_aca590071c7f1111",
+          "label": "Текст",
+          "name": "text",
+          "type": "text",
+          "wrapper": { "width": "100" }
+        }
+      ]
+    },
+    {
+      "key": "field_8a17706abff316af",
+      "label": "Заголовок блоку умов",
+      "name": "offer_title",
+      "type": "text",
+      "default_value": "Ми пропонуємо",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_a60e043b8741891a",
+      "label": "Ми пропонуємо",
+      "name": "offer",
+      "type": "repeater",
+      "layout": "table",
+      "button_label": "Додати пункт",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_bba4f49f680a9f64",
+          "label": "Текст",
+          "name": "text",
+          "type": "text",
+          "wrapper": { "width": "100" }
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "post_type",
+        "operator": "==",
+        "value": "vacancy"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Поля сторінки вакансії.",
+  "show_in_rest": 0
+}

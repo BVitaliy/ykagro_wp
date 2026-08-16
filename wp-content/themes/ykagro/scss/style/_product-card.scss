@@ -1,0 +1,97 @@
+@use "../mixins" as *;
+
+// ── Product card / promo popup (Figma 516:1765) ─────────────────────
+// Glass card: square photo + title + "детальніше" link.
+.product-card {
+  position: relative;
+  border-radius: rem(12);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity var(--transition-1), transform var(--transition-1), visibility var(--transition-1);
+
+  &.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(#{rem(12)});
+    pointer-events: none;
+  }
+
+  &__link {
+    display: flex;
+    gap: rem(24);
+    padding: rem(24);
+  }
+
+  &__close {
+    position: absolute;
+    top: rem(10);
+    right: rem(10);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(26);
+    height: rem(26);
+    border-radius: 50%;
+    background: rgba(45, 46, 48, 0.08);
+    color: var(--clr-black);
+    transition: background var(--transition-1);
+
+    svg {
+      width: rem(14);
+      height: rem(14);
+    }
+
+    @include hover {
+      &:hover {
+        background: rgba(45, 46, 48, 0.16);
+      }
+    }
+  }
+
+  &__media {
+    flex-shrink: 0;
+    width: rem(150);
+    height: rem(150);
+    border-radius: rem(8);
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @include maxMedia(md) {
+      width: rem(96);
+      height: rem(96);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: rem(14);
+    min-width: 0;
+  }
+
+  &__title {
+    color: var(--clr-black);
+    font-weight: 600;
+    font-size: rem(18);
+    line-height: 1.1;
+    transition: color var(--transition-1);
+  }
+
+  @include hover {
+    &__link:hover .product-card__title {
+      color: var(--clr-orange);
+    }
+
+    &__link:hover .link-more__icon {
+      transform: rotate(45deg);
+    }
+  }
+}

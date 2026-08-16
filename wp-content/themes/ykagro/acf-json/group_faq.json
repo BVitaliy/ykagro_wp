@@ -1,0 +1,68 @@
+{
+  "key": "group_faq",
+  "title": "Часті запитання",
+  "fields": [
+    {
+      "key": "field_7d7244baf6bfa7bd",
+      "label": "Заголовок",
+      "name": "faq_title",
+      "type": "text",
+      "default_value": "Відповідаємо на часті запитання",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_278f76f8b391109e",
+      "label": "Підпис під заголовком",
+      "name": "faq_note",
+      "type": "text",
+      "default_value": "Не знайшли відповіді? Зв'яжіться з нами.",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_4227c30dc8cd15db",
+      "label": "Запитання",
+      "name": "faq_items",
+      "type": "repeater",
+      "instructions": "Спільний список для головної сторінки та сторінок товарів.",
+      "layout": "block",
+      "button_label": "Додати запитання",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_d48f06ffc08df0b8",
+          "label": "Запитання",
+          "name": "question",
+          "type": "text",
+          "wrapper": { "width": "100" }
+        },
+        {
+          "key": "field_7f63115a0282be57",
+          "label": "Відповідь",
+          "name": "answer",
+          "type": "textarea",
+          "rows": 4,
+          "new_lines": "",
+          "wrapper": { "width": "100" }
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "options_page",
+        "operator": "==",
+        "value": "yka-site-settings"
+      }
+    ]
+  ],
+  "menu_order": 10,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Спільний FAQ, який використовується на головній і на сторінках товарів.",
+  "show_in_rest": 0
+}

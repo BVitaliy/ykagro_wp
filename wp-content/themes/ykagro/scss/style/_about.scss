@@ -1,0 +1,1252 @@
+@use "../mixins" as *;
+
+// ══ About page ══════════════════════════════════════════════════════
+// 1. .about-scene  — hero that shrinks into the composition (Figma 652:612 + 1035:7347)
+// 2. .about-stats  — light numbers block (Figma 816:5824)
+// 3. .home-intro--quote — quote variant of the shared intro (Figma 773:6414)
+
+.about-page {
+  overflow-x: clip;
+}
+
+// ── 1. Hero scene ───────────────────────────────────────────────────
+// Layout geometry comes straight from the 1818×794 design frame: the inner box
+// keeps that aspect ratio and every element is placed in % of it, so the whole
+// composition scales as one piece. The banner starts full-bleed and is animated
+// (app-about.js) onto __target, which holds the same photo underneath.
+.about-scene {
+  // Mirrors of the .page-hero tokens (a custom property set on .page-hero can't
+  // be read by its ancestor). Keep the pair in sync with _page-hero.scss so the
+  // stage padding and the landed photo match the hero frame exactly — the
+  // rounding is the same at both ends of the animation, so it is never tweened.
+  --scene-pad: #{rem(20)};
+  --scene-radius: #{rem(24)};
+  // scroll distance of the scene; only used once JS pins the stage.
+  // ~1/4 of it is the hold before the banner starts shrinking.
+  --scene-scroll: 320vh;
+
+  position: relative;
+  overflow-x: clip;
+  // The gap to the next block is the section's own padding rather than a
+  // .spacer-xl sibling: with box-sizing: border-box it ends the sticky range
+  // early, so the stage releases with that much room left inside the section
+  // and the photos can drift down past it without hitting the next block.
+  padding-bottom: var(--sp-xl);
+
+  // Animated state: the section becomes a scroll track with a sticky stage.
+  &.is-scene {
+    height: calc(100dvh + var(--scene-scroll));
+  }
+
+  &__stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: var(--scene-pad);
+    overflow: clip;
+  }
+
+  &.is-scene &__stage {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    min-height: 0;
+    // Let the parallax overshoot the stage instead of being cut at its edge.
+    // Must be a plain length — Chrome drops the declaration if the value comes
+    // from a clamp()/var(), so this can't reuse --sp-xl. Older engines that do
+    // not support it simply keep clipping at the box.
+    overflow-clip-margin: #{rem(120)};
+  }
+
+  // ── Composition ───────────────────────────────────────────────────
+  &__inner {
+    position: relative;
+    width: min(100%, #{rem(1818)});
+    margin-inline: auto;
+    aspect-ratio: 1818 / 794;
+  }
+
+  &__target,
+  &__photo {
+    position: absolute;
+    overflow: hidden;
+    border-radius: var(--scene-radius);
+
+    picture,
+    img,
+    video {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img,
+    video {
+      object-fit: cover;
+    }
+  }
+
+  // A slot can hold a clip instead of a still (see about-scene.php) — same box,
+  // so nothing in the layout or the parallax changes. Black underneath covers
+  // the frame between poster and first painted frame, and while a refused
+  // autoplay leaves the poster showing.
+  &__video {
+    background-color: var(--clr-black);
+    pointer-events: none;
+  }
+
+  // The box the banner lands in — design 277×191 @ x 780, y 92. It carries the
+  // photo only as the no-JS fallback: once the scene runs, the shrinking banner
+  // is the photo, and a second copy showing through under it read as a ghost.
+  &__target {
+    left: 42.905%;
+    top: 11.587%;
+    width: 15.237%;
+    aspect-ratio: 277 / 191;
+  }
+
+  &.is-scene &__target {
+    visibility: hidden;
+  }
+
+  // photos, in design order (a…f) — see about-scene.php
+  &__photo {
+    &--a { left: 15.126%; top: 0;       width: 10.341%; aspect-ratio: 1; }
+    &--b { left: 0;       top: 27.330%; width: 10.341%; aspect-ratio: 1; }
+    &--c { left: 9.681%;  top: 63.980%; width: 12.706%; aspect-ratio: 231 / 285; }
+    &--d { left: 76.073%; top: 0;       width: 10.341%; aspect-ratio: 1; }
+    &--e { left: 87.294%; top: 28.086%; width: 12.706%; aspect-ratio: 231 / 285; }
+    &--f { left: 80.803%; top: 76.322%; width: 10.341%; aspect-ratio: 1; }
+  }
+
+  &__copy {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 45.5%;
+    width: 100%;
+    margin-inline: auto;
+    text-align: center;
+    // No translateX(-50%): nested under a GSAP-transformed __inner it
+    // promotes a subpixel layer and blurs the type on mobile Safari.
+  }
+
+  &__title {
+    max-width: rem(925);
+    margin: 0 auto rem(40);
+  }
+
+  &__lead {
+    max-width: rem(661);
+    margin-inline: auto;
+  }
+
+  // ── Hero — the shared .page-hero, laid over the stage ─────────────
+  // Only its .banner is transformed by the scene; the padding, corner radius
+  // and logo notch all come from _page-hero.scss, so the starting frame is
+  // pixel-identical to every other page hero.
+  &__hero {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    min-height: 0;
+
+    > .banner {
+      height: 100%;
+      min-height: 0;
+      // the animation writes left/top/width/height, so take it out of flow
+      position: absolute;
+      left: var(--page-hero-pad);
+      top: var(--page-hero-pad);
+      width: calc(100% - var(--page-hero-pad) * 2);
+      border-radius: var(--page-hero-radius);
+      height: calc(100% - var(--page-hero-pad) * 2);
+      overflow: hidden;
+      // Opaque until the hero img/video paints — otherwise __inner shows through.
+      background-color: var(--clr-black);
+      will-change: width, height, top, left;
+
+      > picture,
+      > video {
+        transform-origin: center center;
+        will-change: transform;
+      }
+    }
+  }
+
+  // Logo + breadcrumbs ride up on the same scrub as the shrinking banner.
+  &__hero-top {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    will-change: transform, opacity;
+
+    a {
+      pointer-events: auto;
+    }
+  }
+
+  html.ta-js &__hero > .banner > :is(picture, video) {
+    transform: scale(1.16);
+  }
+
+  // breadcrumbs + title: one layer that lifts off the screen on scroll
+  &__hero-ui {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    will-change: transform;
+
+    a {
+      pointer-events: auto;
+    }
+  }
+
+  &__hero-title {
+    position: absolute;
+    left: calc(var(--gutter-sm) + var(--page-hero-pad));
+    bottom: calc(var(--page-hero-pad) + #{rem(147)});
+    max-width: rem(1076);
+  }
+
+  @include maxMedia(xl) {
+    &__hero-title {
+      left: var(--gutter);
+      right: var(--gutter);
+      bottom: rem(100);
+      max-width: rem(760);
+    }
+
+    &__inner {
+      width: min(100%, #{rem(1100)});
+      aspect-ratio: 1024 / 720;
+    }
+
+    &__target {
+      left: 41%;
+      top: 7%;
+      width: 18%;
+    }
+
+    &__photo {
+      &--a { left: 14%;   top: 5%;  width: 11%; }
+      &--b { left: 1%;    top: 33%; width: 11%; }
+      &--c { left: 1%;    top: 86%; width: 13%; }
+      &--d { left: 76%;   top: 4%;  width: 11%; }
+      &--e { left: 86.5%; top: 36%; width: 12.5%; }
+      &--f { display: none; }
+    }
+
+    &__copy {
+      top: 42%;
+      left: 0;
+      right: 0;
+      width: 70%;
+      margin-inline: auto;
+      padding-inline: rem(24);
+    }
+
+    &__title {
+      max-width: rem(620);
+    }
+
+    &__lead {
+      max-width: rem(560);
+    }
+  }
+
+  // ── Mobile ────────────────────────────────────────────────────────
+  // Phones show every photo whole instead of letting them bleed off the edges:
+  // one row across the top (photo · landing frame · photo) and one row of four
+  // along the bottom. Nothing overlaps and nothing is cut by the viewport, so
+  // the client sees the six shots, not their halves.
+  @include maxMedia(md) {
+    --scene-pad: #{rem(10)};
+    --scene-radius: #{rem(20)};
+    --scene-scroll: 160vh;
+
+    &.is-scene &__stage {
+      overflow-clip-margin: 0;
+    }
+
+    &__hero-top {
+      transition-duration: 0.34s;
+    }
+
+    // as wide as the screen, but never taller than the stage (short phones)
+    &__inner {
+      width: min(100%, calc((100dvh - var(--scene-pad) * 2) * 393 / 760));
+      aspect-ratio: 393 / 760;
+    }
+
+    // Top row, centre: 4 columns of 23% with 1.5% gutters and a 1.75% margin
+    // either side (23×4 + 1.5×3 + 1.75×2 = 100), so both rows sit on the same
+    // grid and the frame spans the two middle columns.
+    &__target {
+      left: 26.25%;
+      top: 2%;
+      width: 48%;
+    }
+
+    &__photo {
+      // top row — flanking the landing frame
+      &--a { left: 1.75%;  top: 6%; width: 23%; }
+      &--d { left: 75.25%; top: 6%; width: 23%; }
+
+      // Bottom row — one strip of four squares under the copy. It stops well
+      // short of the frame's bottom edge: the floating menu pill covers the
+      // last ~90px of the viewport, and the strip has to stay clear of it even
+      // at the far end of its parallax drift.
+      &--b { left: 1.75%;  top: 72%; width: 23%; }
+      &--c { left: 26.25%; top: 72%; width: 23%; aspect-ratio: 1; }
+      &--f { left: 50.75%; top: 72%; display: block; width: 23%; }
+      &--e { left: 75.25%; top: 72%; width: 23%; aspect-ratio: 1; }
+    }
+
+    // The copy sits in the band between the two rows. The photos scale with the
+    // viewport HEIGHT (see __inner above) while type does not, so the sizes are
+    // capped in dvh as well as vw — otherwise the text grows into the bottom
+    // strip on short phones.
+    &__copy {
+      top: 24%;
+      width: 100%;
+      padding-inline: rem(16);
+    }
+
+    &__title {
+      margin-bottom: var(--sp-sm-2);
+      font-size: clamp(#{rem(20)}, min(6.4vw, 3.5dvh), #{rem(28)});
+    }
+
+    &__lead {
+      font-size: clamp(#{rem(12)}, min(3.6vw, 2.1dvh), #{rem(14)});
+      line-height: 1.4;
+      color: rgba(0, 0, 0, 0.68);
+    }
+
+    // Short phones: less room between the rows, so the copy starts higher and
+    // the strip drops as far as the menu pill allows.
+    @media (max-height: 700px) {
+      &__copy {
+        top: 22%;
+      }
+
+      &__photo {
+        &--b,
+        &--c,
+        &--f,
+        &--e {
+          top: 73%;
+        }
+      }
+    }
+
+    &__breadcrumbs {
+      left: rem(16);
+      top: rem(96);
+    }
+
+    // Same mobile placement as the home hero title: clear of the bottom menu.
+    &__hero-title {
+      bottom: calc(var(--page-hero-pad) + #{rem(150)});
+      right: calc(var(--page-hero-pad) + #{rem(24)});
+    
+      left: calc(var(--page-hero-pad) + #{rem(24)});
+      overflow-wrap: break-word;
+    }
+  }
+}
+
+// Hide composition under the hero until first scroll, or 1s after window
+// load (app-about.js → .is-inner-ready). Prevents photos flashing through
+// an unloaded banner. No .ta-js → stay visible.
+html.ta-js .about-scene:not(.is-inner-ready) .about-scene__inner {
+  visibility: hidden;
+}
+
+// ── 1b. Video band (Figma 1035:7363) ────────────────────────────────
+// Full-bleed looping banner with a play button that opens the full clip in
+// the shared modal. Nothing here assumes a <video>: with $banner_img the same
+// markup renders a picture, and the poster covers a refused autoplay.
+.about-video {
+  position: relative;
+
+  // No fixed height: the band is at least a screenful, and takes the design
+  // proportion once the viewport is wide enough for it to be taller than that.
+  &__media {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100dvh;
+    aspect-ratio: 1920 / 936;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+
+    > .banner {
+      width: 100%;
+      height: 100%;
+      @include maxMedia(md) {
+        border-radius: 0;
+      }
+    }
+  }
+
+  &__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    display: block;
+    width: rem(100);
+    height: rem(100);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    transform: translate(-50%, -50%);
+    transition: transform var(--transition-1);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    @include hover {
+      &:hover {
+        transform: translate(-50%, -50%) scale(1.06);
+      }
+    }
+
+    &:focus-visible {
+      border-radius: 50%;
+      box-shadow: 0 0 0 rem(3) rgba(235, 110, 1, 0.45);
+    }
+  }
+
+  @include maxMedia(md) {
+    &__media {
+      min-height: 80dvh;
+      aspect-ratio: 393 / 560;
+      // border-radius: var(--radius-sm);
+      border-radius: 0;
+    }
+
+    &__play {
+      width: rem(72);
+      height: rem(72);
+    }
+  }
+}
+
+// Video panel of the shared modal — no card, just the clip on the scrim.
+.modal.modal--video {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+
+.modal__panel--video {
+  width: 100vw;
+  height: 100dvh;
+  margin: 0;
+  background: transparent;
+  clip-path: none;
+  -webkit-clip-path: none;
+  // the base panel clips its content — the close button sits above the video
+  overflow: visible;
+
+  &::before {
+    display: none;
+  }
+
+  .modal__close {
+    position: fixed;
+    top: rem(24);
+    right: rem(24);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(44);
+    height: rem(44);
+    color: var(--clr-white);
+    padding: rem(10);
+
+    svg {
+      width: rem(24);
+      height: rem(24);
+    }
+  }
+
+  @include maxMedia(md) {
+    .modal__close {
+      top: rem(16);
+      right: rem(16);
+    }
+  }
+}
+
+.modal__video {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0;
+  background: #000;
+
+  video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+// ── 1c. Story timeline (Figma 1035:7472) ────────────────────────────
+// Periods switch the photo and the copy (app-about.js). The body reuses
+// .news-block--img-left, so only the stacking of the swappable parts lives
+// here.
+.about-story {
+  display: flex;
+  flex-direction: column;
+  gap: rem(60);
+  overflow-x: clip;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(40);
+  }
+
+  &__title {
+    max-width: rem(846);
+    margin: 0;
+    @include maxMedia(lg) {
+    display: flex;
+    flex-wrap: wrap;
+    }
+  }
+
+  &__cta {
+    flex-shrink: 0;
+  }
+
+  &__periods {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    contain: paint;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .container {
+      width: max-content;
+      min-width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      padding-inline: var(--gutter);
+    }
+  }
+
+  &__periods-track {
+    --story-indicator-x: 0px;
+    --story-indicator-w: 0px;
+
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: rem(40);
+    width: max-content;
+    min-width: 100%;
+    height: rem(42);
+    border-bottom: 1px solid var(--clr-line);
+  }
+
+  &__period {
+    position: relative;
+    flex-shrink: 0;
+    height: rem(42);
+    padding: 0 0 rem(22);
+    border: 0;
+    background: none;
+    color: var(--clr-gray);
+    font-family: var(--font-main);
+    font-weight: 500;
+    font-size: rem(16);
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    transition: color var(--transition-1);
+
+    &.is-active {
+      color: var(--clr-black);
+      font-weight: 700;
+    }
+
+    &:focus-visible {
+      color: var(--clr-black);
+    }
+
+    @include hover {
+      &:hover {
+        color: var(--clr-black);
+      }
+    }
+  }
+
+  &__period-indicator {
+    position: absolute;
+    left: 0;
+    bottom: rem(-1);
+    width: var(--story-indicator-w);
+    height: rem(2);
+    background: var(--clr-orange);
+    transform: translateX(var(--story-indicator-x));
+    transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1), transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+    pointer-events: none;
+  }
+
+  &__body.news-block {
+    grid-template-columns: rem(849) rem(640);
+    gap: rem(100);
+    align-items: center;
+
+    @include maxMedia(xxxl) {
+      grid-template-columns: minmax(0, 849fr) minmax(0, 640fr);
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: 1fr;
+      gap: rem(40);
+    }
+  }
+
+  // stacked photos inside the shared .news-block__media frame
+  &__media {
+    position: relative;
+    width: min(100%, #{rem(849)});
+    aspect-ratio: 849 / 682;
+  }
+
+  & &__media {
+    --news-media-parallax-room: 0px;
+
+    picture,
+    img {
+      height: 100%;
+      transform: none;
+    }
+  }
+
+  &__img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+
+    &.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  // every slide in the same grid cell → the column never jumps in height
+  &__slides {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    width: min(100%, #{rem(640)});
+    max-width: rem(640);
+    padding: 0;
+  }
+
+  &__slide {
+    grid-area: 1 / 1;
+    justify-self: stretch;
+    align-self: stretch;
+    width: rem(640);
+    min-width: 0;
+    opacity: 0;
+    visibility: hidden;
+
+    &.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .news-block__tag {
+      margin-bottom: rem(24);
+    }
+
+    h3 {
+      margin-bottom: rem(40);
+    }
+
+    // The shared news block reserves 60 under the last paragraph for its
+    // check-list and another 60 above the button. There is no list here, so
+    // the design's single 40 gap replaces both.
+    p:last-of-type {
+      margin-bottom: rem(40);
+    }
+
+    // design keeps the copy narrower than the column (573 of 640)
+    p {
+      max-width: rem(573);
+    }
+
+    .news-block__cta {
+      margin-top: 0;
+    }
+  }
+
+  & &__slide {
+    .news-block__tag {
+      margin-bottom: rem(24);
+    }
+
+    h3 {
+      margin-bottom: rem(40);
+    }
+
+    p {
+      width: rem(573);
+      max-width: none;
+    }
+
+    p:last-of-type {
+      margin-bottom: rem(40);
+    }
+
+    .news-block__cta {
+      margin-top: 0;
+    }
+  }
+
+  @include maxMedia(lg) {
+    gap: rem(40);
+
+    &__head {
+      flex-direction: column;
+    }
+
+    &__media,
+    &__slides {
+      width: 100%;
+      max-width: none;
+    }
+
+    // Stacked layout: keeping every slide in the same grid cell reserved the
+    // tallest one's height, so short slides left a big empty gap underneath.
+    // Only the active slide stays in flow here — the column follows its height.
+    &__slides {
+      position: relative;
+    }
+
+    & &__slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      &.is-active {
+        position: relative;
+      }
+    }
+  }
+
+  @include maxMedia(md) {
+    gap: rem(32);
+
+    &__periods-track {
+      gap: rem(32);
+      min-width: auto;
+    }
+
+    &__period {
+      padding-bottom: rem(16);
+      font-size: rem(14);
+    }
+
+    & &__slide {
+      width: 100%;
+
+      .news-block__tag {
+        margin-bottom: rem(24);
+      }
+
+      p {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      h3{
+        margin-bottom: rem(40);
+
+      }
+      p:last-of-type {
+        margin-bottom: rem(24);
+      }
+    }
+  }
+}
+
+// ── 1d. Team (Figma 1035:7649) ──────────────────────────────────────
+.about-team {
+  overflow: hidden;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: rem(60);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(40);
+  }
+
+  &__copy {
+    flex: 0 1 rem(894);
+    width: min(100%, #{rem(894)});
+  }
+
+  &__tag {
+    margin-bottom: rem(24);
+    background: #c8d4c4;
+    color: #214314;
+  }
+
+  &__title {
+    width: 100%;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: rem(12);
+  }
+
+  &.is-slider-locked &__nav,
+  &.is-slider-locked &__pagination.swiper-pagination {
+    display: none;
+  }
+
+  &__arrow.swiper-button-lock,
+  &__pagination.swiper-pagination-lock {
+    display: none;
+  }
+
+  &__slider {
+    width: 100%;
+    overflow: hidden;
+
+    .swiper-wrapper {
+      display: flex;
+      box-sizing: content-box;
+      width: 100%;
+      height: 100%;
+      transition-property: transform;
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: rem(16);
+    height: auto;
+    padding: rem(24);
+    border-radius: var(--radius-md);
+    background: #fff7ee;
+    cursor: pointer;
+    outline: none;
+    transition: transform var(--transition-1), box-shadow var(--transition-1);
+
+    &:focus-visible {
+      box-shadow: 0 0 0 rem(3) rgba(235, 110, 1, 0.32);
+    }
+
+    @include hover {
+      // &:hover {
+      //   transform: translateY(#{rem(-4)});
+      // }
+
+      &:hover .about-team__link {
+        background: var(--clr-black);
+        color: var(--clr-white);
+      }
+
+      &:hover .about-team__link .icon {
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(20);
+  }
+
+  &__name {
+    margin: 0;
+  }
+
+  &__role {
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 rem(54);
+    width: rem(54);
+    height: rem(54);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--clr-orange);
+    color: var(--clr-white);
+    cursor: pointer;
+    outline: none;
+    transition: background var(--transition-1), color var(--transition-1);
+
+    .icon {
+      display: inline-flex;
+      width: rem(18);
+      height: rem(18);
+      transform-origin: center;
+      transition: transform var(--transition-1);
+    }
+
+    .icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 rem(3) rgba(235, 110, 1, 0.32);
+    }
+
+    @include hover {
+      &:hover {
+        background: var(--clr-black);
+        color: var(--clr-white);
+      }
+
+      &:hover .icon {
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  &__photo {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    aspect-ratio: 493 / 501;
+    background: #f1e5d8;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s;
+    }
+  }
+
+  @include hover {
+    &__card:hover &__photo img {
+      transform: scale(1.03);
+    }
+  }
+
+  &__pagination.swiper-pagination {
+    @include slider-dots;
+    margin-top: rem(40);
+  }
+
+  @include maxMedia(xl) {
+    .container {
+      gap: rem(44);
+    }
+  }
+
+  @include maxMedia(lg) {
+    &__head {
+      align-items: flex-start;
+    }
+  }
+
+  @include maxMedia(md) {
+    .container {
+      gap: rem(40);
+    }
+
+    &__head {
+      flex-direction: column;
+      gap: rem(24);
+    }
+
+    &__tag {
+      margin-bottom: rem(24);
+    }
+
+    &__copy {
+      flex: none;
+      width: 100%;
+    }
+
+    &__title {
+      white-space: normal;
+    }
+
+    &__nav {
+      align-self: flex-end;
+      display: none
+    }
+
+    &__slider {
+      @include slider-bleed(var(--gutter));
+    }
+
+    &__card {
+      height: auto;
+      min-height: 0;
+      padding: rem(20);
+      border-radius: var(--radius-sm);
+    }
+
+    &__role {
+      min-height: 0;
+    }
+
+    &__photo {
+      border-radius: var(--radius-sm);
+    }
+
+    &__pagination.swiper-pagination {
+      margin-top: rem(28);
+      padding-right: var(--gutter);
+    }
+  }
+}
+
+// ── 2. Numbers (Figma 816:5824) ─────────────────────────────────────
+.about-stats {
+  @include maxMedia(md) {
+    overflow: hidden;
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(24);
+    margin-bottom: var(--sp-lg);
+    text-align: center;
+    @include maxMedia(md) {
+      margin-bottom: var(--sp-sm-2);
+    }    
+  }
+
+  &__title {
+    max-width: rem(1216);
+    @include maxMedia(md) {
+      font-size: rem(28);
+    }    
+  }
+
+  &__slider {
+    width: 100%;
+
+    @include maxMedia(md) {
+      @include slider-bleed(var(--gutter));
+    }
+
+    .swiper-wrapper {
+      box-sizing: content-box;
+      width: 100%;
+      height: 100%;
+      transition-property: transform;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: rem(48);
+
+    @include maxMedia(xl) {
+      gap: rem(24);
+    }
+    @include maxMedia(lg) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @include maxMedia(sm) {
+      grid-template-columns: 1fr;
+      gap: rem(16);
+    }
+    @include maxMedia(md) {
+      display: flex;
+      gap: 0;
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: rem(40);
+    min-height: rem(279);
+    padding: rem(40);
+    background: var(--bg-1);
+    border-radius: var(--radius-md);
+
+    @include maxMedia(xl) {
+      padding: rem(28);
+    }
+    @include maxMedia(md) {
+      flex-shrink: 0;
+      width: 100%;
+      min-height: rem(180);
+      gap: rem(24);
+      padding: rem(24);
+    }
+  }
+
+  &__pagination.swiper-pagination {
+    display: none;
+
+    @include maxMedia(md) {
+      @include slider-dots;
+      padding-right: var(--gutter);
+    }
+  }
+
+  &__num {
+    display: block;
+  }
+
+  &__text {
+    max-width: rem(321);
+    margin: 0;
+    line-height: 1.3;
+  }
+}
+
+// ── 3. Intro — quote variant (Figma 773:6414) ───────────────────────
+// Same component as the homepage intro; the card swaps the tag/lead/button for
+// a quote mark + hen row on top and an author line under the title.
+.home-intro--quote {
+  .home-intro__card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-intro__quote-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: rem(24);
+    margin-bottom: rem(100);
+  }
+
+  .home-intro__quote-mark {
+    width: rem(100);
+    height: rem(100);
+  }
+
+  .home-intro__hen {
+    display: block;
+    width: rem(121);
+    transform-origin: 52% 100%;
+    will-change: transform;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      transform-origin: 50% 100%;
+      will-change: transform;
+
+      * {
+        transform-box: fill-box;
+      }
+    }
+  }
+
+  .home-intro__title {
+    margin-bottom: rem(40);
+  }
+
+  .home-intro__author {
+    margin: 0;
+    color: var(--clr-orange);
+    font-weight: 600;
+    font-size: rem(14);
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  @include maxMedia(lg) {
+    .home-intro__quote-row {
+      margin-bottom: rem(48);
+    }
+
+    .home-intro__quote-mark {
+      width: rem(64);
+      height: rem(64);
+    }
+
+    .home-intro__hen {
+      width: rem(78);
+    }
+
+    .home-intro__title {
+      margin-bottom: rem(24);
+    }
+  }
+}

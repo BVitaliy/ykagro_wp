@@ -1,0 +1,279 @@
+@use "../mixins" as *;
+
+// ── Product detail hero (Figma 784:10929 + 784:10885) ───────────────
+// 828 gallery + info column, info vertically centred against the photo.
+.product-hero {
+  &__inner {
+    display: grid;
+    grid-template-columns: rem(828) minmax(0, 1fr);
+    align-items: center;
+    gap: rem(135);
+
+    @include maxMedia(xxl) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: rem(80);
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: rem(40);
+    }
+  }
+
+  &__gallery {
+    position: relative;
+  }
+
+  &__slider {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    // Notch in the top-right corner for the badge (Figma 1250:7147). The shape
+    // is proportional, so it holds at every width the 828/655 photo takes.
+    -webkit-clip-path: url(#product-gallery-clip);
+    clip-path: url(#product-gallery-clip);
+  }
+
+  // Sits in that notch, flush with the right edge of the photo box
+  &__badge {
+    position: absolute;
+    top: 3.18%; // 20.8 / 655
+    right: 0.23%; // (828 - 826.1) / 828
+    z-index: 2;
+    display: block;
+    width: 12.88%; // 106.625 / 828
+    aspect-ratio: 106.625 / 97.4334;
+    color: var(--clr-orange);
+    pointer-events: none;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__slide {
+    .product-hero__lightbox {
+      display: block;
+      width: 100%;
+      height: 100%;
+      color: inherit;
+      cursor: zoom-in;
+
+      &:focus-visible {
+        outline: rem(2) solid var(--clr-orange);
+        outline-offset: rem(4);
+      }
+    }
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      aspect-ratio: 828 / 655;
+      object-fit: cover;
+    }
+  }
+
+  &__arrow {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &--prev {
+      left: rem(24);
+    }
+
+    &--next {
+      right: rem(24);
+    }
+
+    @include maxMedia(md) {
+      &--prev {
+        left: rem(12);
+      }
+
+      &--next {
+        right: rem(12);
+      }
+    }
+  }
+
+  // ── Body: editor content ──────────────────────────────────────────
+  // Only the title carries classes; everything below it comes from a WYSIWYG
+  // blob, so every rule here targets bare tags from this parent (same approach
+  // as .news-block__body). Figma stacks the blocks on a flat 60 rhythm.
+  &__body {
+    // flex column, but the rhythm is margins not gap — an editor blob can emit
+    // any number of paragraphs and they must not all get the 60 block gap
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    // reset first, rhythm second — a tag rule further down would otherwise win
+    // on equal specificity and cancel the margins (see .article-content)
+    > * {
+      margin: 0;
+    }
+
+    > * + * {
+      margin-top: var(--sp-md);
+    }
+
+    // consecutive paragraphs read as one block
+    > p + p {
+      margin-top: rem(20);
+    }
+
+    p {
+      max-width: rem(590);
+      color: var(--clr-muted);
+      font-size: clamp(#{rem(16)}, 0.94vw, #{rem(18)});
+      line-height: 1.4;
+    }
+
+    :is(ul, ol) {
+      display: flex;
+      flex-direction: column;
+      gap: rem(24);
+      padding: 0;
+      list-style: none;
+
+      @include maxMedia(lg) {
+        gap: rem(16);
+      }
+    }
+
+    :is(ul, ol) li {
+      display: flex;
+      align-items: flex-start;
+      gap: rem(16);
+      color: var(--clr-black);
+      font-weight: 500;
+      font-size: rem(18);
+      line-height: 1.4;
+
+      @include maxMedia(lg) {
+        font-size: rem(16);
+      }
+    }
+
+    a:not(.btn) {
+      color: var(--clr-orange);
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+      transition: opacity var(--transition-1);
+
+      @include hover {
+        &:hover {
+          opacity: 0.7;
+        }
+      }
+    }
+
+    strong,
+    b {
+      color: var(--clr-black);
+      font-weight: 500;
+    }
+
+    // Same hand-drawn orange tick as the shared news block check-list
+    :is(ul, ol) li::before {
+      content: "";
+      flex-shrink: 0;
+      width: rem(20);
+      height: rem(20);
+      margin-top: rem(2);
+      background-color: var(--clr-orange);
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M8.42095 19.5H8.41209C8.35496 19.4988 8.29865 19.4861 8.24655 19.4625C8.19445 19.4389 8.14764 19.4049 8.10893 19.3627L0.111941 10.6235C0.0454334 10.5508 0.0060964 10.4572 0.00065196 10.3586C-0.00479248 10.26 0.0239935 10.1626 0.0820911 10.083C0.140208 10.0034 0.223997 9.94655 0.319171 9.9221C0.414344 9.89765 0.515008 9.90714 0.603999 9.94895L7.9233 13.3933C7.98487 13.4223 8.05762 13.4083 8.10473 13.359L19.2695 1.63162C19.4207 1.47272 19.6679 1.45537 19.8395 1.59225C20.0111 1.72912 20.0508 1.97474 19.9309 2.15895L8.82486 19.2577C8.809 19.2825 8.79035 19.305 8.76983 19.3261L8.72085 19.3753C8.64115 19.455 8.53337 19.4998 8.42095 19.5Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M8.42095 19.5H8.41209C8.35496 19.4988 8.29865 19.4861 8.24655 19.4625C8.19445 19.4389 8.14764 19.4049 8.10893 19.3627L0.111941 10.6235C0.0454334 10.5508 0.0060964 10.4572 0.00065196 10.3586C-0.00479248 10.26 0.0239935 10.1626 0.0820911 10.083C0.140208 10.0034 0.223997 9.94655 0.319171 9.9221C0.414344 9.89765 0.515008 9.90714 0.603999 9.94895L7.9233 13.3933C7.98487 13.4223 8.05762 13.4083 8.10473 13.359L19.2695 1.63162C19.4207 1.47272 19.6679 1.45537 19.8395 1.59225C20.0111 1.72912 20.0508 1.97474 19.9309 2.15895L8.82486 19.2577C8.809 19.2825 8.79035 19.305 8.76983 19.3261L8.72085 19.3753C8.64115 19.455 8.53337 19.4998 8.42095 19.5Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+  }
+}
+
+// ── Characteristics (Figma 816:6071) ────────────────────────────────
+// Editor content — the markup carries .article-content, which owns every rule
+// (headings, rhythm, lists, framed table). Same arrangement as
+// .responsibility-challenges__content; only the column width is local.
+.product-specs {
+  &__content {
+    max-width: rem(1080);
+    margin-inline: auto;
+  }
+}
+
+// ── Other products in the category (Figma 816:5857) ─────────────────
+.product-related {
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(40);
+    margin-bottom: var(--sp-md);
+
+    // same stack as the other card rows on the site
+    @include maxMedia(md) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--sp-sm-2);
+    }
+  }
+
+  &__title {
+    margin: 0;
+  }
+
+  &__cta {
+    flex-shrink: 0;
+  }
+
+  &__slider {
+    overflow: hidden;
+
+    // Below lg the next card peeks in. Clipping at the .container-full padding
+    // would cut it short of the screen edge, so the slider bleeds out to the
+    // full viewport and takes the inset back as its own padding — Swiper
+    // subtracts horizontal padding when sizing slides, so the card width and
+    // the left alignment stay exactly the same.
+    @include maxMedia(lg) {
+      margin-inline: calc(var(--container-pad) * -1);
+      padding-inline: var(--container-pad);
+    }
+  }
+
+  &__slide {
+    height: auto;
+  }
+
+  // Same bullet bar as the article slider — 3 pages read as 124px in Figma
+  &__pagination.swiper-pagination {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: rem(12);
+    width: 100%;
+    margin-top: var(--sp-md);
+    line-height: 0;
+
+    .swiper-pagination-bullet {
+      width: rem(20);
+      height: rem(6);
+      margin: 0 !important;
+      border-radius: rem(72);
+      background: rgba(235, 110, 1, 0.2);
+      opacity: 1;
+      transition: width var(--transition-1), background var(--transition-1);
+    }
+
+    .swiper-pagination-bullet-active {
+      width: rem(60);
+      background: var(--clr-orange);
+    }
+  }
+}

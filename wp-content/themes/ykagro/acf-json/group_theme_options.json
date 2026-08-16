@@ -1,0 +1,200 @@
+{
+  "key": "group_theme_options",
+  "title": "Налаштування сайту",
+  "fields": [
+    {
+      "key": "field_ff024f08160f097d",
+      "label": "Контакти у футері",
+      "name": "footer_contacts_tab",
+      "type": "tab",
+      "placement": "top",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_b3620e38bed3f287",
+      "label": "Адреса",
+      "name": "contact_address",
+      "type": "text",
+      "instructions": "Один рядок, як у футері: «Хмельницьке шосе 22, Київ».",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_c21712e6f14af39d",
+      "label": "Телефон",
+      "name": "contact_phone",
+      "type": "text",
+      "instructions": "У зручному для читання вигляді: «+38 059 956 45 54». Посилання tel: формується автоматично.",
+      "wrapper": { "width": "25" }
+    },
+    {
+      "key": "field_b994bbaa7407e395",
+      "label": "E-mail",
+      "name": "contact_email",
+      "type": "email",
+      "wrapper": { "width": "25" }
+    },
+    {
+      "key": "field_291354d660576462",
+      "label": "Соцмережі",
+      "name": "footer_socials",
+      "type": "repeater",
+      "instructions": "Виводяться у футері та в шапці сторінки контактів.",
+      "layout": "table",
+      "button_label": "Додати соцмережу",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_25025cad574e21e4",
+          "label": "Іконка",
+          "name": "icon",
+          "type": "select",
+          "choices": {
+            "instagram": "Instagram",
+            "facebook": "Facebook",
+            "tiktok": "TikTok",
+            "youtube": "YouTube",
+            "telegram": "Telegram"
+          },
+          "return_format": "value",
+          "ui": 1,
+          "wrapper": { "width": "30" }
+        },
+        {
+          "key": "field_ff134ca2157b685a",
+          "label": "Підпис",
+          "name": "label",
+          "type": "text",
+          "instructions": "Для aria-label, напр. «Instagram».",
+          "wrapper": { "width": "30" }
+        },
+        {
+          "key": "field_d98157f35760b6cc",
+          "label": "Посилання",
+          "name": "link",
+          "type": "url",
+          "wrapper": { "width": "40" }
+        }
+      ]
+    },
+    {
+      "key": "field_51bebb41522fe22b",
+      "label": "Копірайт",
+      "name": "footer_copyright",
+      "type": "text",
+      "instructions": "Порожнє поле — підставиться «©Назва сайту. Всі права захищено».",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_3019cc70cd0a5690",
+      "label": "Сторінка контактів",
+      "name": "contacts_tab",
+      "type": "tab",
+      "placement": "top",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_703257fe925e729f",
+      "label": "Картки контактів",
+      "name": "contact_cards",
+      "type": "repeater",
+      "instructions": "Блоки на сторінці контактів — «Виробництво», «Головний офіс» тощо.",
+      "layout": "block",
+      "button_label": "Додати картку",
+      "wrapper": { "width": "100" },
+      "sub_fields": [
+        {
+          "key": "field_00fff53bd1c94018",
+          "label": "Заголовок",
+          "name": "title",
+          "type": "text",
+          "wrapper": { "width": "100" }
+        },
+        {
+          "key": "field_f26ebc4cb1adaa31",
+          "label": "Адреса",
+          "name": "address",
+          "type": "text",
+          "wrapper": { "width": "50" }
+        },
+        {
+          "key": "field_4983c07dc238bdaa",
+          "label": "Адреса для Google Maps",
+          "name": "address_query",
+          "type": "text",
+          "instructions": "Повна адреса для пошуку на карті. Порожнє — використається поле «Адреса».",
+          "wrapper": { "width": "50" }
+        },
+        {
+          "key": "field_366adbcba744c384",
+          "label": "Телефон",
+          "name": "phone",
+          "type": "text",
+          "wrapper": { "width": "33" }
+        },
+        {
+          "key": "field_f4f267909005a89b",
+          "label": "E-mail",
+          "name": "email",
+          "type": "email",
+          "wrapper": { "width": "33" }
+        },
+        {
+          "key": "field_bbf730184f44989e",
+          "label": "Графік роботи",
+          "name": "schedule",
+          "type": "text",
+          "instructions": "Напр. «Пн-Нд 10:00-20:00».",
+          "wrapper": { "width": "34" }
+        }
+      ]
+    },
+    {
+      "key": "field_ea2bf162427cf122",
+      "label": "Форми",
+      "name": "forms_tab",
+      "type": "tab",
+      "placement": "top",
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_525fa2e98f43b449",
+      "label": "Основна форма зворотного зв'язку",
+      "name": "default_form_id",
+      "type": "select",
+      "instructions": "Використовується у модальному вікні та в блоці «Розпочніть співпрацю».",
+      "choices": {},
+      "return_format": "value",
+      "ui": 1,
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_e40acca166d9d5d1",
+      "label": "Форма відгуку на вакансію",
+      "name": "vacancy_form_id",
+      "type": "select",
+      "instructions": "Форма з полем завантаження резюме.",
+      "choices": {},
+      "return_format": "value",
+      "ui": 1,
+      "wrapper": { "width": "50" }
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "options_page",
+        "operator": "==",
+        "value": "yka-site-settings"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Глобальні налаштування: контакти, соцмережі, форми.",
+  "show_in_rest": 0
+}

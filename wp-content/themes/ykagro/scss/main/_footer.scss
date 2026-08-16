@@ -1,0 +1,474 @@
+@use "../mixins" as *;
+
+// Footer / subfooter — Figma 747:5317 and 784:4870.
+.footer { 
+  position: relative;
+  z-index: 2;
+  padding: rem(20);
+  padding-top: 0;
+
+  @include maxMedia(md) {
+    padding: rem(10);
+    padding-top: 0;
+  }
+
+  &__block {
+    position: relative;
+    overflow: hidden;
+    padding: rem(60) rem(60) rem(40);
+    background: #232426;
+    color: var(--clr-white);
+    border-radius: rem(24);
+
+    @include maxMedia(lg) {
+      padding-inline: rem(32);
+    }
+
+    @include maxMedia(md) {
+      padding: rem(40) rem(20) rem(24);
+      border-radius: rem(18);
+    }
+  }
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: rem(20);
+  }
+
+  &__seo {
+    width: 100%;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: rem(18);
+    line-height: 1.4;
+
+    :where(p) {
+      margin: 0;
+      max-width: rem(1760);
+    }
+
+    :where(h2, h3, h4) {
+      margin: 0;
+      color: var(--clr-white);
+      font-size: rem(20);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    :where(a) {
+      color: var(--clr-white);
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+      transition: color var(--transition-1);
+
+      @include hover {
+        &:hover {
+          color: var(--clr-orange);
+        }
+      }
+    }
+
+    :where(strong, b) {
+      color: var(--clr-white);
+      font-weight: 500;
+    }
+
+    :where(ul, ol) {
+      display: flex;
+      flex-direction: column;
+      gap: rem(8);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    :where(li) {
+      position: relative;
+      padding-left: rem(19);
+    }
+
+    :where(ul li)::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.62em;
+      width: rem(7);
+      height: rem(7);
+      border-radius: 50%;
+      background: var(--clr-orange);
+    }
+
+    :where(ol) {
+      counter-reset: footer-seo-list;
+    }
+
+    :where(ol li) {
+      counter-increment: footer-seo-list;
+      padding-left: rem(28);
+
+      &::before {
+        content: counter(footer-seo-list) ".";
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: var(--clr-orange);
+        font-weight: 600;
+      }
+    }
+
+    :where(blockquote) {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: rem(32);
+      margin: 0;
+      padding: rem(40);
+      border-radius: rem(24);
+      background: #37383a;
+      color: var(--clr-white);
+      font-size: rem(24);
+      font-weight: 500;
+      line-height: 1.4;
+
+      &::before {
+        content: "";
+        flex: 0 0 rem(100);
+        width: rem(100);
+        height: rem(100);
+        background: url("../img/icons/quote.gif") center / contain no-repeat;
+      }
+    }
+
+    :where(table) {
+      width: 100%;
+      border: 1px solid rgba(33, 67, 20, 0.1);
+      border-collapse: collapse;
+      color: var(--clr-white);
+    }
+
+    :where(th, td) {
+      min-height: rem(60);
+      padding: rem(12) rem(16);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    :where(th) {
+      background: #37383a;
+      color: var(--clr-white);
+      font-size: rem(20);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    :where(td) {
+      color: var(--clr-white);
+      font-size: rem(18);
+      line-height: 1.4;
+    }
+
+    @include maxMedia(md) {
+      font-size: rem(16);
+
+      :where(h2, h3, h4) {
+        font-size: rem(18);
+      }
+
+      :where(blockquote) {
+        gap: rem(18);
+        padding: rem(24);
+        border-radius: rem(18);
+        font-size: rem(18);
+
+        &::before {
+          flex-basis: rem(64);
+          width: rem(64);
+          height: rem(64);
+        }
+      }
+    }
+
+    @include maxMedia(sm) {
+      :where(blockquote) {
+        flex-direction: column;
+      }
+
+      :where(table) {
+        display: block;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      :where(thead) {
+        display: none;
+      }
+
+      :where(tbody, tr, td) {
+        display: block;
+        width: auto;
+      }
+
+      :where(tr) {
+        padding-block: rem(12);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      :where(td) {
+        min-height: 0;
+        padding: rem(4) 0;
+        border-bottom: 0;
+        font-size: rem(15);
+
+        &:first-child {
+          color: var(--clr-white);
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &__seo-visible {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+  }
+
+  .seo-block__more {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    visibility: hidden;
+    transition: grid-template-rows 0.45s ease, visibility 0s linear 0.45s;
+  }
+
+  .seo-block__more-inner {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    min-height: 0;
+    overflow: hidden;
+
+    > :first-child {
+      margin-top: rem(24);
+    }
+  }
+
+  &__top.is-open {
+    gap: rem(40);
+  }
+
+  &__top.is-open .seo-block__more {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  &__more {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(20);
+    margin-top: 0;
+    color: var(--clr-white);
+    font-size: rem(16);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  &__more .link-more__icon {
+    flex: 0 0 auto;
+    width: rem(22);
+    height: rem(22);
+    transform: rotate(90deg);
+    svg{
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__top.is-open &__more .link-more__icon {
+    transform: rotate(-90deg);
+  }
+
+  &__top.is-open .seo-block__more-label,
+  &__top:not(.is-open) .seo-block__less-label {
+    display: none;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: rem(260) rem(260) rem(260) 1fr;
+    gap: rem(80);
+    margin-top: rem(60);
+    padding-top: rem(100);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+    // SEO block ($footer_show_seo = false) omitted → grid is the block's
+    // first child; its own padding-top already gives clearance, so drop the
+    // separator + extra spacing meant to sit under the SEO text.
+    &:first-child {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    @include maxMedia(xl) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: rem(48);
+    }
+
+    @include maxMedia(lg) {
+      grid-template-columns: 1fr 1fr;
+      padding-top: rem(64);
+    }
+
+    @include maxMedia(md) {
+      grid-template-columns: 1fr;
+      gap: rem(28);
+      margin-top: rem(44);
+      padding-top: rem(44);
+    }
+  }
+
+  &__menu,
+  &__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: rem(10);
+    font-style: normal;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: rem(16);
+    font-weight: 500;
+    line-height: 1.4;
+
+    a {
+      color: inherit;
+      transition: color var(--transition-1);
+
+      @include hover {
+        &:hover {
+          color: var(--clr-orange);
+        }
+      }
+    }
+  }
+
+  &__aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: rem(80);
+    justify-self: end;
+    text-align: right;
+
+    @include maxMedia(xl) {
+      grid-column: 1 / -1;
+      align-items: flex-start;
+      justify-self: start;
+      gap: rem(28);
+      text-align: left;
+    }
+  }
+
+  &__socials {
+    display: flex;
+    gap: rem(12);
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: rem(56);
+      height: rem(56);
+      border-radius: rem(12);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--clr-white);
+      transition: background var(--transition-1), color var(--transition-1);
+
+      .icon {
+        display: inline-flex;
+        width: rem(30);
+        height: rem(30);
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      @include hover {
+        &:hover {
+          background: var(--clr-orange);
+          color: var(--clr-white);
+        }
+      }
+    }
+  }
+
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: rem(10);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: rem(14);
+    line-height: 1.4;
+
+    p {
+      margin: 0;
+    }
+
+    a {
+      display: inline-flex;
+      color: var(--clr-white);
+      transition: opacity var(--transition-1);
+
+      @include hover {
+        &:hover {
+          opacity: 0.7;
+        }
+      }
+    }
+
+    @include maxMedia(xl) {
+      align-items: flex-start;
+    }
+  }
+
+  &__dev {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: rem(8);
+  }
+
+  &__dev img {
+    display: block;
+    width: rem(78);
+    height: auto;
+  }
+
+  &__logo {
+    margin-top: rem(100);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    svg path[fill="#2D2E30"] {
+      fill: var(--clr-white);
+    }
+
+    @include maxMedia(md) {
+      margin-top: rem(64);
+      // The floating menu pill sits over the very bottom of the page on phones
+      // (fixed, rem(64) tall at rem(24) from the viewport edge) and used to cut
+      // the watermark in half. Clear it: the pill lands under the logo, not on it.
+      margin-bottom: rem(72);
+    }
+  }
+}

@@ -1,0 +1,155 @@
+@use "../../mixins" as *;
+
+// ── Home stats (Figma 403:849) ──────────────────────────────────────
+.home-stats {
+  &__inner {
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+
+    picture,
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      object-fit: cover;
+      will-change: transform;
+    }
+  }
+
+  &__blend {
+    position: absolute;
+    inset: 0;
+    background: #e5c596;
+    mix-blend-mode: color;
+    opacity: 0.42;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    // background:
+    //   linear-gradient(180deg, rgba(43, 34, 18, 0.3) 0%, rgba(43, 34, 18, 0.34) 46%, rgba(35, 24, 8, 0.54) 100%),
+    //   radial-gradient(95% 70% at 53% 35%, rgba(255, 255, 255, 0.08) 0%, rgba(51, 32, 6, 0.14) 56%, rgba(30, 20, 8, 0.34) 100%);
+    background-color: #000;
+    opacity: 0.3;
+  }
+
+  &__scrim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+    pointer-events: none;
+ 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    mask-image: linear-gradient(0deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 55%, transparent 100%);
+    will-change: opacity;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));    
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    row-gap: var(--sp-xl);
+    min-height: max(100svh, 61.458vw);
+    padding: rem(158) var(--gutter) rem(150);
+
+    @include maxMedia(md) {
+      min-height: rem(680);
+      padding: rem(48) var(--gutter);
+    }
+  }
+
+  &__head {
+    max-width: rem(620);
+  }
+
+  &__tag {
+    margin-bottom: var(--sp-sm);
+  }
+
+  &__title {
+    max-width: rem(430);
+    margin-bottom: var(--sp-sm);
+
+    @include maxMedia(md) {
+      margin-bottom: var(--sp-sm-2);
+    }
+  }
+
+  &__lead {
+    max-width: rem(440);
+    opacity: 0.9;
+  }
+
+  // ── Statistics row ────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: rem(48);
+
+    @include maxMedia(md) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: rem(32);
+    }
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: rem(16);
+
+  &__num {
+    font-weight: 700;
+    font-size: clamp(#{rem(52)}, 5.2vw, #{rem(100)});
+    line-height: 1;
+
+    @include maxMedia(md) {
+      font-size: rem(48);
+    }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+  }
+
+  &__icon {
+    width: rem(20);
+    min-width: rem(20);
+    height: rem(20);
+    color: var(--clr-white);
+    opacity: 0.85;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__text {
+    font-size: rem(18);
+    opacity: 0.9;
+
+    @include maxMedia(md) {
+      font-size: rem(16);
+    }
+  }
+}

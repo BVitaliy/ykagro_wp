@@ -1,0 +1,204 @@
+@use "../mixins" as *;
+@use "./prose" as *;
+
+// ── Doc page (Figma 694:1806) — policy / legal WYSIWYG pages ─────────
+// Title + classless editor content, centred narrow column (1080).
+// Figma tokens on this frame:
+//   title  H3 Bold 52/1.1 #000
+//   h2–h3  H5 SemiBold 34/1.1 #2D2E30
+//   body   Text Regular 18/1.4 #2D2E30
+//   gaps   40 between sections, 20 heading→text / p→p
+.doc-page {
+  &__inner {
+    width: min(calc(100% - var(--gutter) * 2), #{rem(1080)});
+    margin-inline: auto;
+  }
+
+  // Page H1 — Figma 694:1904
+  &__title {
+    max-width: rem(1080);
+    margin: 0 auto rem(60);
+    color: var(--clr-text);
+    text-align: center;
+
+    @include maxMedia(md) {
+      margin-bottom: rem(40);
+    }
+  }
+
+  &__content {
+    color: var(--clr-black);
+    font-size: rem(18);
+    line-height: 1.4;
+
+    @include prose;
+
+    // ── Rhythm (Figma sections: 40 between blocks, 20 inside) ───────
+    > * + * {
+      margin-top: rem(20);
+    }
+
+    > * + :is(h1, h2, h3, h4, h5, h6) {
+      margin-top: rem(40);
+    }
+
+    > :is(h1, h2, h3, h4, h5, h6) + * {
+      margin-top: rem(20);
+    }
+
+    // ── Headings — map editor tags to Figma type scale ──────────────
+    // h1 in body (rare): H4 Bold 40
+    :where(h1) {
+      margin: 0;
+      color: var(--clr-black);
+      font-size: clamp(#{rem(24)}, 2.08vw, #{rem(40)});
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    // Primary sections (design uses H5) — h2 / h3 from WYSIWYG
+    :where(h2, h3) {
+      margin: 0;
+      color: var(--clr-black);
+      font-size: clamp(#{rem(22)}, 1.77vw, #{rem(34)});
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    // H6 SemiBold 24
+    :where(h4) {
+      margin: 0;
+      color: var(--clr-black);
+      font-size: clamp(#{rem(18)}, 1.25vw, #{rem(24)});
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    // Between H6 and body
+    :where(h5) {
+      margin: 0;
+      color: var(--clr-black);
+      font-size: rem(20);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    :where(h6) {
+      margin: 0;
+      color: var(--clr-black);
+      font-size: rem(18);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    // ── Body / inline ───────────────────────────────────────────────
+    :where(p) {
+      margin: 0;
+      color: var(--clr-black);
+      font-size: rem(18);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    :where(li) {
+      color: var(--clr-black);
+      font-size: rem(18);
+      line-height: 1.4;
+    }
+
+    :where(small) {
+      font-size: rem(14);
+      line-height: 1.4;
+    }
+
+    :where(em, i) {
+      font-style: italic;
+    }
+
+    :where(u) {
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+    }
+
+    :where(s, del) {
+      text-decoration: line-through;
+    }
+
+    :where(sup, sub) {
+      font-size: 0.75em;
+      line-height: 0;
+    }
+
+    :where(hr) {
+      margin: rem(40) 0;
+      border: 0;
+      border-top: 1px solid var(--clr-line);
+    }
+
+    :where(code) {
+      padding: 0.1em 0.35em;
+      border-radius: rem(6);
+      background: var(--bg-1);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    :where(pre) {
+      margin: 0;
+      padding: rem(20) rem(24);
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      background: var(--bg-1);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: rem(14);
+      line-height: 1.5;
+
+      code {
+        padding: 0;
+        background: none;
+        font-size: inherit;
+      }
+    }
+
+    @include maxMedia(md) {
+      font-size: rem(16);
+
+      > * + * {
+        margin-top: rem(16);
+      }
+
+      > * + :is(h1, h2, h3, h4, h5, h6) {
+        margin-top: rem(32);
+      }
+
+      > :is(h1, h2, h3, h4, h5, h6) + * {
+        margin-top: rem(16);
+      }
+
+      :where(h1) {
+        font-size: rem(28);
+      }
+
+      :where(h2, h3) {
+        font-size: rem(24);
+      }
+
+      :where(h4) {
+        font-size: rem(20);
+      }
+
+      :where(h5) {
+        font-size: rem(18);
+      }
+
+      :where(h6) {
+        font-size: rem(16);
+      }
+
+      :where(p),
+      :where(li) {
+        font-size: rem(16);
+      }
+    }
+  }
+}
