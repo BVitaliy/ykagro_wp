@@ -38,17 +38,33 @@ while ( have_rows( 'page_builder' ) ) {
 	}
 
 	switch ( $yka_layout ) {
-		case 'hero':       require $yka_partials_dir . 'layout-hero.php';       break;
-		case 'intro':      require $yka_partials_dir . 'layout-intro.php';      break;
-		case 'directions': require $yka_partials_dir . 'layout-directions.php'; break;
-		case 'products':   require $yka_partials_dir . 'layout-products.php';   break;
-		case 'stats':      require $yka_partials_dir . 'layout-stats.php';      break;
-		case 'gallery':    require $yka_partials_dir . 'layout-gallery.php';    break;
-		case 'statement':  require $yka_partials_dir . 'layout-statement.php';  break;
-		case 'news':       require $yka_partials_dir . 'layout-news.php';       break;
-		case 'contact':    require $yka_partials_dir . 'layout-contact.php';    break;
-		case 'faq':        require $yka_partials_dir . 'layout-faq.php';        break;
-		case 'articles':   require $yka_partials_dir . 'layout-articles.php';   break;
+		case 'hero':                require $yka_partials_dir . 'layout-hero.php';                break;
+		case 'page_hero':           require $yka_partials_dir . 'layout-page-hero.php';           break;
+		case 'video_band':          require $yka_partials_dir . 'layout-video-band.php';          break;
+		case 'about_scene':         require $yka_partials_dir . 'layout-about-scene.php';         break;
+		case 'about_story':         require $yka_partials_dir . 'layout-about-story.php';         break;
+		case 'about_team':          require $yka_partials_dir . 'layout-about-team.php';          break;
+		case 'production_steps':    require $yka_partials_dir . 'layout-production-steps.php';    break;
+		case 'benefits':            require $yka_partials_dir . 'layout-benefits.php';            break;
+		case 'vacancies':           require $yka_partials_dir . 'layout-vacancies.php';           break;
+		case 'contacts_hero':       require $yka_partials_dir . 'layout-contacts-hero.php';       break;
+		case 'intro':               require $yka_partials_dir . 'layout-intro.php';               break;
+		case 'directions':          require $yka_partials_dir . 'layout-directions.php';          break;
+		case 'directions_list':     require $yka_partials_dir . 'layout-directions-list.php';     break;
+		case 'products':            require $yka_partials_dir . 'layout-products.php';            break;
+		case 'products_categories': require $yka_partials_dir . 'layout-products-categories.php'; break;
+		case 'stats':               require $yka_partials_dir . 'layout-stats.php';               break;
+		case 'stats_cards':         require $yka_partials_dir . 'layout-stats-cards.php';         break;
+		case 'gallery':             require $yka_partials_dir . 'layout-gallery.php';             break;
+		case 'statement':           require $yka_partials_dir . 'layout-statement.php';           break;
+		case 'news':                require $yka_partials_dir . 'layout-news.php';                break;
+		case 'contact':             require $yka_partials_dir . 'layout-contact.php';             break;
+		case 'form_section':        require $yka_partials_dir . 'layout-form-section.php';        break;
+		case 'comfort':             require $yka_partials_dir . 'layout-comfort.php';             break;
+		case 'doc':                 require $yka_partials_dir . 'layout-doc.php';                 break;
+		case 'cta_band':            require $yka_partials_dir . 'layout-cta-band.php';            break;
+		case 'faq':                 require $yka_partials_dir . 'layout-faq.php';                 break;
+		case 'articles':            require $yka_partials_dir . 'layout-articles.php';            break;
 	}
 
 	++$yka_row_index;

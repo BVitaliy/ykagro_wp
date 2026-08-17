@@ -21,11 +21,18 @@ define( 'YKA_HOME_URL', home_url( '/' ) );
  */
 define( 'YKA_VER', '1.0.0' );
 
+require_once YKA_DIR . '/functions/class-svg-sanitizer.php';
 require_once YKA_DIR . '/functions/helpers.php';
 require_once YKA_DIR . '/functions/class-nav-walker.php';
 require_once YKA_DIR . '/functions/post-types.php';
 require_once YKA_DIR . '/functions/init.php';
 require_once YKA_DIR . '/functions/admin.php';
+require_once YKA_DIR . '/functions/seo.php';
+
+// ACF 6.8.7+ rejects SVG in image fields; this scopes an exemption to icon fields.
+if ( class_exists( 'ACF' ) ) {
+	require_once YKA_DIR . '/functions/class-svg-acf.php';
+}
 
 // ACF field groups live in acf-json/ — see .claude/acf-flexible-content.md.
 if ( class_exists( 'ACF' ) ) {

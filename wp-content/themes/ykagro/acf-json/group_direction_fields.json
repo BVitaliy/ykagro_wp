@@ -8,7 +8,9 @@
       "name": "card_tab",
       "type": "tab",
       "placement": "top",
-      "wrapper": { "width": "100" }
+      "wrapper": {
+        "width": "100"
+      }
     },
     {
       "key": "field_8196110cf10b2e2a",
@@ -26,7 +28,22 @@
       },
       "return_format": "value",
       "ui": 1,
-      "wrapper": { "width": "50" }
+      "wrapper": {
+        "width": "25"
+      }
+    },
+    {
+      "key": "field_556dd4737adfde7b",
+      "label": "Своя іконка",
+      "name": "custom_icon",
+      "type": "image",
+      "instructions": "Завантажте SVG або PNG, щоб замінити іконку зі списку. SVG вставляється в розмітку й фарбується стилями; PNG виводиться як зображення і кольору не змінює. Рекомендований розмір — 48×48 px.",
+      "return_format": "array",
+      "preview_size": "thumbnail",
+      "mime_types": "svg,png",
+      "wrapper": {
+        "width": "25"
+      }
     },
     {
       "key": "field_e9c8004b9da4a88f",
@@ -36,7 +53,35 @@
       "instructions": "Короткий текст у картці на сторінці «Напрями діяльності» та на головній.",
       "rows": 3,
       "new_lines": "",
-      "wrapper": { "width": "50" }
+      "wrapper": {
+        "width": "50"
+      }
+    },
+    {
+      "key": "field_458860239944c85a",
+      "label": "Фото для плитки",
+      "name": "tile_image",
+      "type": "image",
+      "instructions": "Горизонтальний кроп 860×513 px для сторінки «Напрями діяльності». Порожнє — використається зображення запису.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "mime_types": "jpg,jpeg,png,webp",
+      "wrapper": {
+        "width": "50"
+      }
+    },
+    {
+      "key": "field_8e5d039ad129a1b1",
+      "label": "Фото для плитки — мобільне",
+      "name": "tile_image_mob",
+      "type": "image",
+      "instructions": "На мобільних плитка вертикальна — потрібен окремий кроп 361×420 px, а не менша копія.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "mime_types": "jpg,jpeg,png,webp",
+      "wrapper": {
+        "width": "50"
+      }
     },
     {
       "key": "field_d43e126f2872d3a4",
@@ -44,7 +89,9 @@
       "name": "detail_tab",
       "type": "tab",
       "placement": "top",
-      "wrapper": { "width": "100" }
+      "wrapper": {
+        "width": "100"
+      }
     },
     {
       "key": "field_c6264eff3ce7bf2d",
@@ -55,7 +102,9 @@
       "return_format": "array",
       "preview_size": "medium",
       "mime_types": "jpg,jpeg,png,webp",
-      "wrapper": { "width": "50" }
+      "wrapper": {
+        "width": "50"
+      }
     },
     {
       "key": "field_53b40fb942054bb8",
@@ -66,7 +115,9 @@
       "return_format": "array",
       "preview_size": "medium",
       "mime_types": "jpg,jpeg,png,webp",
-      "wrapper": { "width": "50" }
+      "wrapper": {
+        "width": "50"
+      }
     },
     {
       "key": "field_aad4c3fe606dad76",
@@ -76,7 +127,9 @@
       "instructions": "Блоки «текст + фото» на сторінці напряму. Сторона чергується вручну.",
       "layout": "block",
       "button_label": "Додати секцію",
-      "wrapper": { "width": "100" },
+      "wrapper": {
+        "width": "100"
+      },
       "sub_fields": [
         {
           "key": "field_0670bc57567b8d3f",
@@ -90,7 +143,9 @@
           "default_value": "right",
           "return_format": "value",
           "ui": 1,
-          "wrapper": { "width": "25" }
+          "wrapper": {
+            "width": "25"
+          }
         },
         {
           "key": "field_36a73f9cfc848609",
@@ -98,7 +153,9 @@
           "name": "tag",
           "type": "text",
           "instructions": "Маленький підпис над заголовком.",
-          "wrapper": { "width": "35" }
+          "wrapper": {
+            "width": "35"
+          }
         },
         {
           "key": "field_db22697a1fd879e1",
@@ -107,7 +164,9 @@
           "type": "textarea",
           "instructions": "Переноси рядків зберігаються.",
           "rows": 2,
-          "wrapper": { "width": "40" }
+          "wrapper": {
+            "width": "40"
+          }
         },
         {
           "key": "field_7a5467894bf78661",
@@ -117,7 +176,9 @@
           "toolbar": "basic",
           "media_upload": 0,
           "delay": 1,
-          "wrapper": { "width": "60" }
+          "wrapper": {
+            "width": "60"
+          }
         },
         {
           "key": "field_acc686ced87e4d31",
@@ -128,7 +189,9 @@
           "return_format": "array",
           "preview_size": "medium",
           "mime_types": "jpg,jpeg,png,webp",
-          "wrapper": { "width": "40" }
+          "wrapper": {
+            "width": "40"
+          }
         },
         {
           "key": "field_e04d784b930cbe80",
@@ -138,14 +201,18 @@
           "instructions": "Опційний перелік під текстом.",
           "layout": "table",
           "button_label": "Додати пункт",
-          "wrapper": { "width": "100" },
+          "wrapper": {
+            "width": "100"
+          },
           "sub_fields": [
             {
               "key": "field_fdfd92e9bc6edddd",
               "label": "Текст",
               "name": "text",
               "type": "text",
-              "wrapper": { "width": "100" }
+              "wrapper": {
+                "width": "100"
+              }
             }
           ]
         }

@@ -4,10 +4,11 @@
  *
  * Ported from the markup's inc/_footer.php + inc/_bottom.php.
  *
- * The SEO text block is optional per page: templates set
- * $yka_footer_show_seo = false before get_footer() to skip it, mirroring the
- * markup's $footer_show_seo flag. Its content comes from the page's ACF
- * `seo_block` field.
+ * The SEO text block is optional per page. The markup toggled it with a
+ * $footer_show_seo flag, but a flag set in a template cannot reach here —
+ * get_footer() loads this file through load_template(), which does not inherit
+ * the caller's local scope. The real condition is simply whether the page's ACF
+ * `seo_block` holds any text, so that is what we check.
  *
  * @package ykagro
  */
@@ -16,9 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$yka_footer_show_seo = isset( $yka_footer_show_seo ) ? (bool) $yka_footer_show_seo : true;
-
-$yka_seo       = $yka_footer_show_seo && function_exists( 'get_field' ) ? get_field( 'seo_block' ) : null;
+$yka_seo       = function_exists( 'get_field' ) ? get_field( 'seo_block' ) : null;
 $yka_address   = function_exists( 'get_field' ) ? get_field( 'contact_address', 'options' ) : '';
 $yka_phone     = function_exists( 'get_field' ) ? get_field( 'contact_phone', 'options' ) : '';
 $yka_email     = function_exists( 'get_field' ) ? get_field( 'contact_email', 'options' ) : '';

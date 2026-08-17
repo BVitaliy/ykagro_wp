@@ -63,8 +63,16 @@ $items  = get_sub_field( 'items' );
 						<div class="home-stats__item stat">
 							<span class="stat__num clr-white"><?php echo esc_html( $item['num'] ); ?></span>
 							<span class="stat__label">
-								<?php if ( ! empty( $item['icon'] ) ) { ?>
-									<span class="stat__icon"><?php yka_icon( 'icons/' . sanitize_file_name( $item['icon'] ) . '.svg' ); ?></span>
+								<?php if ( ! empty( $item['icon'] ) || ! empty( $item['custom_icon'] ) ) { ?>
+									<span class="stat__icon">
+										<?php
+										yka_icon_field(
+											$item['custom_icon'] ?? null,
+											! empty( $item['icon'] ) ? 'icons/' . sanitize_file_name( $item['icon'] ) . '.svg' : '',
+											$item['label'] ?? ''
+										);
+										?>
+									</span>
 								<?php } ?>
 								<span class="stat__text clr-white"><?php echo esc_html( $item['label'] ?? '' ); ?></span>
 							</span>

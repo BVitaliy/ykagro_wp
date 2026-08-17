@@ -99,6 +99,8 @@ function yka_acf_load_cf7_choices( array $field ): array {
 // Site Settings → Forms: both selects list the site's CF7 forms.
 add_filter( 'acf/load_field/key=field_525fa2e98f43b449', 'yka_acf_load_cf7_choices' );
 add_filter( 'acf/load_field/key=field_e40acca166d9d5d1', 'yka_acf_load_cf7_choices' );
+// Page builder → form blocks.
+add_filter( 'acf/load_field/key=field_5237e6bbfe3e871e', 'yka_acf_load_cf7_choices' );
 // Page builder → contact block, form variant.
 add_filter( 'acf/load_field/key=field_13df98338bc2c206', 'yka_acf_load_cf7_choices' );
 

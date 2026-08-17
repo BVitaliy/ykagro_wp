@@ -1,0 +1,96 @@
+{
+  "key": "group_author_fields",
+  "title": "Профіль автора",
+  "fields": [
+    {
+      "key": "field_d87af718ff139c89",
+      "label": "Посада",
+      "name": "author_role",
+      "type": "text",
+      "instructions": "Показується під ім'ям на сторінці автора.",
+      "wrapper": {
+        "width": "100"
+      }
+    },
+    {
+      "key": "field_1fc54d891261a72c",
+      "label": "Фото",
+      "name": "author_photo",
+      "type": "image",
+      "instructions": "Портрет 512×514 px. Порожнє — використається аватар за замовчуванням.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "wrapper": {
+        "width": "100"
+      }
+    },
+    {
+      "key": "field_d62c590bc5eb9e48",
+      "label": "Соцмережі",
+      "name": "author_socials",
+      "type": "repeater",
+      "instructions": "Виводяться у блоці «Про автора» під статтею.",
+      "layout": "table",
+      "button_label": "Додати соцмережу",
+      "wrapper": {
+        "width": "100"
+      },
+      "sub_fields": [
+        {
+          "key": "field_22b7580dd01e541c",
+          "label": "Іконка",
+          "name": "icon",
+          "type": "select",
+          "choices": {
+            "instagram": "Instagram",
+            "facebook": "Facebook",
+            "tiktok": "TikTok",
+            "youtube": "YouTube",
+            "telegram": "Telegram"
+          },
+          "return_format": "value",
+          "ui": 1,
+          "wrapper": {
+            "width": "30"
+          }
+        },
+        {
+          "key": "field_186df1d3fa783817",
+          "label": "Підпис",
+          "name": "label",
+          "type": "text",
+          "wrapper": {
+            "width": "30"
+          }
+        },
+        {
+          "key": "field_aaba98f5c40f5617",
+          "label": "Посилання",
+          "name": "link",
+          "type": "url",
+          "wrapper": {
+            "width": "40"
+          }
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "user_form",
+        "operator": "==",
+        "value": "all"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Поля профілю користувача для блоку «Про автора».",
+  "show_in_rest": 0
+}

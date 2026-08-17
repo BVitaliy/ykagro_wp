@@ -145,8 +145,54 @@
           "type": "text",
           "instructions": "Напр. «Пн-Нд 10:00-20:00».",
           "wrapper": { "width": "34" }
+        },
+        {
+          "key": "field_4be5e9d3c9a3fa42",
+          "label": "Широта (lat)",
+          "name": "lat",
+          "type": "number",
+          "instructions": "Для пінів на живій карті, напр. 49.9308.",
+          "step": "any",
+          "wrapper": { "width": "25" }
+        },
+        {
+          "key": "field_8d56d905173587b5",
+          "label": "Довгота (lng)",
+          "name": "lng",
+          "type": "number",
+          "step": "any",
+          "wrapper": { "width": "25" }
+        },
+        {
+          "key": "field_2966a554c45da680",
+          "label": "X на картинці, %",
+          "name": "pin_x",
+          "type": "number",
+          "instructions": "Лише для режиму «статична картинка».",
+          "step": "any",
+          "min": 0,
+          "max": 100,
+          "wrapper": { "width": "25" }
+        },
+        {
+          "key": "field_9ee4e8f1f49b6688",
+          "label": "Y на картинці, %",
+          "name": "pin_y",
+          "type": "number",
+          "step": "any",
+          "min": 0,
+          "max": 100,
+          "wrapper": { "width": "25" }
         }
       ]
+    },
+    {
+      "key": "field_2eb36930681667e0",
+      "label": "Ключ Google Maps API",
+      "name": "google_maps_key",
+      "type": "text",
+      "instructions": "Потрібен для режиму «жива карта» на сторінці контактів. Без ключа карта переходить у режим без карти.",
+      "wrapper": { "width": "100" }
     },
     {
       "key": "field_ea2bf162427cf122",

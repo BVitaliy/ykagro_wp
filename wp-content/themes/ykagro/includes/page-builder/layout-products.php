@@ -53,10 +53,8 @@ if ( 'products' === $source ) {
 
 	if ( ! is_wp_error( $terms ) ) {
 		foreach ( $terms as $term ) {
-			$thumb_id = (int) get_term_meta( $term->term_id, 'thumbnail_id', true );
-
 			$cards[] = [
-				'image' => $thumb_id ? [ 'ID' => $thumb_id, 'alt' => $term->name ] : null,
+				'image' => yka_term_image( (int) $term->term_id ),
 				'title' => $term->name,
 				'href'  => get_term_link( $term ),
 			];

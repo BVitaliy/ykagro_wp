@@ -21,11 +21,12 @@ if ( ! $post_id ) {
 	return;
 }
 
-$title = get_the_title( $post_id );
-$text  = (string) get_field( 'card_text', $post_id );
-$icon  = (string) get_field( 'icon', $post_id );
-$num   = $args['num'] ?? '';
-$total = $args['total'] ?? '';
+$title       = get_the_title( $post_id );
+$text        = (string) get_field( 'card_text', $post_id );
+$icon        = (string) get_field( 'icon', $post_id );
+$custom_icon = get_field( 'custom_icon', $post_id );
+$num         = $args['num'] ?? '';
+$total       = $args['total'] ?? '';
 
 if ( empty( $icon ) ) {
 	$icon = 'direction-broiler';
@@ -47,5 +48,5 @@ if ( empty( $icon ) ) {
 			<?php esc_html_e( 'Детальніше', 'ykagro' ); ?>
 		</a>
 	</div>
-	<span class="direction-card__icon"><?php yka_icon( 'icons/' . sanitize_file_name( $icon ) . '.svg' ); ?></span>
+	<span class="direction-card__icon"><?php yka_icon_field( $custom_icon, 'icons/' . sanitize_file_name( $icon ) . '.svg', $title ); ?></span>
 </article>

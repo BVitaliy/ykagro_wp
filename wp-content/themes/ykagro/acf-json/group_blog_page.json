@@ -1,0 +1,53 @@
+{
+  "key": "group_blog_page",
+  "title": "Сторінка блогу",
+  "fields": [
+    {
+      "key": "field_7fcda30f78a363c3",
+      "label": "Заголовок у панелі",
+      "name": "blog_intro",
+      "type": "textarea",
+      "instructions": "H1 у білій панелі поверх банера. Порожнє — використається назва сторінки.",
+      "rows": 3,
+      "wrapper": { "width": "100" }
+    },
+    {
+      "key": "field_bc6a36c37e0d7a8c",
+      "label": "Банер",
+      "name": "blog_banner",
+      "type": "image",
+      "instructions": "Розмір 1880×720 px. Порожнє — виводиться лише логотип і крихти.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "wrapper": { "width": "50" }
+    },
+    {
+      "key": "field_3153cbcf36da93f2",
+      "label": "Банер — мобільний",
+      "name": "blog_banner_mob",
+      "type": "image",
+      "instructions": "Розмір 750×800 px.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "wrapper": { "width": "50" }
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "page_type",
+        "operator": "==",
+        "value": "posts_page"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Шапка сторінки, призначеної як «Сторінка записів».",
+  "show_in_rest": 0
+}

@@ -1,0 +1,35 @@
+{
+  "key": "group_product_cat",
+  "title": "Категорія продукції",
+  "fields": [
+    {
+      "key": "field_66ce5d3f42d67936",
+      "label": "Зображення категорії",
+      "name": "image",
+      "type": "image",
+      "instructions": "Фото для картки категорії — у слайдері продукції на головній та в сітці на сторінці «Продукція». Розмір 640×482 px.",
+      "return_format": "array",
+      "preview_size": "medium",
+      "mime_types": "jpg,jpeg,png,webp",
+      "wrapper": { "width": "100" }
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "taxonomy",
+        "operator": "==",
+        "value": "product_cat"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Зображення для карток категорій продукції.",
+  "show_in_rest": 0
+}

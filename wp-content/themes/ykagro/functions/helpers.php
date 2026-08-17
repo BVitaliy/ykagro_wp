@@ -54,6 +54,75 @@ function yka_img( string $path ): string {
 }
 
 /**
+ * Renders an icon that may come from the media library or from the theme.
+ *
+ * An uploaded SVG is inlined so CSS can still recolour it (`currentColor`), which
+ * is how every icon in this design behaves on hover. It is re-sanitized on the
+ * way out: files uploaded before the sanitizer existed, or dropped in over FTP,
+ * never went through the upload filter.
+ *
+ * A PNG cannot be recoloured, so it is output as <img> — the editor chose a
+ * raster icon and gets a raster icon.
+ *
+ * @param mixed  $uploaded ACF image field value. An empty ACF field returns
+ *                         `false`, not null, so this stays untyped rather than
+ *                         `?array` — a type hint here throws a TypeError and
+ *                         takes the whole section down.
+ * @param string $fallback Path relative to img/, e.g. 'icons/direction-broiler.svg'.
+ * @param string $alt      Alt text for the raster case.
+ */
+function yka_icon_field( $uploaded, string $fallback = '', string $alt = '' ): void {
+	$attachment_id = is_array( $uploaded ) && ! empty( $uploaded['ID'] ) ? (int) $uploaded['ID'] : 0;
+
+	if ( ! $attachment_id ) {
+		if ( ! empty( $fallback ) ) {
+			yka_icon( $fallback );
+		}
+
+		return;
+	}
+
+	$mime = get_post_mime_type( $attachment_id );
+
+	if ( 'image/svg+xml' === $mime ) {
+		$path = get_attached_file( $attachment_id );
+
+		if ( $path && is_readable( $path ) ) {
+			$raw = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local upload.
+
+			if ( false !== $raw ) {
+				$sanitizer = new YKA_Svg_Sanitizer();
+				$clean     = $sanitizer->sanitize( $raw );
+
+				if ( '' !== $clean ) {
+					echo $clean; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against an allow-list.
+
+					return;
+				}
+			}
+		}
+
+		// Unreadable or unsafe — fall back rather than showing a broken icon.
+		if ( ! empty( $fallback ) ) {
+			yka_icon( $fallback );
+		}
+
+		return;
+	}
+
+	echo wp_get_attachment_image(
+		$attachment_id,
+		'full',
+		false,
+		[
+			'alt'      => ! empty( $alt ) ? $alt : ( $uploaded['alt'] ?? '' ),
+			'loading'  => 'lazy',
+			'decoding' => 'async',
+		]
+	);
+}
+
+/**
  * Render a `<picture>` with a webp source when the sibling file exists.
  *
  * Mirrors the markup convention: webp first, original as fallback, optional
@@ -112,6 +181,45 @@ function yka_picture( array $args ): void {
 		>
 	</picture>
 	<?php
+}
+
+/**
+ * Image for a taxonomy term, as an ACF-shaped array.
+ *
+ * WordPress has no native image field for terms, so this comes from the term's
+ * ACF `image` field. The `thumbnail_id` term meta is checked as a fallback: it is
+ * the de-facto convention other plugins (and this theme's own seeding) write to,
+ * so a category set up that way keeps working.
+ *
+ * @param int    $term_id  Term ID.
+ * @param string $taxonomy Taxonomy name.
+ * @return array|null ACF-style image array, or null when there is none.
+ */
+function yka_term_image( int $term_id, string $taxonomy = 'product_cat' ): ?array {
+	if ( ! $term_id ) {
+		return null;
+	}
+
+	if ( function_exists( 'get_field' ) ) {
+		$image = get_field( 'image', $taxonomy . '_' . $term_id );
+
+		if ( is_array( $image ) && ! empty( $image['ID'] ) ) {
+			return $image;
+		}
+	}
+
+	$thumb_id = (int) get_term_meta( $term_id, 'thumbnail_id', true );
+
+	if ( ! $thumb_id ) {
+		return null;
+	}
+
+	$term = get_term( $term_id, $taxonomy );
+
+	return [
+		'ID'  => $thumb_id,
+		'alt' => $term instanceof WP_Term ? $term->name : '',
+	];
 }
 
 /**

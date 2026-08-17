@@ -36,6 +36,7 @@ class YKA_Theme {
 	public function __construct() {
 		add_action( 'after_setup_theme', [ $this, 'setup' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'contacts_map_boot' ], 20 );
 		add_action( 'wp_head', [ $this, 'head_preloads' ], 1 );
 		add_action( 'wp_head', [ $this, 'head_inline_boot' ], 2 );
 		add_action( 'widgets_init', [ $this, 'register_sidebars' ] );
@@ -61,6 +62,10 @@ class YKA_Theme {
 		add_image_size( 'yka-intro-left', 900, 600, true );  // intro collage, left
 		add_image_size( 'yka-intro-right', 1000, 666, true );// intro collage, right
 		add_image_size( 'yka-section', 1000, 700, true );    // direction section photo
+		add_image_size( 'yka-tile', 860, 513, true );         // direction listing tile
+		add_image_size( 'yka-comfort', 547, 459, true );      // comfort / benefit card
+		add_image_size( 'yka-team', 633, 635, true );          // team portrait (card + modal)
+		add_image_size( 'yka-author', 648, 650, true );        // author archive portrait
 		add_image_size( 'yka-banner', 2880, 1000, true );    // wide page banner
 		add_image_size( 'yka-banner-mob', 750, 800, true );  // banner, mobile crop
 
@@ -180,55 +185,50 @@ class YKA_Theme {
 	}
 
 	/**
-	 * Per-template script map, ported from the static pages' closing script tags.
+	 * Conditional script map.
 	 *
-	 * Each entry's `when` is evaluated once per request; the corresponding static
-	 * page names are listed so the mapping stays auditable against the markup.
+	 * Pages are assembled from page-builder blocks, so what a page needs follows
+	 * from which blocks it actually contains — not from which template file it
+	 * uses. That is both more accurate and stable when an editor rearranges a page.
+	 *
+	 * The three scroll modules (home, contact-parallax, hero-parallax) load on
+	 * every content view: the static markup included them on almost every page,
+	 * and each module bails when its root element is absent (see
+	 * .claude/js-standards.md), so there is nothing to gate them on.
 	 */
 	private function conditional_scripts(): array {
+		$is_content_view = is_singular() || is_home() || is_tax( 'product_cat' );
+
 		return [
-			// index, about, product-detail, article, cooperation, direction-detail
 			'yka-swiper-init' => [
 				'src'  => 'js/app-swiper.js',
 				'deps' => [ 'yka-swiper' ],
 				'when' => $this->needs_swiper(),
 			],
-			// index, about, career, cooperation, direction-detail, responsibility
 			'yka-home' => [
 				'src'  => 'js/app-home.js',
-				'when' => is_front_page()
-					|| $this->is_template( [ 'about', 'career', 'cooperation', 'responsibility' ] )
-					|| is_singular( 'direction' ),
+				'when' => $is_content_view,
 			],
-			// index, about, products, product-category, contacts, career, production, cooperation, direction-detail
 			'yka-contact-parallax' => [
 				'src'  => 'js/app-contact-parallax.js',
-				'when' => is_front_page()
-					|| $this->is_template( [ 'about', 'career', 'contacts', 'cooperation', 'production', 'products' ] )
-					|| is_tax( 'product_cat' )
-					|| is_singular( 'direction' ),
+				'when' => $is_content_view,
 			],
-			// career, production, blog, directions, responsibility, cooperation, direction-detail
 			'yka-hero-parallax' => [
 				'src'  => 'js/app-hero-parallax.js',
-				'when' => $this->is_template( [ 'career', 'directions', 'production', 'responsibility', 'cooperation' ] )
-					|| is_home()
-					|| is_singular( 'direction' ),
+				'when' => $is_content_view,
 			],
-			// about, direction-detail
+			// The scroll scene and story timeline only exist in these blocks.
 			'yka-about' => [
 				'src'  => 'js/app-about.js',
-				'when' => $this->is_template( [ 'about' ] ) || is_singular( 'direction' ),
+				'when' => $this->has_layout( [ 'about_scene', 'about_story' ] ) || is_singular( 'direction' ),
 			],
-			// responsibility, cooperation, direction-detail
 			'yka-resp-cta' => [
 				'src'  => 'js/app-resp-cta.js',
-				'when' => $this->is_template( [ 'responsibility', 'cooperation' ] ) || is_singular( 'direction' ),
+				'when' => $this->has_layout( [ 'cta_band' ] ),
 			],
-			// production
 			'yka-production' => [
 				'src'  => 'js/app-production.js',
-				'when' => $this->is_template( [ 'production' ] ),
+				'when' => $this->has_layout( [ 'production_steps' ] ),
 			],
 			// article, article-no-nav
 			'yka-article' => [
@@ -251,6 +251,11 @@ class YKA_Theme {
 				'src'  => 'js/app-select.js',
 				'when' => is_tax( 'product_cat' ),
 			],
+			// contacts — map pins and popups
+			'yka-contacts' => [
+				'src'  => 'js/app-contacts.js',
+				'when' => $this->has_layout( [ 'contacts_hero' ] ),
+			],
 			// 404
 			'yka-404' => [
 				'src'  => 'js/app-404.js',
@@ -260,40 +265,145 @@ class YKA_Theme {
 	}
 
 	/**
-	 * index, about, product-detail, article, cooperation, direction-detail
+	 * Google Maps bootstrap for the contacts block.
+	 *
+	 * The Maps JS API is ~300KB and the map sits below the fold, so it is loaded
+	 * only when it nears the viewport. The API still calls the global init
+	 * callback on ready, so pin behaviour is unchanged.
+	 */
+	public function contacts_map_boot(): void {
+		if ( ! $this->has_layout( [ 'contacts_hero' ] ) ) {
+			return;
+		}
+
+		$api_key = function_exists( 'get_field' ) ? (string) get_field( 'google_maps_key', 'options' ) : '';
+
+		wp_add_inline_script(
+			'yka-contacts',
+			'window.YKAGRO_CONTACTS_MAP = ' . wp_json_encode(
+				[
+					'apiKey'  => $api_key,
+					'zoom'    => 11,
+					'pinIcon' => YKA_URI . '/img/icons/map-pin.svg',
+				]
+			) . ';'
+			. 'window.initYkagroContactsMap = window.initYkagroContactsMap || function () { window.__YKAGRO_CONTACTS_MAP_READY = true; };',
+			'before'
+		);
+
+		if ( empty( $api_key ) ) {
+			return;
+		}
+
+		$src = add_query_arg(
+			[
+				'key'      => $api_key,
+				'language' => 'uk',
+				'region'   => 'UA',
+				'callback' => 'initYkagroContactsMap',
+			],
+			'https://maps.googleapis.com/maps/api/js'
+		);
+
+		wp_add_inline_script(
+			'yka-contacts',
+			'(function () {
+				var url = ' . wp_json_encode( $src ) . ';
+				var target = document.querySelector("[data-contacts-map]");
+				var loaded = false;
+				function load() {
+					if (loaded) return;
+					loaded = true;
+					var s = document.createElement("script");
+					s.src = url;
+					s.async = true;
+					s.defer = true;
+					document.body.appendChild(s);
+				}
+				if (!target || !("IntersectionObserver" in window)) { load(); return; }
+				var io = new IntersectionObserver(function (entries) {
+					if (entries[0].isIntersecting) { io.disconnect(); load(); }
+				}, { rootMargin: "600px 0px" });
+				io.observe(target);
+			})();'
+		);
+	}
+
+	/**
+	 * Blocks that render a Swiper instance, plus the single templates that do.
 	 */
 	private function needs_swiper(): bool {
-		return is_front_page()
-			|| $this->is_template( [ 'about', 'cooperation' ] )
+		return $this->has_layout( [ 'products', 'articles', 'comfort', 'stats_cards', 'gallery', 'about_team' ] )
 			|| is_singular( [ 'post', 'product', 'direction' ] );
 	}
 
 	/**
-	 * index, product-detail, cooperation, direction-detail
+	 * Blocks that open a lightbox.
 	 */
 	private function needs_lightgallery(): bool {
-		return is_front_page()
-			|| $this->is_template( [ 'cooperation' ] )
+		return $this->has_layout( [ 'gallery' ] )
 			|| is_singular( [ 'product', 'direction' ] );
 	}
 
 	/**
-	 * Is the current page using one of the given templates/<slug>.php files?
+	 * Does the current page's builder contain any of these layouts?
 	 *
-	 * @param string[] $slugs Template slugs without the templates/ prefix or .php suffix.
+	 * Hidden rows are ignored — a hidden block renders nothing, so it needs nothing.
+	 *
+	 * @param string[] $names Layout names.
 	 */
-	private function is_template( array $slugs ): bool {
-		if ( ! is_page() ) {
-			return false;
+	private function has_layout( array $names ): bool {
+		return (bool) array_intersect( $names, $this->page_layouts() );
+	}
+
+	/**
+	 * Layout names used by the current page, in order.
+	 *
+	 * Read straight from post meta rather than through have_rows(), because this
+	 * runs on wp_enqueue_scripts where starting an ACF loop would disturb the
+	 * row pointer the template later relies on.
+	 *
+	 * @return string[]
+	 */
+	private function page_layouts(): array {
+		static $cache = null;
+
+		if ( null !== $cache ) {
+			return $cache;
 		}
 
-		foreach ( $slugs as $slug ) {
-			if ( is_page_template( 'templates/' . $slug . '.php' ) ) {
-				return true;
+		$cache = [];
+
+		if ( ! is_singular() || ! function_exists( 'get_field' ) ) {
+			return $cache;
+		}
+
+		$post_id = get_queried_object_id();
+
+		if ( ! $post_id ) {
+			return $cache;
+		}
+
+		$rows = get_post_meta( $post_id, 'page_builder', true );
+
+		if ( ! is_array( $rows ) ) {
+			return $cache;
+		}
+
+		foreach ( $rows as $index => $layout ) {
+			if ( ! is_string( $layout ) || '' === $layout ) {
+				continue;
 			}
+
+			// Skip rows the editor switched off.
+			if ( get_post_meta( $post_id, sprintf( 'page_builder_%d_%s_hide', $index, $layout ), true ) ) {
+				continue;
+			}
+
+			$cache[] = $layout;
 		}
 
-		return false;
+		return $cache;
 	}
 }
 
