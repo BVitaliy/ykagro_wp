@@ -85,116 +85,120 @@ if ( $yka_products_page ) {
 $yka_trail[] = [ 'label' => $yka_term->name ];
 ?>
 
-<main>
+<main class="is-doc">
 	<?php get_template_part( 'includes/scroll-line' ); ?>
 
-	<?php get_template_part( 'template-parts/components/page-head', null, [ 'items' => $yka_trail ] ); ?>
+	<div class="products-page">
 
-	<div class="container">
-		<h1 class="h2 clr-black"><?php echo esc_html( $yka_term->name ); ?></h1>
-	</div>
+		<?php get_template_part( 'template-parts/components/page-head', null, [ 'items' => $yka_trail ] ); ?>
 
-	<div class="spacer-md"></div>
-
-	<section class="catalog">
 		<div class="container">
-			<?php if ( ! is_wp_error( $yka_terms ) && ! empty( $yka_terms ) ) { ?>
-				<nav class="catalog__tabs-rail" aria-label="<?php esc_attr_e( 'Категорії продукції', 'ykagro' ); ?>">
-					<ul class="catalog__tabs">
-						<?php
-						foreach ( $yka_terms as $yka_tab ) {
-							$yka_is_active = (int) $yka_tab->term_id === (int) $yka_term->term_id;
-							?>
-							<li>
-								<a href="<?php echo esc_url( get_term_link( $yka_tab ) ); ?>"
-									class="catalog__tab<?php echo $yka_is_active ? ' is-active' : ''; ?>"
-									<?php echo $yka_is_active ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $yka_tab->name ); ?></a>
-							</li>
+			<h1 class="h2 clr-black"><?php echo esc_html( $yka_term->name ); ?></h1>
+		</div>
+
+		<div class="spacer-md"></div>
+
+		<section class="catalog">
+			<div class="container">
+				<?php if ( ! is_wp_error( $yka_terms ) && ! empty( $yka_terms ) ) { ?>
+					<nav class="catalog__tabs-rail" aria-label="<?php esc_attr_e( 'Категорії продукції', 'ykagro' ); ?>">
+						<ul class="catalog__tabs">
 							<?php
+							foreach ( $yka_terms as $yka_tab ) {
+								$yka_is_active = (int) $yka_tab->term_id === (int) $yka_term->term_id;
+								?>
+								<li>
+									<a href="<?php echo esc_url( get_term_link( $yka_tab ) ); ?>"
+										class="catalog__tab<?php echo $yka_is_active ? ' is-active' : ''; ?>"
+										<?php echo $yka_is_active ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $yka_tab->name ); ?></a>
+								</li>
+								<?php
+							}
+							?>
+						</ul>
+					</nav>
+				<?php } ?>
+
+				<?php // One GET form: ?q=…&sort=… — both fields land on the backend together. ?>
+				<form class="catalog__bar" role="search" method="get" action="<?php echo esc_url( get_term_link( $yka_term ) ); ?>">
+					<label class="catalog__search">
+						<button type="submit" class="catalog__search-icon" aria-label="<?php esc_attr_e( 'Знайти', 'ykagro' ); ?>"><?php yka_icon( 'icons/search.svg' ); ?></button>
+						<input class="catalog__search-input" type="search" name="q" placeholder="<?php esc_attr_e( 'Шукати...', 'ykagro' ); ?>" aria-label="<?php esc_attr_e( 'Пошук продукції', 'ykagro' ); ?>"
+							value="<?php echo esc_attr( $yka_search ); ?>">
+					</label>
+
+					<?php // Mobile only: tabs + sort move into the filter sheet. ?>
+					<button class="catalog__filter-btn js-catalog-filter-open" type="button"
+						aria-controls="catalog-filter" aria-expanded="false" aria-label="<?php esc_attr_e( 'Фільтри', 'ykagro' ); ?>">
+						<span class="catalog__filter-icon" aria-hidden="true"><?php yka_icon( 'icons/filters.svg' ); ?></span>
+					</button>
+
+					<div class="catalog__sort">
+						<span class="catalog__sort-label" id="catalog-sort-label"><?php esc_html_e( 'Сортувати', 'ykagro' ); ?></span>
+						<?php
+						get_template_part(
+							'template-parts/components/select',
+							null,
+							[
+								'name'       => 'sort',
+								'id'         => 'catalog-sort',
+								'options'    => $yka_sorts,
+								'value'      => $yka_sort,
+								'labelledby' => 'catalog-sort-label',
+								'class'      => 'catalog__select',
+								'submit'     => true,
+							]
+						);
+						?>
+					</div>
+				</form>
+			</div>
+
+			<div class="container-full">
+				<?php if ( $yka_query->have_posts() ) { ?>
+					<div class="catalog__grid">
+						<?php
+						while ( $yka_query->have_posts() ) {
+							$yka_query->the_post();
+							get_template_part( 'template-parts/components/catalog-card' );
 						}
 						?>
-					</ul>
-				</nav>
-			<?php } ?>
+					</div>
 
-			<?php // One GET form: ?q=…&sort=… — both fields land on the backend together. ?>
-			<form class="catalog__bar" role="search" method="get" action="<?php echo esc_url( get_term_link( $yka_term ) ); ?>">
-				<label class="catalog__search">
-					<span class="catalog__search-icon" aria-hidden="true"><?php yka_icon( 'icons/search.svg' ); ?></span>
-					<input class="catalog__search-input" type="search" name="q" placeholder="<?php esc_attr_e( 'Шукати...', 'ykagro' ); ?>" aria-label="<?php esc_attr_e( 'Пошук продукції', 'ykagro' ); ?>"
-						value="<?php echo esc_attr( $yka_search ); ?>">
-				</label>
-
-				<?php // Mobile only: tabs + sort move into the filter sheet. ?>
-				<button class="catalog__filter-btn js-catalog-filter-open" type="button"
-					aria-controls="catalog-filter" aria-expanded="false" aria-label="<?php esc_attr_e( 'Фільтри', 'ykagro' ); ?>">
-					<span class="catalog__filter-icon" aria-hidden="true"><?php yka_icon( 'icons/filters.svg' ); ?></span>
-				</button>
-
-				<div class="catalog__sort">
-					<span class="catalog__sort-label" id="catalog-sort-label"><?php esc_html_e( 'Сортувати', 'ykagro' ); ?></span>
 					<?php
 					get_template_part(
-						'template-parts/components/select',
+						'template-parts/components/pagination',
 						null,
 						[
-							'name'       => 'sort',
-							'id'         => 'catalog-sort',
-							'options'    => $yka_sorts,
-							'value'      => $yka_sort,
-							'labelledby' => 'catalog-sort-label',
-							'class'      => 'catalog__select',
-							'submit'     => true,
+							'query'     => $yka_query,
+							'more_text' => __( 'Показати більше', 'ykagro' ),
+							'grid'      => '.catalog__grid',
 						]
 					);
 					?>
-				</div>
-			</form>
-		</div>
+				<?php } else { ?>
+					<div class="container">
+						<p class="text-lg clr-muted"><?php esc_html_e( 'За цим запитом продукцію не знайдено.', 'ykagro' ); ?></p>
+					</div>
+				<?php } ?>
+			</div>
 
-		<div class="container-full">
-			<?php if ( $yka_query->have_posts() ) { ?>
-				<div class="catalog__grid">
-					<?php
-					while ( $yka_query->have_posts() ) {
-						$yka_query->the_post();
-						get_template_part( 'template-parts/components/catalog-card' );
-					}
-					?>
-				</div>
+			<?php
+			get_template_part(
+				'template-parts/single/catalog-filter',
+				null,
+				[
+					'terms'   => $yka_terms,
+					'current' => (int) $yka_term->term_id,
+					'sorts'   => $yka_sorts,
+					'sort'    => $yka_sort,
+				]
+			);
+			?>
+		</section>
 
-				<?php
-				get_template_part(
-					'template-parts/components/pagination',
-					null,
-					[
-						'query'     => $yka_query,
-						'more_text' => __( 'Показати більше', 'ykagro' ),
-					]
-				);
-				?>
-			<?php } else { ?>
-				<div class="container">
-					<p class="text-lg clr-muted"><?php esc_html_e( 'За цим запитом продукцію не знайдено.', 'ykagro' ); ?></p>
-				</div>
-			<?php } ?>
-		</div>
-
-		<?php
-		get_template_part(
-			'template-parts/single/catalog-filter',
-			null,
-			[
-				'terms'   => $yka_terms,
-				'current' => (int) $yka_term->term_id,
-				'sorts'   => $yka_sorts,
-				'sort'    => $yka_sort,
-			]
-		);
-		?>
-	</section>
-
-	<div class="spacer-xl"></div>
+		<div class="spacer-xl"></div>
+	</div>
 </main>
 
 <?php

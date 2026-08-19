@@ -77,7 +77,10 @@ if ( empty( $yka_intro ) ) {
 					get_template_part(
 						'template-parts/components/pagination',
 						null,
-						[ 'more_text' => __( 'Показати більше', 'ykagro' ) ]
+						[
+							'more_text' => __( 'Показати більше', 'ykagro' ),
+							'grid'      => '.blog-list__grid',
+						]
 					);
 					?>
 				</div>

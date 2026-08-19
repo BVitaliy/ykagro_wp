@@ -23,6 +23,11 @@ if ( ! function_exists( 'have_rows' ) || ! have_rows( 'page_builder' ) ) {
 $yka_partials_dir = YKA_DIR . '/includes/page-builder/';
 $yka_row_index    = 0;
 
+// Some blocks carry their own bottom margin, so the spacer after them would
+// double the gap. The banner-less page hero is one: its heading uses
+// .products-title, which already sets margin-bottom.
+$yka_prev_owns_gap = false;
+
 while ( have_rows( 'page_builder' ) ) {
 	the_row();
 
@@ -32,8 +37,13 @@ while ( have_rows( 'page_builder' ) ) {
 		continue;
 	}
 
-	// The markup separates every section with a spacer, except before the hero.
-	if ( $yka_row_index > 0 && 'hero' !== $yka_layout ) {
+	// A page hero with no image renders as page-head + heading, and that heading
+	// owns the gap below it — matching products.php, which has no spacer there.
+	$yka_owns_gap = ( 'page_hero' === $yka_layout && ! get_sub_field( 'image' ) );
+
+	// The markup separates every section with a spacer, except before the hero
+	// and after a block that already provides the gap itself.
+	if ( $yka_row_index > 0 && 'hero' !== $yka_layout && ! $yka_prev_owns_gap ) {
 		echo '<div class="spacer-xl"></div>';
 	}
 
@@ -50,6 +60,7 @@ while ( have_rows( 'page_builder' ) ) {
 		case 'contacts_hero':       require $yka_partials_dir . 'layout-contacts-hero.php';       break;
 		case 'intro':               require $yka_partials_dir . 'layout-intro.php';               break;
 		case 'directions':          require $yka_partials_dir . 'layout-directions.php';          break;
+		case 'directions_slider':   require $yka_partials_dir . 'layout-directions-slider.php';   break;
 		case 'directions_list':     require $yka_partials_dir . 'layout-directions-list.php';     break;
 		case 'products':            require $yka_partials_dir . 'layout-products.php';            break;
 		case 'products_categories': require $yka_partials_dir . 'layout-products-categories.php'; break;
@@ -65,7 +76,10 @@ while ( have_rows( 'page_builder' ) ) {
 		case 'cta_band':            require $yka_partials_dir . 'layout-cta-band.php';            break;
 		case 'faq':                 require $yka_partials_dir . 'layout-faq.php';                 break;
 		case 'articles':            require $yka_partials_dir . 'layout-articles.php';            break;
+		case 'challenges':          require $yka_partials_dir . 'layout-challenges.php';          break;
 	}
+
+	$yka_prev_owns_gap = $yka_owns_gap;
 
 	++$yka_row_index;
 }

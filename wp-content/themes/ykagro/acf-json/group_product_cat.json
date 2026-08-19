@@ -11,7 +11,22 @@
       "return_format": "array",
       "preview_size": "medium",
       "mime_types": "jpg,jpeg,png,webp",
-      "wrapper": { "width": "100" }
+      "wrapper": {
+        "width": "100"
+      }
+    },
+    {
+      "key": "field_9416b389d81cec22",
+      "label": "Іконка-бейдж на сторінці товару",
+      "name": "badge_icon",
+      "type": "image",
+      "instructions": "Значок у виїмці фото на сторінці товару. Задається один раз на категорію — усі товари цієї категорії успадкують його. Порожнє — використається півень із теми. SVG або PNG, приблизно 96×96 px.",
+      "return_format": "array",
+      "preview_size": "thumbnail",
+      "mime_types": "svg,png",
+      "wrapper": {
+        "width": "100"
+      }
     }
   ],
   "location": [
@@ -30,6 +45,6 @@
   "instruction_placement": "label",
   "hide_on_screen": "",
   "active": true,
-  "description": "Зображення для карток категорій продукції.",
+  "description": "Зображення картки категорії та іконка-бейдж для її товарів.",
   "show_in_rest": 0
 }

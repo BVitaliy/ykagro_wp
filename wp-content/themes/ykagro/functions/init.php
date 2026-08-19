@@ -29,6 +29,7 @@ class YKA_Theme {
 		'yka-titles'      => 'js/app-titles.js',
 		'yka-faq'         => 'js/app-faq.js',
 		'yka-form'        => 'js/app-form.js',
+		'yka-cf7'         => 'js/app-cf7.js',
 		'yka-modals'      => 'js/app-modals.js',
 		'yka-scroll-line' => 'js/app-scroll-line.js',
 	];
@@ -242,6 +243,11 @@ class YKA_Theme {
 				'deps' => [ 'yka-lightgallery' ],
 				'when' => is_singular( 'product' ),
 			],
+			// Listings with a "Показати більше" button: catalog, blog, author, search.
+			'yka-load-more' => [
+				'src'  => 'js/app-load-more.js',
+				'when' => is_tax( 'product_cat' ) || is_home() || is_author() || is_search(),
+			],
 			// product-category
 			'yka-catalog-filter' => [
 				'src'  => 'js/app-catalog-filter.js',
@@ -333,7 +339,7 @@ class YKA_Theme {
 	 * Blocks that render a Swiper instance, plus the single templates that do.
 	 */
 	private function needs_swiper(): bool {
-		return $this->has_layout( [ 'products', 'articles', 'comfort', 'stats_cards', 'gallery', 'about_team' ] )
+		return $this->has_layout( [ 'products', 'articles', 'comfort', 'stats_cards', 'gallery', 'about_team', 'directions_slider' ] )
 			|| is_singular( [ 'post', 'product', 'direction' ] );
 	}
 

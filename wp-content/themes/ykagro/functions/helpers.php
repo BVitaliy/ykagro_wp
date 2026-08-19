@@ -184,6 +184,156 @@ function yka_picture( array $args ): void {
 }
 
 /**
+ * Badge icon for a product, inherited from its category.
+ *
+ * The badge is a per-category mark, not a per-product one, so it is set once on
+ * the category and every product in it picks it up. When a product sits in
+ * several categories the first one that actually defines an icon wins.
+ *
+ * @param int $post_id Product ID.
+ * @return array|null ACF image array, or null to fall back to the theme icon.
+ */
+function yka_product_badge( int $post_id ): ?array {
+	$terms = wp_get_object_terms( $post_id, 'product_cat', [ 'fields' => 'ids' ] );
+
+	if ( is_wp_error( $terms ) || empty( $terms ) ) {
+		return null;
+	}
+
+	foreach ( $terms as $term_id ) {
+		$icon = get_field( 'badge_icon', 'product_cat_' . (int) $term_id );
+
+		if ( is_array( $icon ) && ! empty( $icon['ID'] ) ) {
+			return $icon;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Breadcrumb trail for the current singular view.
+ *
+ * A CPT entry sits under its listing page (a direction under "Напрями
+ * діяльності"), so that level is inserted automatically instead of every
+ * template rebuilding the same trail.
+ */
+function yka_trail(): array {
+	$trail = [];
+
+	$parents = [
+		'direction' => 'directions',
+		'product'   => 'products',
+		'vacancy'   => 'career',
+	];
+
+	$type = get_post_type();
+
+	if ( isset( $parents[ $type ] ) ) {
+		$page = get_page_by_path( $parents[ $type ] );
+
+		if ( $page ) {
+			$trail[] = [
+				'label' => get_the_title( $page ),
+				'href'  => get_permalink( $page ),
+			];
+		}
+	}
+
+	$trail[] = [ 'label' => get_the_title() ];
+
+	return $trail;
+}
+
+/**
+ * Does the current page open with a full-width banner hero?
+ *
+ * The decorative scroll line starts below the fold by default, which is right
+ * when a tall banner sits at the top. On light inner pages (products, contacts,
+ * a product detail) the content begins immediately, so the line has to start at
+ * the very top — that is what `main.is-doc` switches on.
+ *
+ * Read from post meta rather than have_rows(): this runs while building <main>,
+ * and starting an ACF loop here would disturb the row pointer the page builder
+ * uses moments later.
+ */
+function yka_has_banner_hero(): bool {
+	if ( ! is_singular() ) {
+		return false;
+	}
+
+	$post_id = get_queried_object_id();
+
+	if ( ! $post_id ) {
+		return false;
+	}
+
+	$rows = get_post_meta( $post_id, 'page_builder', true );
+
+	if ( ! is_array( $rows ) ) {
+		return false;
+	}
+
+	foreach ( $rows as $index => $layout ) {
+		if ( ! is_string( $layout ) ) {
+			continue;
+		}
+
+		// The homepage hero and the about scene always carry media.
+		if ( in_array( $layout, [ 'hero', 'about_scene' ], true ) ) {
+			return true;
+		}
+
+		// A page hero counts only when an image is actually set.
+		if ( 'page_hero' === $layout && get_post_meta( $post_id, sprintf( 'page_builder_%d_image', $index ), true ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Page-scoped wrapper class from the markup, e.g. `cooperation-page`.
+ *
+ * The markup wraps most page bodies in a div named after the page file, and a
+ * few rules hang off it (.about-page clips the horizontal overflow of the hero
+ * scene, .cooperation-page widens the gallery heading). Templates with a file
+ * of their own carry that wrapper inline; only the pages sharing
+ * templates/page-builder.php need it resolved at runtime, and their slug
+ * matches the markup file name one to one.
+ *
+ * Pages the markup leaves unwrapped (contacts, privacy) stay unwrapped: the
+ * wrapper is what `main > *:not(.scroll-line)` lifts above the scroll line, so
+ * adding one where the markup has none would move that stacking context.
+ */
+function yka_page_wrapper_class(): string {
+	$wrapped = [ 'about', 'career', 'cooperation', 'directions', 'production', 'products', 'responsibility' ];
+	$slug    = get_post_field( 'post_name', get_queried_object_id() );
+
+	if ( ! in_array( $slug, $wrapped, true ) ) {
+		return '';
+	}
+
+	return $slug . '-page';
+}
+
+/**
+ * Class list for the <main> element.
+ *
+ * @param string $extra Extra classes to prepend.
+ */
+function yka_main_class( string $extra = '' ): string {
+	$classes = $extra ? [ $extra ] : [];
+
+	if ( ! yka_has_banner_hero() ) {
+		$classes[] = 'is-doc';
+	}
+
+	return implode( ' ', $classes );
+}
+
+/**
  * Image for a taxonomy term, as an ACF-shaped array.
  *
  * WordPress has no native image field for terms, so this comes from the term's
@@ -239,6 +389,58 @@ function yka_acf_image( ?array $image, string $size = 'large', array $attr = [] 
 	}
 
 	echo wp_get_attachment_image( (int) $image['ID'], $size, false, $attr );
+}
+
+/**
+ * Rebases a URL authored on a development host onto the current site.
+ *
+ * ACF stores absolute URLs, so links picked in the admin outlive the host they
+ * were created on. This keeps them working after a move even if the database
+ * was migrated without a search-replace. External links are left alone.
+ *
+ * @param string $url Stored URL.
+ * @return string URL on the current host, or the original when it is external.
+ */
+function yka_rebase_url( string $url ): string {
+	$host = wp_parse_url( $url, PHP_URL_HOST );
+
+	// Relative paths, anchors, mailto:, tel: — nothing to rebase.
+	if ( empty( $host ) ) {
+		return $url;
+	}
+
+	$home = untrailingslashit( home_url() );
+
+	if ( $host === wp_parse_url( $home, PHP_URL_HOST ) ) {
+		return $url;
+	}
+
+	// A known authoring base: drop it whole, including its install sub-directory.
+	foreach ( YKA_LEGACY_URLS as $base ) {
+		$base = untrailingslashit( $base );
+
+		if ( $url === $base || 0 === strpos( $url, $base . '/' ) ) {
+			return $home . substr( $url, strlen( $base ) );
+		}
+	}
+
+	// Any other local host: swap the origin, keep the path.
+	if ( ! preg_match( '/^(localhost|127\.0\.0\.1|\[::1\])$|\.(local|test|localhost)$/i', $host ) ) {
+		return $url;
+	}
+
+	$parts = wp_parse_url( $url );
+	$path  = $parts['path'] ?? '';
+
+	if ( ! empty( $parts['query'] ) ) {
+		$path .= '?' . $parts['query'];
+	}
+
+	if ( ! empty( $parts['fragment'] ) ) {
+		$path .= '#' . $parts['fragment'];
+	}
+
+	return $home . $path;
 }
 
 /**

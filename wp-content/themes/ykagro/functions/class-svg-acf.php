@@ -24,7 +24,7 @@ class YKA_Svg_Acf {
 	/**
 	 * ACF field names allowed to hold an SVG.
 	 */
-	private const SVG_FIELDS = [ 'custom_icon' ];
+	private const SVG_FIELDS = [ 'custom_icon', 'badge_icon' ];
 
 	/**
 	 * @var YKA_Svg_Sanitizer

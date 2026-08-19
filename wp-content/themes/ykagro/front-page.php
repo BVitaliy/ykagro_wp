@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
-<main>
+<main<?php echo yka_main_class() ? ' class="' . esc_attr( yka_main_class() ) . '"' : ''; ?>>
 	<?php get_template_part( 'includes/scroll-line' ); ?>
 	<?php require YKA_DIR . '/includes/page-builder.php'; ?>
 	<div class="spacer-xl"></div>

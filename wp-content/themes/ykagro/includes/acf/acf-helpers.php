@@ -129,3 +129,46 @@ function yka_strip_table_attrs( string $html ): string {
 		$html
 	);
 }
+
+/**
+ * Rebases URLs stored in link/url fields onto the current host.
+ *
+ * Runs on output only (get_field / get_sub_field), so the admin keeps showing
+ * and saving whatever the editor picked. See yka_rebase_url().
+ *
+ * @param mixed $value Formatted field value: link array, or URL string.
+ * @return mixed
+ */
+function yka_acf_rebase_link_value( $value ) {
+	if ( is_array( $value ) && ! empty( $value['url'] ) ) {
+		$value['url'] = yka_rebase_url( (string) $value['url'] );
+
+		return $value;
+	}
+
+	if ( is_string( $value ) && ! empty( $value ) ) {
+		return yka_rebase_url( $value );
+	}
+
+	return $value;
+}
+add_filter( 'acf/format_value/type=link', 'yka_acf_rebase_link_value', 20 );
+add_filter( 'acf/format_value/type=url', 'yka_acf_rebase_link_value', 20 );
+
+/**
+ * Wraps standalone wysiwyg images in <figure>.
+ *
+ * wpautop leaves an image that sits on its own line inside a <p>, while the
+ * markup — and therefore every prose rule, from the fluid width down to the
+ * vertical rhythm of `> figure` — expects a <figure>. Images that share a
+ * paragraph with text are left alone, they are inline by intent.
+ *
+ * @param string $html HTML from a wysiwyg field, after wpautop.
+ */
+function yka_wrap_content_images( string $html ): string {
+	return preg_replace(
+		'#<p>(?:\s|&nbsp;)*((?:<a\b[^>]*>)?\s*<img\b[^>]*>\s*(?:</a>)?)(?:\s|&nbsp;)*</p>#i',
+		'<figure>$1</figure>',
+		$html
+	);
+}

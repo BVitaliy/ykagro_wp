@@ -19,7 +19,16 @@ define( 'YKA_HOME_URL', home_url( '/' ) );
 /**
  * Asset cache buster. Bump on every deploy that changes css/ or js/.
  */
-define( 'YKA_VER', '1.0.0' );
+define( 'YKA_VER', '1.0.3' );
+
+/**
+ * Base URLs the content was authored on. ACF link fields store absolute URLs,
+ * so a link picked in the admin keeps the host it was created with. Anything
+ * matching one of these bases is rebased onto home_url() at output time — see
+ * yka_rebase_url(). Empty the array once the database has been migrated with a
+ * serialization-aware search-replace.
+ */
+define( 'YKA_LEGACY_URLS', [ 'http://localhost:8888/ykagro_wp' ] );
 
 require_once YKA_DIR . '/functions/class-svg-sanitizer.php';
 require_once YKA_DIR . '/functions/helpers.php';

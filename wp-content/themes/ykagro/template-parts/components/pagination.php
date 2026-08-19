@@ -12,6 +12,9 @@
  * @param array $args {
  *     @type WP_Query $query     Query to page through. Defaults to the main query.
  *     @type string   $more_text Label for the "load more" button. Empty = no button.
+ *     @type string   $grid      CSS selector of the container the cards live in.
+ *                               Set it to let app-load-more.js append the next
+ *                               page instead of navigating; empty = plain link.
  * }
  *
  * @package ykagro
@@ -30,6 +33,7 @@ if ( $total < 2 ) {
 
 $current   = max( 1, (int) $query->get( 'paged' ) ?: (int) get_query_var( 'paged' ) ?: 1 );
 $more_text = ! empty( $args['more_text'] ) ? (string) $args['more_text'] : '';
+$grid      = ! empty( $args['grid'] ) ? (string) $args['grid'] : '';
 
 $pages = paginate_links(
 	[
@@ -51,7 +55,7 @@ $prev_url = $current > 1 ? get_pagenum_link( $current - 1 ) : '';
 ?>
 <div class="pagination-block">
 	<?php if ( ! empty( $more_text ) && ! empty( $next_url ) ) { ?>
-		<a href="<?php echo esc_url( $next_url ); ?>" class="btn pagination-block__more">
+		<a href="<?php echo esc_url( $next_url ); ?>" class="btn pagination-block__more"<?php echo ! empty( $grid ) ? ' data-load-more="' . esc_attr( $grid ) . '"' : ''; ?>>
 			<span class="btn__icon"><?php yka_icon( 'icons/arrow-diagonal.svg' ); ?></span>
 			<?php echo esc_html( $more_text ); ?>
 		</a>

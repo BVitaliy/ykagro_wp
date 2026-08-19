@@ -18,7 +18,7 @@ $yka_query_string = get_search_query();
 $yka_found        = (int) $GLOBALS['wp_query']->found_posts;
 ?>
 
-<main>
+<main class="is-doc">
 	<?php get_template_part( 'includes/scroll-line', null, [ 'class' => 'scroll-line--blog' ] ); ?>
 
 	<?php
@@ -54,7 +54,7 @@ $yka_found        = (int) $GLOBALS['wp_query']->found_posts;
 		<?php } ?>
 
 		<form class="catalog__search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<span class="catalog__search-icon" aria-hidden="true"><?php yka_icon( 'icons/search.svg' ); ?></span>
+			<button type="submit" class="catalog__search-icon" aria-label="<?php esc_attr_e( 'Знайти', 'ykagro' ); ?>"><?php yka_icon( 'icons/search.svg' ); ?></button>
 			<input class="catalog__search-input" type="search" name="s" value="<?php echo esc_attr( $yka_query_string ); ?>"
 				placeholder="<?php esc_attr_e( 'Шукати...', 'ykagro' ); ?>" aria-label="<?php esc_attr_e( 'Пошук по сайту', 'ykagro' ); ?>">
 		</form>
@@ -84,7 +84,10 @@ $yka_found        = (int) $GLOBALS['wp_query']->found_posts;
 				get_template_part(
 					'template-parts/components/pagination',
 					null,
-					[ 'more_text' => __( 'Показати більше', 'ykagro' ) ]
+					[
+						'more_text' => __( 'Показати більше', 'ykagro' ),
+						'grid'      => '.blog-list__grid',
+					]
 				);
 				?>
 			</div>

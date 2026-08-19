@@ -942,6 +942,16 @@
               "wrapper": {
                 "width": "50"
               }
+            },
+            {
+              "key": "field_6b48daa8355b7f95",
+              "label": "Якір",
+              "name": "anchor",
+              "type": "text",
+              "instructions": "ID секції для посилань на неї, напр. «detail-form». Тоді кнопка з посиланням #detail-form прокрутить сюди.",
+              "wrapper": {
+                "width": "50"
+              }
             }
           ]
         },
@@ -1024,6 +1034,38 @@
               "wrapper": {
                 "width": "50"
               }
+            },
+            {
+              "key": "field_5a83b453952b4dd3",
+              "label": "Кнопка в панелі заголовка",
+              "name": "cta",
+              "type": "group",
+              "layout": "table",
+              "wrapper": {
+                "width": "100"
+              },
+              "instructions": "Необовʼязково. Порожній напис — кнопка не виводиться.",
+              "sub_fields": [
+                {
+                  "key": "field_e5ffa4e15680067c",
+                  "label": "Напис",
+                  "name": "label",
+                  "type": "text",
+                  "wrapper": {
+                    "width": "50"
+                  }
+                },
+                {
+                  "key": "field_4fcae2bfc6f5c5e4",
+                  "label": "Посилання",
+                  "name": "link",
+                  "type": "link",
+                  "return_format": "array",
+                  "wrapper": {
+                    "width": "50"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -2365,6 +2407,97 @@
               }
             }
           ]
+        },
+        "layout_a9582c9435e887ec": {
+          "key": "layout_a9582c9435e887ec",
+          "name": "directions_slider",
+          "label": "Напрями — слайдер",
+          "display": "block",
+          "sub_fields": [
+            {
+              "key": "field_hide_directions_slider",
+              "label": "Приховати блок",
+              "name": "directions_slider_hide",
+              "type": "true_false",
+              "ui": 1,
+              "wrapper": {
+                "width": "100"
+              }
+            },
+            {
+              "key": "field_aada8a4cac842dd1",
+              "label": "Заголовок",
+              "name": "title",
+              "type": "text",
+              "default_value": "Більше напрямів нашої роботи",
+              "wrapper": {
+                "width": "60"
+              }
+            },
+            {
+              "key": "field_4228216701b81588",
+              "label": "Кнопка",
+              "name": "cta",
+              "type": "group",
+              "layout": "table",
+              "wrapper": {
+                "width": "40"
+              },
+              "sub_fields": [
+                {
+                  "key": "field_c1a9582c9435e887",
+                  "label": "Напис",
+                  "name": "label",
+                  "type": "text",
+                  "default_value": "Усі напрями",
+                  "wrapper": {
+                    "width": "50"
+                  }
+                },
+                {
+                  "key": "field_c24228216701b815",
+                  "label": "Посилання",
+                  "name": "link",
+                  "type": "link",
+                  "return_format": "array",
+                  "wrapper": {
+                    "width": "50"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "layout_a9778ee7807ee942": {
+          "key": "layout_a9778ee7807ee942",
+          "name": "challenges",
+          "label": "Текстовий блок (редактор)",
+          "display": "block",
+          "sub_fields": [
+            {
+              "key": "field_hide_challenges",
+              "label": "Приховати блок",
+              "name": "challenges_hide",
+              "type": "true_false",
+              "ui": 1,
+              "wrapper": {
+                "width": "100"
+              }
+            },
+            {
+              "key": "field_c10dd31ed3ca9bb7",
+              "label": "Текст",
+              "name": "content",
+              "type": "wysiwyg",
+              "instructions": "Вільний текст із заголовками, списками та зображеннями. Ширина колонки — як у статті, вирівняно по центру. Зображення вставляйте окремим рядком і з розміром «Повний розмір» — вони розтягуються на всю ширину колонки.",
+              "toolbar": "full",
+              "media_upload": 1,
+              "delay": 1,
+              "wrapper": {
+                "width": "100"
+              }
+            }
+          ]
         }
       }
     }
@@ -2382,6 +2515,13 @@
         "param": "page_template",
         "operator": "==",
         "value": "templates/page-builder.php"
+      }
+    ],
+    [
+      {
+        "param": "post_type",
+        "operator": "==",
+        "value": "direction"
       }
     ]
   ],

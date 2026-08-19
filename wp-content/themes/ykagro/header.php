@@ -32,7 +32,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="menu__panel">
 			<div class="menu__panel-inner">
 				<form class="menu__search" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get" role="search">
-					<span class="menu__search-icon icon"><?php yka_icon( 'icons/search.svg' ); ?></span>
+					<?php // A submit button, not a decorative span: the magnifier is what people tap,
+					// and it also gives the form an explicit submit control instead of relying on
+					// implicit submission (which silently stops working if a second field is added). ?>
+					<button type="submit" class="menu__search-icon icon" aria-label="<?php esc_attr_e( 'Знайти', 'ykagro' ); ?>"><?php yka_icon( 'icons/search.svg' ); ?></button>
 					<input
 						class="menu__search-input js-menu-search-input"
 						type="search"

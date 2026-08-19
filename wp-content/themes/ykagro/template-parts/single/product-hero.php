@@ -24,6 +24,10 @@ if ( empty( $gallery ) && has_post_thumbnail( $post_id ) ) {
 	$gallery = [ [ 'ID' => get_post_thumbnail_id( $post_id ), 'alt' => get_the_title( $post_id ) ] ];
 }
 
+// The badge is inherited from the category; with none set the notch is dropped
+// too, otherwise an empty bite is left in the photo corner.
+$badge = yka_product_badge( $post_id );
+
 $cta_label  = ! empty( $cta['label'] ) ? $cta['label'] : __( 'Замовити', 'ykagro' );
 $cta_action = ! empty( $cta['action'] ) ? $cta['action'] : 'modal';
 $cta_url    = $cta['link']['url'] ?? '';
@@ -31,7 +35,7 @@ $is_modal   = 'link' !== $cta_action || empty( $cta_url );
 ?>
 <section class="product-hero">
 	<div class="container product-hero__inner">
-		<div class="product-hero__gallery js-product-hero-lightbox">
+		<div class="product-hero__gallery js-product-hero-lightbox<?php echo empty( $badge ) ? ' product-hero__gallery--no-badge' : ''; ?>">
 			<div class="product-hero__slider swiper js-product-gallery">
 				<div class="swiper-wrapper">
 					<?php
@@ -75,8 +79,12 @@ $is_modal   = 'link' !== $cta_action || empty( $cta_url );
 				</div>
 			</div>
 
-			<?php // Rooster badge in the notch cut out of the photo ?>
-			<span class="product-hero__badge" aria-hidden="true"><?php yka_icon( 'icons/rooster.svg' ); ?></span>
+			<?php // Badge in the notch cut out of the photo — set per category, not per product. ?>
+			<?php if ( ! empty( $badge ) ) { ?>
+				<span class="product-hero__badge" aria-hidden="true">
+					<?php yka_icon_field( $badge ); ?>
+				</span>
+			<?php } ?>
 
 			<?php if ( count( $gallery ) > 1 ) { ?>
 				<button class="btn-round btn-round--prev product-hero__arrow product-hero__arrow--prev js-product-gallery-prev" type="button" aria-label="<?php esc_attr_e( 'Попереднє фото', 'ykagro' ); ?>">

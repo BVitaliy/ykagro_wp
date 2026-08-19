@@ -30,7 +30,7 @@ if ( $yka_products_page ) {
 $yka_trail[] = [ 'label' => get_the_title() ];
 ?>
 
-<main>
+<main class="is-doc">
 	<?php get_template_part( 'includes/scroll-line', null, [ 'class' => 'scroll-line--blog' ] ); ?>
 
 	<div class="product-page">

@@ -1,0 +1,71 @@
+@use "../mixins" as *;
+
+// ── Contact Form 7 integration ──────────────────────────────────────
+// The markup was written for a hand-rolled <form>; CF7 wraps every control in
+// its own <span> and injects service markup. These rules bridge the two so the
+// design keeps working — nothing here changes the visual design, it only
+// neutralises CF7's structural additions.
+//
+// Kept in its own file so the ported design partials stay byte-identical to the
+// markup project and remain diffable against it.
+
+.form-block {
+  // Hidden inputs container: an empty flex item that would still eat one `gap`.
+  .hidden-fields-container {
+    display: none;
+  }
+
+  // CF7 wraps each control; without this the wrapper is inline and the input's
+  // width: 100% resolves against a shrink-to-fit box.
+  .wpcf7-form-control-wrap {
+    display: block;
+    min-width: 0;
+  }
+
+  // The design shows an error via `input.is-error ~ .form-block__error`, but the
+  // CF7 wrapper breaks that sibling relationship — restore it through the wrap.
+  .wpcf7-form-control-wrap:has(.form-block__input.is-error) ~ .form-block__error {
+    display: block;
+  }
+
+  // Server-side validation message: match the design's error text instead of
+  // CF7's default styling.
+  .wpcf7-not-valid-tip {
+    margin-top: rem(6);
+    font-size: rem(13);
+    color: #e70000;
+    text-align: left;
+  }
+
+  .wpcf7-form-control.wpcf7-not-valid {
+    border-color: #e70000;
+    color: #e70000;
+  }
+
+  // Response banner under the form (sent / failed / validation summary).
+  .wpcf7-response-output {
+    margin: rem(6) 0 0;
+    padding: rem(12) rem(24);
+    border: 1px solid var(--clr-line);
+    border-radius: rem(22);
+    font-size: rem(14);
+    text-align: center;
+  }
+
+  // Success is announced by the "thanks" modal (app-cf7.js), so CF7's own
+  // banner would just repeat it.
+  &.sent .wpcf7-response-output {
+    display: none;
+  }
+
+  &.invalid .wpcf7-response-output,
+  &.failed .wpcf7-response-output {
+    border-color: #e70000;
+    color: #e70000;
+  }
+
+  // Spinner sits next to the submit button, not on its own row.
+  .wpcf7-spinner {
+    margin: 0 auto;
+  }
+}

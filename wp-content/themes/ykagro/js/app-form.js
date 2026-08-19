@@ -66,6 +66,15 @@ $(function () {
   }
 
   $(document).on("submit", ".js-appointment-form", function (e) {
+    // Contact Form 7 owns submission on this site: it validates server-side and
+    // sends over AJAX. Preventing the default here would block it, and the
+    // markup-only validation below cannot see CF7's required fields (it looks for
+    // [required], CF7 marks them with aria-required), so it would report every
+    // form as valid. Success is handled in app-cf7.js via the wpcf7mailsent event.
+    if (this.classList.contains("wpcf7-form")) {
+      return;
+    }
+
     e.preventDefault();
 
     if (validateAppointmentForm(this)) {

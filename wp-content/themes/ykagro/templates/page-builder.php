@@ -14,10 +14,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
-<main>
+<?php $yka_wrapper = yka_page_wrapper_class(); ?>
+<main<?php echo yka_main_class() ? ' class="' . esc_attr( yka_main_class() ) . '"' : ''; ?>>
 	<?php get_template_part( 'includes/scroll-line' ); ?>
+
+	<?php if ( ! empty( $yka_wrapper ) ) { ?>
+		<div class="<?php echo esc_attr( $yka_wrapper ); ?>">
+	<?php } ?>
+
 	<?php require YKA_DIR . '/includes/page-builder.php'; ?>
 	<div class="spacer-xl"></div>
+
+	<?php if ( ! empty( $yka_wrapper ) ) { ?>
+		</div>
+	<?php } ?>
 </main>
 
 <?php

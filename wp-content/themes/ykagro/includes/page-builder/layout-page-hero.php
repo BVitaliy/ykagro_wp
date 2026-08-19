@@ -17,12 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 $title     = (string) get_sub_field( 'title' );
 $image     = get_sub_field( 'image' );
 $image_mob = get_sub_field( 'image_mob' );
+$cta       = get_sub_field( 'cta' );
+
+$has_cta = ! empty( $cta['label'] ) && ! empty( $cta['link']['url'] );
 
 if ( empty( $title ) ) {
 	$title = get_the_title();
 }
 
-$trail = [ [ 'label' => get_the_title() ] ];
+$trail = yka_trail();
 
 if ( empty( $image['ID'] ) ) {
 	get_template_part( 'template-parts/components/page-head', null, [ 'items' => $trail ] );
@@ -60,7 +63,8 @@ if ( empty( $image['ID'] ) ) {
 	</div>
 
 	<?php // The heading sits in its own white panel, not over the photo. ?>
-	<div class="page-hero__title-panel">
+	<div class="page-hero__title-panel<?php echo $has_cta ? ' page-hero__title-panel--cta' : ''; ?>">
 		<h1 class="page-hero__title h3"><?php echo yka_heading( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- yka_heading returns escaped HTML. ?></h1>
+		<?php yka_cta( $cta, 'btn page-hero__cta' ); ?>
 	</div>
 </section>

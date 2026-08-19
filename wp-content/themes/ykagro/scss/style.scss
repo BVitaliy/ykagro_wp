@@ -40,3 +40,5 @@
 @use "./style/home/news";
 @use "./style/home/contact";
 @use "./style/home/articles";
+@use "./style/cf7" as cf7;
+@use "./style/wp-overrides" as wp-overrides;

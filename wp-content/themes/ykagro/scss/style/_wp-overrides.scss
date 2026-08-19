@@ -1,0 +1,24 @@
+@use "../mixins" as *;
+
+// ── Additions the markup did not anticipate ─────────────────────────
+// Kept apart from the ported design partials so those stay byte-identical to
+// the markup project and remain diffable against it.
+
+// The photo notch is cut by clip-path on the slider, independently of the badge.
+// When a category defines no badge icon, the notch would stay as an empty bite
+// out of the corner — so the cut is dropped along with the badge.
+.product-hero__gallery--no-badge {
+  .product-hero__slider {
+    -webkit-clip-path: none;
+    clip-path: none;
+  }
+}
+
+// "Показати більше" appends the next page over fetch (app-load-more.js), so the
+// click has no page reload to signal that something is happening.
+.pagination-block.is-loading {
+  .pagination-block__more {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}

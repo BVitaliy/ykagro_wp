@@ -30,4 +30,12 @@ if ( ! $form_id || ! shortcode_exists( 'contact-form-7' ) ) {
 	return;
 }
 
-echo do_shortcode( sprintf( '[contact-form-7 id="%d"]', $form_id ) );
+// CF7 renders <form class="wpcf7-form">, so the design's own class has to be
+// passed in — .form-block is what supplies the flex layout and the 12px gap
+// between fields. Without it the inputs sit flush against each other.
+echo do_shortcode(
+	sprintf(
+		'[contact-form-7 id="%d" html_class="form-block js-appointment-form"]',
+		$form_id
+	)
+);

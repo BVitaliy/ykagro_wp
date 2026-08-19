@@ -20,6 +20,7 @@ $title     = (string) get_sub_field( 'title' );
 $text      = (string) get_sub_field( 'text' );
 $cta_label = (string) get_sub_field( 'cta_label' );
 $form_id   = (int) get_sub_field( 'form_id' );
+$anchor    = sanitize_title( (string) get_sub_field( 'anchor' ) );
 
 if ( $is_form && ! $form_id ) {
 	$form_id = (int) get_field( 'default_form_id', 'options' );
@@ -34,7 +35,7 @@ $collage = [
 	'category-1.jpg'     => [ 'br', 392, 286 ],
 ];
 ?>
-<section class="home-contact<?php echo $is_form ? ' home-contact--form' : ''; ?>"<?php echo $is_form ? ' aria-label="' . esc_attr__( 'Форма зворотного зв\'язку', 'ykagro' ) . '"' : ''; ?>>
+<section class="home-contact<?php echo $is_form ? ' home-contact--form' : ''; ?>"<?php echo ! empty( $anchor ) ? ' id="' . esc_attr( $anchor ) . '"' : ''; ?><?php echo $is_form ? ' aria-label="' . esc_attr__( 'Форма зворотного зв\'язку', 'ykagro' ) . '"' : ''; ?>>
 	<div class="home-contact__panel">
 		<?php
 		foreach ( $collage as $file => $meta ) {

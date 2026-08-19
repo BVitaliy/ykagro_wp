@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
-<main>
+<main class="is-doc">
 	<?php get_template_part( 'includes/scroll-line' ); ?>
 
 	<div class="container">
