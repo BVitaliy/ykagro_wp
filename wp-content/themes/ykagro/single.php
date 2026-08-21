@@ -78,6 +78,19 @@ $yka_has_author = $yka_author_id && ! empty( get_the_author_meta( 'description',
 			<div class="article-content">
 				<?php the_content(); ?>
 			</div>
+
+			<?php // Filled from the article's h2 headings by app-article.js, which
+			// hides the whole block when there are none. ?>
+			<aside class="article-toc" data-article-toc>
+				<button class="article-toc__toggle" type="button" aria-expanded="false" data-article-toc-toggle>
+					<span data-article-toc-current><?php esc_html_e( 'Читайте у цій статті', 'ykagro' ); ?></span>
+					<span class="article-toc__toggle-icon" aria-hidden="true"><?php yka_icon( 'icons/chevron-down.svg' ); ?></span>
+				</button>
+				<nav class="article-toc__panel" aria-label="<?php esc_attr_e( 'Навігація по статті', 'ykagro' ); ?>">
+					<p class="article-toc__title"><?php esc_html_e( 'Читайте у цій статті', 'ykagro' ); ?></p>
+					<ul class="article-toc__list"></ul>
+				</nav>
+			</aside>
 		</div>
 	</article>
 
